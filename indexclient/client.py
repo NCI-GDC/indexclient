@@ -5,6 +5,7 @@ except ImportError:
 
 import copy
 import json
+from functools import wraps
 
 import requests
 
@@ -45,6 +46,24 @@ class IndexClient(object):
         resp = requests.get(self.url + '/index')
         handle_error(resp)
 
+    def max_release_number(func):
+        MAX_RELEASE_NUMBER = 5 # ??
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            docs = func(*args, **kwargs)
+            if isinstance(docs, list):
+                # walk and remove offending dudes
+                docs = [d for d in docs
+                    if (float(d.metadata.get('release_number', 0)) <= MAX_RELEASE_NUMBER)
+                ]
+            else:
+                if docs.metadata and 'release_number' in docs.metadata:
+                    if float(docs.metadata['release_number']) > MAX_RELEASE_NUMBER:
+                        return None
+            return docs
+        return wrapped
+
+    @max_release_number
     def global_get(self, did, no_dist=False):
         """
         Makes a web request to the Indexd service global endpoint to retrieve
@@ -71,6 +90,7 @@ class IndexClient(object):
 
         return Document(self, did, json=response.json())
 
+    @max_release_number
     def get(self, did):
         """
         Makes a web request to the Indexd service to retrieve an index document record.
@@ -90,6 +110,7 @@ class IndexClient(object):
 
         return Document(self, did, json=response.json())
 
+    @max_release_number
     def bulk_request(self, dids):
         """
         bulk_get makes one http request to the indexd service and retrieves
@@ -116,6 +137,7 @@ class IndexClient(object):
             for doc in response.json()
         ]
 
+    @max_release_number
     def get_with_params(self, params=None):
         """
         Return a document object corresponding to the supplied parameters, such
@@ -154,6 +176,7 @@ class IndexClient(object):
         """ Returns a generator of document objects. """
         return self.list_with_params(limit, start, page_size)
 
+    @max_release_number
     def list_with_params(self, limit=float("inf"), start=None, page_size=100, params=None, negate_params=None):
         """
         Return a generator of document object corresponding to the supplied parameters, such
@@ -256,6 +279,8 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
+
+    @max_release_number
     def get_latest_version(self, did, skip_null_versions=False):
         """
         Args:
@@ -287,6 +312,7 @@ class IndexClient(object):
             return Document(self, rev_doc["did"])
         return None
 
+    @max_release_number
     def list_versions(self, did):
         # type: (str) -> list[Document]
         versions_dict = self._get("index", did, "versions").json()  # type: dict
