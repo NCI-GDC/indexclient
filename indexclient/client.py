@@ -33,7 +33,6 @@ def handle_error(resp):
 
 class IndexClient(object):
 
-    # TODO: ???? default?
     def __init__(self, baseurl, max_release_number, version="v0", auth=None):
         self.auth = auth
         self.url = baseurl
@@ -50,13 +49,23 @@ class IndexClient(object):
 
     def doc_passes_max_release_number_check(self, doc):
         # TODO: INFINITY
-        if doc.metadata.get('release_number', "50000.0") <= self.MAX_RELEASE_NUMBER:
-            return True
+        try:
+            if doc.metadata.get('release_number', "50000.0") <= self.MAX_RELEASE_NUMBER:
+                return True
+        except AttributeError:
+            # document has no attribute metadata
+            pass
         return False
 
     def check_max_release_number(func):
         """
-        Filters
+        Filters out documents that have a release number > max release number.
+
+        This filter should be applied in most cases;
+        however, we do want to let submitters look at submitted files
+        that have not been released yet, so we will allow this filter to be actively
+        disabled by passing in 'disable_max_release_number.'
+
         """
         @wraps(func)
         def wrapped(self, *args, **kwargs):
@@ -68,11 +77,11 @@ class IndexClient(object):
 
             # by default do filtering
             try:
-                return [d for d in docs \
-                    if self.doc_passes_max_release_number_check(d)]
+                return [doc for doc in docs \
+                    if self.doc_passes_max_release_number_check(doc)]
 
             except TypeError:
-                # not iterable
+                # not iterable, check singular
                 if not self.doc_passes_max_release_number_check(docs):
                     return None
                 return docs
