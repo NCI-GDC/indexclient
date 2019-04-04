@@ -32,7 +32,7 @@ def test_hashes(get_request_mock, handle_error_mock):
     }
 
     with patch("indexclient.client.IndexClient._get") as get_mock:
-        client = IndexClient('base_url')
+        client = IndexClient('base_url', max_release_number="1.0")
         client.get_with_params(input_params)
 
         assert get_mock.called
