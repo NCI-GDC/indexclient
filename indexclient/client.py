@@ -90,24 +90,20 @@ class IndexClient(object):
 
         return Document(self, did, json=response.json())
 
-    def bulk_request(self, dids, with_latest_id=False):
+    def bulk_request(self, dids):
         """
         bulk_get makes one http request to the indexd service and retrieves
         a list of Documents based on the dids provided.
 
         Args:
             dids (list): list of dids for potential documents
-            with_latest_id (boolean): return doc with  doc.latest id or not
         Returns:
             list: Document objects representing  index records
         """
 
         headers = {'content-type': 'application/json'}
         try:
-            if with_latest_id:
-                response = self._post("bulk/documents?latest=true", json=dids, headers=headers)
-            else:
-                response = self._post("bulk/documents", json=dids, headers=headers)
+            response = self._post("bulk/documents", json=dids, headers=headers)
         except requests.HTTPError as exception:
             if exception.response.status_code == 404:
                 return None
@@ -119,13 +115,14 @@ class IndexClient(object):
             for doc in response.json()
         ]
 
-    def bulk_get_latest(self, dids):
+    def bulk_get_latest(self, dids, skip_null=False):
         """
         bulk get latest versions
         """
         headers = {'content-type': 'application/json'}
         try:
-            response = self._post("bulk/documents/latest", json=dids, headers=headers)
+            response = self._post("bulk/documents/latest", params={"skip_null": skip_null},
+                                  json=dids, headers=headers)
         except requests.HTTPError as exception:
             if exception.response.status_code == 404:
                 return None
