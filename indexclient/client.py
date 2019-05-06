@@ -117,7 +117,14 @@ class IndexClient(object):
 
     def bulk_get_latest(self, dids, skip_null=False):
         """
-        bulk get latest versions
+        bulk get latest version
+        Args:
+            dids (list): list of dids
+            skip_null (boolean): skip null version
+
+        Returns:
+            list: Document objects
+
         """
         headers = {'content-type': 'application/json'}
         try:
