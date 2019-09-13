@@ -1,7 +1,7 @@
 import pytest
 from requests import HTTPError
 
-from tests.conftest import(
+from indexclient.mocks.create import (
     create_random_index,
     create_random_index_version,
 )
