@@ -2,8 +2,8 @@ import pytest
 
 from indexclient.client import (
     Document,
+    recursive_sort,
 )
-# from indexclient.client import recursive_sort
 
 
 def create_document(
@@ -69,12 +69,12 @@ def test_greater_than():
     assert sorted(docs) == docs[::-1]
 
 
-# @pytest.mark.parametrize('given, expected', [
-#     (1, 1),
-#     ('one', 'one'),
-#     ([1, 4, 3, 2], [1, 2, 3, 4]),
-#     ({'dict': [1, 4, 3, 2]}, {'dict': [1, 2, 3, 4]}),
-#     ({'one': {'two': [1, 4, 3, 2]}}, {'one': {'two': [1, 2, 3, 4]}}),
-# ])
-# def test_recursive_sort(given, expected):
-#     assert recursive_sort(given) == expected
+@pytest.mark.parametrize('given, expected', [
+    (1, 1),
+    ('one', 'one'),
+    ([1, 4, 3, 2], [1, 2, 3, 4]),
+    ({'dict': [1, 4, 3, 2]}, {'dict': [1, 2, 3, 4]}),
+    ({'one': {'two': [1, 4, 3, 2]}}, {'one': {'two': [1, 2, 3, 4]}}),
+])
+def test_recursive_sort(given, expected):
+    assert recursive_sort(given) == expected

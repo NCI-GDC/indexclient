@@ -1,9 +1,10 @@
 import pytest
-from indexd_test_utils import (
+from requests import HTTPError
+
+from tests.conftest import(
     create_random_index,
     create_random_index_version,
 )
-from requests import HTTPError
 
 
 def test_instantiate(index_client):
