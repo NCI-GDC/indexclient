@@ -1,5 +1,4 @@
 import pytest
-
 from indexclient.client import Document, recursive_sort
 
 

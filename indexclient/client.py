@@ -15,6 +15,22 @@ UPDATABLE_ATTRS = [
 ]
 
 
+def recursive_sort(value):
+    """
+    Sort all the lists in the dictionary recursively so that we can compare a
+    dictionary's contents being the same instead of comparing their order.
+    """
+    if isinstance(value, dict):
+        return {
+            key: recursive_sort(value[key])
+            for key in value.keys()
+        }
+    elif isinstance(value, list):
+        return sorted([recursive_sort(element) for element in value])
+    else:
+        return value
+
+
 def json_dumps(data):
     return json.dumps({k: v for (k, v) in data.items() if v is not None})
 
@@ -458,19 +474,3 @@ class Document(object):
                             auth=self.client.auth,
                             params={"rev": self.rev})
         self._deleted = True
-
-
-def recursive_sort(value):
-    """
-    Sort all the lists in the dictionary recursively so that we can compare a
-    dictionary's contents being the same instead of comparing their order.
-    """
-    if isinstance(value, dict):
-        return {
-            key: recursive_sort(value[key])
-            for key in value.keys()
-        }
-    elif isinstance(value, list):
-        return sorted([recursive_sort(element) for element in value])
-    else:
-        return value
