@@ -7,8 +7,4 @@ pre-commit~=1.21.0
 cfgv~=2.0.1
 more-itertools<6
 
-cdispyutils~=0.2.11
-cdislogging~=0.0.2
-doiclient~=1.0
-dosclient~=1.0
 indexd~=2.3.0

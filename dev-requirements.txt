@@ -14,42 +14,24 @@ atomicwrites==1.4.0
     # via pytest
 attrs==20.3.0
     # via pytest
-cdiserrors==0.1.2
-    # via cdispyutils
 cdislogging==0.0.3
-    # via
-    #   -r dev-requirements.in
-    #   cdiserrors
-    #   indexd
-cdispyutils==0.2.13
-    # via -r dev-requirements.in
-cffi==1.14.5
-    # via cryptography
+    # via indexd
 cfgv==2.0.1
     # via
     #   -r dev-requirements.in
     #   pre-commit
 click==7.1.2
     # via flask
-cryptography==2.9.2
-    # via cdispyutils
 distlib==0.3.1
     # via virtualenv
 doiclient==1.0.0
-    # via
-    #   -r dev-requirements.in
-    #   indexd
+    # via indexd
 dosclient==1.0.0
-    # via
-    #   -r dev-requirements.in
-    #   indexd
+    # via indexd
 filelock==3.0.12
     # via virtualenv
 flask==1.1.2
-    # via
-    #   cdiserrors
-    #   cdispyutils
-    #   indexd
+    # via indexd
 future==0.18.2
     # via indexd
 identify==1.6.2
@@ -96,10 +78,6 @@ psycopg2==2.8.6
     # via indexd
 py==1.10.0
     # via pytest
-pycparser==2.20
-    # via cffi
-pyjwt==1.7.1
-    # via cdispyutils
 pyparsing==2.4.7
     # via packaging
 pytest==4.6.11
@@ -110,15 +88,12 @@ pyyaml==5.3.1
     #   pre-commit
 requests==2.13.0
     # via
-    #   cdispyutils
     #   doiclient
     #   dosclient
     #   indexclient
 six==1.15.0
     # via
-    #   cdispyutils
     #   cfgv
-    #   cryptography
     #   mock
     #   more-itertools
     #   pathlib2
@@ -141,9 +116,7 @@ virtualenv==20.4.3
 wcwidth==0.2.5
     # via pytest
 werkzeug==1.0.1
-    # via
-    #   cdiserrors
-    #   flask
+    # via flask
 zipp==1.2.0
     # via
     #   importlib-metadata
