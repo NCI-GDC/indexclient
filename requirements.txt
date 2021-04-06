@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements.txt setup.py
 #
+--index-url https://nexus.osdc.io/repository/pypi-all/simple
+
 certifi==2020.12.5
     # via requests
 chardet==4.0.0
