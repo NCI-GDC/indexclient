@@ -6,21 +6,7 @@
 #
 --index-url https://nexus.osdc.io/repository/pypi-all/simple
 
--e git+https://github.com/uc-cdis/cdislogging.git@0.0.2#egg=cdislogging
-    # via
-    #   -r dev-requirements.in
-    #   indexd
 -e git+https://github.com/uc-cdis/cdis-python-utils.git@0.1.7#egg=cdispyutils
-    # via -r dev-requirements.in
--e git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
-    # via
-    #   -r dev-requirements.in
-    #   indexd
--e git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
-    # via
-    #   -r dev-requirements.in
-    #   indexd
--e git+https://github.com/NCI-GDC/indexd.git@2.3.1#egg=indexd
     # via -r dev-requirements.in
 appdirs==1.4.4
     # via virtualenv
@@ -30,6 +16,10 @@ atomicwrites==1.4.0
     # via pytest
 attrs==20.3.0
     # via pytest
+cdislogging==0.0.3
+    # via
+    #   -r dev-requirements.in
+    #   indexd
 cfgv==2.0.1
     # via
     #   -r dev-requirements.in
@@ -38,6 +28,14 @@ click==7.1.2
     # via flask
 distlib==0.3.1
     # via virtualenv
+doiclient==1.0.0
+    # via
+    #   -r dev-requirements.in
+    #   indexd
+dosclient==1.0.0
+    # via
+    #   -r dev-requirements.in
+    #   indexd
 filelock==3.0.12
     # via virtualenv
 flask==1.1.2
@@ -58,6 +56,8 @@ importlib-resources==3.2.1
     #   virtualenv
 indexclient==2.1.0
     # via indexd
+indexd==2.3.0
+    # via -r dev-requirements.in
 itsdangerous==1.1.0
     # via flask
 jinja2==2.11.3
