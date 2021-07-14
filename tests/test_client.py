@@ -259,8 +259,8 @@ def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation)
 
 
 @pytest.mark.parametrize("include, expectation", [
-    ("01.txt", 4),
-    ("test_bucket", 0),
+    ("01.txt", 1),
+    ("test_bucket", 5),
 ])
 def test_query_urls__include(indexd_loader, indexd_client, include, expectation):
     indexd_loader("tests/data/documents.json")
@@ -283,4 +283,4 @@ def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
 
     urls = indexd_client.query_urls_metadata(**params)
 
-    assert expected == len(urls)
+    assert expected == len(list(urls))
