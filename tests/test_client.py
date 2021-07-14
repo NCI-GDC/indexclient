@@ -3,7 +3,6 @@ from indexd_test_utils import (
     create_random_index,
     create_random_index_version,
 )
-import pkg_resources
 from requests import HTTPError
 
 
@@ -277,7 +276,9 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
     ({"url":"s3://localhost:7000/test_bucket_2", "key":"type", "value":"aws", "page_size":2}, 4),
     ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3}, 5),
     ({"url":"", "key":"state", "value":"invalidated", "page_size":2}, 0),
-    ({"url":"s3://localhost:7000/test_bucket/03.txt", "key":"state", "value":"validated", "page_size":3}, 1)
+    ({"url":"s3://localhost:7000/test_bucket/03.txt", "key":"state", "value":"validated", "page_size":3}, 1),
+    ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3, "limit":4}, 4),
+    ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3, "limit":0}, 0)
 ])
 def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
     indexd_loader("tests/data/documents.json")

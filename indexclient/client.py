@@ -339,6 +339,7 @@ class IndexClient(object):
                 yield entry
 
             limit -= len(response)
+            params["limit"] = min(limit, page_size)
             params["offset"] += len(response)
 
 
