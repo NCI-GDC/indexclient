@@ -338,7 +338,7 @@ class IndexClient(object):
                 yield entry
 
             params["limit"] -= len(response)
-            params["offest"] += len(response)
+            params["offset"] += len(response)
             if not response or params["limit"] <= 0:
                 break
 
