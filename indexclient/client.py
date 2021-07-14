@@ -320,7 +320,7 @@ class IndexClient(object):
             versions.append(Document(self, version["did"], version))
         return versions
 
-    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset="0", page_size=100):
+    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset=0, page_size=100):
         params = {
             "url": url,
             "key": key,
