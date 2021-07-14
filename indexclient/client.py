@@ -331,16 +331,16 @@ class IndexClient(object):
             "offset": offset
         }
 
-        while True:
+        while limit > 0:
             response = self._get("_query/urls/metadata/q", params=params).json()
-
+            if not response:
+                break
             for entry in response:
                 yield entry
 
-            params["limit"] -= len(response)
+            limit -= len(response)
             params["offset"] += len(response)
-            if not response or params["limit"] <= 0:
-                break
+
 
     def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset=0, page_size=100):
         """ Queries indexd entries using URL patterns, which can be either full or partial URLs
