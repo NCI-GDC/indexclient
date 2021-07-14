@@ -356,7 +356,6 @@ class IndexClient(object):
         Returns:
             Generator[Dict]
         """
-        max_return_size = limit
         params = {
             "exclude": exclude,
             "include": include,
@@ -365,8 +364,7 @@ class IndexClient(object):
             "limit": limit if limit < page_size else page_size,
             "offset": offset
         }
-        total_returned = 0
-        while True:
+        while limit > 0:
 
             response = self._get("_query/urls/q", params=params).json()
 
@@ -375,9 +373,8 @@ class IndexClient(object):
             for entry in response:
                 yield entry
 
-            if total_returned >= max_return_size:
-                break
-            total_returned += len(response)
+            limit -= len(response)
+            params["limit"] = min(limit, page_size)
             params["offset"] += len(response)
 
     def _get(self, *path, **kwargs):
