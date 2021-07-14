@@ -246,8 +246,7 @@ def test_bulk_get_latest(index_client):
     ("test_bucket", 0),
 ])
 def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation):
-    test_data_file = pkg_resources.resource_filename("tests", "data/documents.json")
-    indexd_loader(test_data_file)
+    indexd_loader("tests/data/documents.json")
 
     urls = indexd_client.query_url(exclude=exclude, page_size=2)
     total_urls = 0
@@ -264,8 +263,7 @@ def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation)
     ("test_bucket", 0),
 ])
 def test_query_urls__include(indexd_loader, indexd_client, include, expectation):
-    test_data_file = pkg_resources.resource_filename("tests", "data/documents.json")
-    indexd_loader(test_data_file)
+    indexd_loader("tests/data/documents.json")
 
     urls = indexd_client.query_url(include=include, page_size=2)
     total_urls = 0
@@ -281,8 +279,7 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
     ({"url":"", "key":"type", "value":"invalidated", "page_size":2}, 0)
 ])
 def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
-    test_data_file = pkg_resources.resource_filename("tests", "data/documents.json")
-    indexd_loader(test_data_file)
+    indexd_loader("tests/data/documents.json")
 
     urls = indexd_client.query_urls_metadata(**params)
 
