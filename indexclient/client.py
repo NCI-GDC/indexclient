@@ -320,30 +320,64 @@ class IndexClient(object):
             versions.append(Document(self, version["did"], version))
         return versions
 
-    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset="0"):
+    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset="0", page_size=100):
         params = {
             "url": url,
             "key": key,
             "value": value,
             "fields": fields,
             "versioned": versioned,
-            "limit": limit,
+            "limit": limit if limit < page_size else page_size,
             "offset": offset
         }
-        resp = self._get("_query/urls/metadata/q", params=params)
-        return resp.json()
 
-    def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset="0"):
+        while True:
+            response = self._get("_query/urls/metadata/q", params=params).json()
+
+            for entry in response:
+                yield entry
+
+            params["limit"] -= len(response)
+            params["offest"] += len(response)
+            if not response or params["limit"] <= 0:
+                break
+
+    def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset=0, page_size=100):
+        """ Queries indexd entries using URL patterns, which can be either full or partial URLs
+        Args:
+            exclude (str): A URL pattern to exclude. All URLs matching this pattern will not be included in the return
+            include (str): All entries with URL matching this pattern will be included
+            versioned (str):
+            fields:
+            limit:
+            offset:
+            page_size (int):
+        Returns:
+            Generator[Dict]
+        """
+        max_return_size = limit
         params = {
             "exclude": exclude,
             "include": include,
             "versioned": versioned,
             "fields": fields,
-            "limit": limit,
+            "limit": limit if limit < page_size else page_size,
             "offset": offset
         }
-        resp = self._get("_query/urls/q", params=params)
-        return resp.json()
+        total_returned = 0
+        while True:
+
+            response = self._get("_query/urls/q", params=params).json()
+
+            if not response:
+                break
+            for entry in response:
+                yield entry
+
+            if total_returned >= max_return_size:
+                break
+            total_returned += len(response)
+            params["offset"] += len(response)
 
     def _get(self, *path, **kwargs):
         resp = requests.get(self.url_for(*path), **kwargs)
