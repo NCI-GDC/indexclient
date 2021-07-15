@@ -1,4 +1,5 @@
 import pytest
+import pkg_resources
 from indexd_test_utils import (
     create_random_index,
     create_random_index_version,
@@ -245,7 +246,8 @@ def test_bulk_get_latest(index_client):
     ("test_bucket", 0),
 ])
 def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation):
-    indexd_loader("tests/data/documents.json")
+    test_file = pkg_resources.resource_filename("tests", "data/documents.json")
+    indexd_loader(test_file)
 
     urls = indexd_client.query_url(exclude=exclude, page_size=2)
     total_urls = 0
@@ -262,7 +264,8 @@ def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation)
     ("test_bucket", 5),
 ])
 def test_query_urls__include(indexd_loader, indexd_client, include, expectation):
-    indexd_loader("tests/data/documents.json")
+    test_file = pkg_resources.resource_filename("tests", "data/documents.json")
+    indexd_loader(test_file)
 
     urls = indexd_client.query_url(include=include, page_size=2)
     total_urls = 0
@@ -281,7 +284,8 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
     ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3, "limit":0}, 0)
 ])
 def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
-    indexd_loader("tests/data/documents.json")
+    test_file = pkg_resources.resource_filename("tests", "data/documents.json")
+    indexd_loader(test_file)
 
     urls = indexd_client.query_urls_metadata(**params)
 
