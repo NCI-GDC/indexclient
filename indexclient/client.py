@@ -321,6 +321,19 @@ class IndexClient(object):
         return versions
 
     def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset=0, page_size=100):
+        """ Queries indexd entries using URL patterns, which can be either full or partial URLs
+        Args:
+            url (str): A URL pattern to match
+            key (str): metadata key
+            value (str): metadata value for key
+            versioned (str): whether or not is versioned
+            fields: (str): comma separated list of fields to return
+            limit: (int): max results to return
+            offset: (int) where to start the next query from
+            page_size (int): how many to query at a time
+        Returns:
+            Generator[Dict]: indexd entries
+        """
         params = {
             "url": url,
             "key": key,
@@ -348,13 +361,13 @@ class IndexClient(object):
         Args:
             exclude (str): A URL pattern to exclude. All URLs matching this pattern will not be included in the return
             include (str): All entries with URL matching this pattern will be included
-            versioned (str):
-            fields:
-            limit:
-            offset:
-            page_size (int):
+            versioned (str): whether or not is versioned
+            fields: (str): comma separated list of fields to return
+            limit: (int): max results to return
+            offset: (int) where to start the next query from
+            page_size (int): how many to query at a time
         Returns:
-            Generator[Dict]
+            Generator[Dict]: indexd entries
         """
         params = {
             "exclude": exclude,
