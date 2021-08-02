@@ -1,7 +1,3 @@
-# Note: Some of the code below is also found in indexd client.py
-# https://github.com/NCI-GDC/indexd/tree/master/indexd/client.py.
-# Changes to this code might also require changes to indexd
-
 try:
     from urlparse import urljoin
 except ImportError:
