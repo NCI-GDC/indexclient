@@ -23,7 +23,7 @@ cdislogging==1.0.0
     #   -r dev-requirements.in
     #   cdiserrors
     #   indexd
-git+https://github.com/uc-cdis/cdis-python-utils.git@1.0.0#egg=cdispyutils
+-e git+https://github.com/uc-cdis/cdis-python-utils.git@1.0.0#egg=cdispyutils
     # via -r dev-requirements.in
 certifi==2020.12.5
     # via
@@ -52,11 +52,11 @@ cryptography==2.9.2
     # via cdispyutils
 distlib==0.3.1
     # via virtualenv
-git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
+-e git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
     # via
     #   -r dev-requirements.in
     #   indexd
-git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
+-e git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
     # via
     #   -r dev-requirements.in
     #   indexd
@@ -96,7 +96,7 @@ importlib-resources==3.2.1
     # via
     #   pre-commit
     #   virtualenv
-git+https://github.com/NCI-GDC/indexd.git@feat/dev-556#egg=indexd
+-e git+https://github.com/NCI-GDC/indexd.git@feat/dev-556#egg=indexd
     # via -r dev-requirements.in
 ipaddress==1.0.23
     # via cryptography
