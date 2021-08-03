@@ -52,11 +52,11 @@ cryptography==2.9.2
     # via cdispyutils
 distlib==0.3.1
     # via virtualenv
--git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
+git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
     # via
     #   -r dev-requirements.in
     #   indexd
--git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
+git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
     # via
     #   -r dev-requirements.in
     #   indexd
