@@ -6,6 +6,7 @@ setup(
     packages=[
         'indexclient',
         'indexclient.parsers',
+        'indexd_test_utils'
     ],
     install_requires=[
         'requests~=2.5',
