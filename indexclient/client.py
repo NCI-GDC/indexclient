@@ -532,7 +532,7 @@ class Document(object):
                             params={"rev": self.rev})
         self._deleted = True
 
-    def _get_url_metadata_by_type(self, url_type: str, request_prop: str) -> Optional[str]:
+    def get_url_metadata_by_type(self, request_prop: str, url_type: str) -> Optional[str]:
         urls_metadata = self._doc.get("urls_metadata", {})
         requested_metadata = [
             UrlMetadata(
@@ -544,29 +544,12 @@ class Document(object):
 
         # Edge case, the following check can be removed after DEV-983
         if len(requested_metadata) > 1:
-            raise ValueError("multiple urls with the request type")
+            raise ValueError("multiple urls of the request type within this Document")
 
         if requested_metadata:
             return getattr(requested_metadata[0], request_prop, None)
         else:
             return None
-
-    def get_url_from_type(self, url_type: str = "cleversafe") -> Optional[str]:
-        """
-        Return a url based on a given url type, or None if that url type does not exist
-        """
-        return self._get_url_metadata_by_type(
-            url_type=url_type, request_prop="url"
-        )
-
-    def get_state_from_type(self, url_type: str = "cleversafe") -> Optional[str]:
-        """
-        Return the state of a given url type,
-        or None if 1) that url type does not exist or 2) the state is absent from that url_metadata
-        """
-        return self._get_url_metadata_by_type(
-            url_type=url_type, request_prop="state"
-        )
 
 
 def recursive_sort(value):

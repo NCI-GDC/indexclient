@@ -53,6 +53,7 @@ def test_greater_than_less_than():
         assert doc.did > did
         did = doc.did
 
+
 @pytest.mark.parametrize('given, expected', [
     (1, 1),
     ('one', 'one'),
@@ -62,3 +63,39 @@ def test_greater_than_less_than():
 ])
 def test_recursive_sort(given, expected):
     assert recursive_sort(given) == expected
+
+
+TEST_URL = "fake_cleversafe_url"
+TEST_STATE = "test_state"
+TEST_URL_TYPE = "cleversafe"
+
+
+def create_doc_with_url() -> Document:
+    doc = create_document(
+        urls=[TEST_URL],
+        urls_metadata={
+            TEST_URL: {"state": TEST_STATE, "type": TEST_URL_TYPE}
+        }
+    )
+
+    return doc
+
+
+def test_get_url_metadata():
+    doc = create_doc_with_url()
+    assert doc.get_url_metadata_by_type(url_type=TEST_URL_TYPE, request_prop="url") == TEST_URL
+    assert doc.get_url_metadata_by_type(url_type=TEST_URL_TYPE, request_prop="state") == TEST_STATE
+
+
+def test_get_url_metadata_negative():
+    doc = create_doc_with_url()
+    assert doc.get_url_metadata_by_type(url_type="dummy", request_prop="url") is None
+    assert doc.get_url_metadata_by_type(url_type=TEST_URL_TYPE, request_prop="dummy") is None
+
+
+def test_get_url_metadata_missing_state():
+    doc = create_document(
+        urls=[TEST_URL],
+        urls_metadata={TEST_URL: {"type": TEST_URL_TYPE}}
+    )
+    assert doc.get_url_metadata_by_type(url_type=TEST_URL_TYPE, request_prop="state") is None
