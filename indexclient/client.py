@@ -5,6 +5,7 @@ except ImportError:
 
 import copy
 import json
+from typing import NamedTuple, Optional
 
 import requests
 
@@ -355,7 +356,6 @@ class IndexClient(object):
             params["limit"] = min(limit, page_size)
             params["offset"] += len(response)
 
-
     def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset=0, page_size=100):
         """ Queries indexd entries using URL patterns, which can be either full or partial URLs
         Args:
@@ -413,6 +413,12 @@ class IndexClient(object):
 
 class DocumentDeletedError(Exception):
     pass
+
+
+class UrlMetadata(NamedTuple):
+    url: str
+    type: str
+    state: str
 
 
 class Document(object):
@@ -479,7 +485,7 @@ class Document(object):
         self._check_deleted()
         json = json or self.client._get("index", self.did).json()
         # set attributes to current Document
-        for k,v in json.items():
+        for k, v in json.items():
             self.__dict__[k] = v
         self._attrs = json.keys()
         self._fetched = True
@@ -525,6 +531,42 @@ class Document(object):
                             auth=self.client.auth,
                             params={"rev": self.rev})
         self._deleted = True
+
+    def _get_url_metadata_by_type(self, url_type: str, request_prop: str) -> Optional[str]:
+        urls_metadata = self._doc.get("urls_metadata", {})
+        requested_metadata = [
+            UrlMetadata(
+                url=url, state=metadata.get("state"), type=metadata.get("type"),
+            )
+            for url, metadata in urls_metadata.items()
+            if metadata.get("type") == url_type
+        ]
+
+        # Edge case, the following check can be removed after DEV-983
+        if len(requested_metadata) > 1:
+            raise ValueError("multiple urls with the request type")
+
+        if requested_metadata:
+            return getattr(requested_metadata[0], request_prop, None)
+        else:
+            return None
+
+    def get_url_from_type(self, url_type: str = "cleversafe") -> Optional[str]:
+        """
+        Return a url based on a given url type, or None if that url type does not exist
+        """
+        return self._get_url_metadata_by_type(
+            url_type=url_type, request_prop="url"
+        )
+
+    def get_state_from_type(self, url_type: str = "cleversafe") -> Optional[str]:
+        """
+        Return the state of a given url type,
+        or None if 1) that url type does not exist or 2) the state is absent from that url_metadata
+        """
+        return self._get_url_metadata_by_type(
+            url_type=url_type, request_prop="state"
+        )
 
 
 def recursive_sort(value):
