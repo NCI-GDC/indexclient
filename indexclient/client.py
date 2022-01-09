@@ -3,9 +3,9 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
+import collections
 import copy
 import json
-from typing import NamedTuple, Optional
 
 import requests
 
@@ -14,6 +14,9 @@ UPDATABLE_ATTRS = [
     'metadata', 'acl', 'urls_metadata',
     'hashes', 'size'
 ]
+
+
+UrlMetadata = collections.namedtuple("UrlMetadata", ["url", "type", "state"])
 
 
 def json_dumps(data):
@@ -415,12 +418,6 @@ class DocumentDeletedError(Exception):
     pass
 
 
-class UrlMetadata(NamedTuple):
-    url: str
-    type: str
-    state: str
-
-
 class Document(object):
 
     def __init__(self, client, did, json=None):
@@ -532,7 +529,7 @@ class Document(object):
                             params={"rev": self.rev})
         self._deleted = True
 
-    def get_url_metadata_by_type(self, request_prop: str, url_type: str) -> Optional[str]:
+    def get_url_metadata_by_type(self, url_type):
         urls_metadata = self._doc.get("urls_metadata", {})
         requested_metadata = [
             UrlMetadata(
@@ -547,7 +544,21 @@ class Document(object):
             raise ValueError("multiple urls of the request type within this Document")
 
         if requested_metadata:
-            return getattr(requested_metadata[0], request_prop, None)
+            return requested_metadata[0]
+        else:
+            return None
+
+    def get_url_by_url_type(self, url_type):
+        url_metadata = self.get_url_metadata_by_type(url_type=url_type)
+        if url_metadata:
+            return url_metadata.url
+        else:
+            return None
+
+    def get_state_by_url_type(self, url_type):
+        url_metadata = self.get_url_metadata_by_type(url_type=url_type)
+        if url_metadata:
+            return url_metadata.state
         else:
             return None
 
