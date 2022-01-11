@@ -530,6 +530,15 @@ class Document(object):
         self._deleted = True
 
     def get_url_metadata_by_type(self, url_type):
+        """
+        Gets the corresponding url_metadata with specified url_type.
+
+        Parameters:
+            url_type (str): desired type of URL
+
+        Returns:
+            A UrlMetadata object representing the metadata
+        """
         urls_metadata = self._doc.get("urls_metadata", {})
         requested_metadata = [
             UrlMetadata(
@@ -549,6 +558,15 @@ class Document(object):
             return None
 
     def get_url_by_url_type(self, url_type):
+        """
+        Gets the URL of the requested url_type from the document
+
+        Parameters:
+            url_type (str): the requested type of URL
+
+        Returns:
+            str: the URL of requested url type
+        """
         url_metadata = self.get_url_metadata_by_type(url_type=url_type)
         if url_metadata:
             return url_metadata.url
@@ -556,6 +574,15 @@ class Document(object):
             return None
 
     def get_state_by_url_type(self, url_type):
+        """
+        Gets state of the requested url_type from the document
+
+        Parameters:
+            url_type (str): the requested type of URL
+
+        Returns:
+            str: the state of requested url_type
+        """
         url_metadata = self.get_url_metadata_by_type(url_type=url_type)
         if url_metadata:
             return url_metadata.state
