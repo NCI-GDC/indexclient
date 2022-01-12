@@ -280,17 +280,25 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False):
+    def get_latest_version(self, did, skip_null_versions=False, hide_deleted_urls=False):
         """
         Args:
             did (str): document id of an existing entry whose latest version is requested
             skip_null_versions (bool): if True, exclude entries without a version
+            hide_deleted_urls (bool): if True, remove deleted url endpoints from document
         Returns:
             Document: latest version of the entry
         """
 
         params = {"has_version": "true" if skip_null_versions else "false"}
         doc = self._get("index", did, "latest", params=params).json()
+
+        if doc and hide_deleted_urls:
+            urls_to_remove = [url for url, metadata in doc.urls_metadata.items()
+                              if metadata.get('state', None) == 'deleted']
+            for url in urls_to_remove:
+                doc.urls.remove(url)
+                del doc.urls_metadata[url]
 
         if doc and "did" in doc:
             return Document(self, doc["did"], doc)
