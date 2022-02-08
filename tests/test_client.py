@@ -106,6 +106,23 @@ def test_get_latest_version_with_skip(index_client):
     assert v_doc.baseid == doc_2.baseid
 
 
+def test_get_latest_version_with_skip_deleted(index_client):
+    """
+    Tests retrieval of latest record version not flagged as deleted
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
+    non_deleted_doc = create_random_index(index_client)
+    did = non_deleted_doc.did
+
+    deleted_doc = create_random_index_version(index_client, did=did)
+    deleted_doc.metadata = {"deleted": "True"}
+    deleted_doc.patch()
+
+    assert non_deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=True)
+    assert deleted_doc == index_client.get_latest_version(did)
+
+
 @pytest.mark.parametrize("arg, exception", [("AAA", HTTPError), (None, TypeError)])
 def test_invalid_input(arg, exception, index_client):
     """
@@ -150,6 +167,34 @@ def test_list_versions(index_client):
     # list versions
     versions = index_client.list_versions(doc.did)
     assert len(versions) == 2
+
+
+def test_list_versions_with_delete(index_client):
+    """
+    Tests retrieval of all versions of document not flagged as deleted
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
+    doc = create_random_index(index_client)
+    did = doc.did
+
+    non_deleted_docs = [doc]
+    deleted_docs = []
+
+    for i in range(10):
+        doc = create_random_index_version(index_client, did=did)
+
+        if i % 2 == 0:
+            non_deleted_docs.append(doc)
+        else:
+            doc.metadata = {"deleted": "True"}
+            doc.patch()
+            deleted_docs.append(doc)
+
+    assert set(index_client.list_versions(did)) == set(non_deleted_docs + deleted_docs), \
+        "the versions returned do not match all records created"
+    assert set(index_client.list_versions(doc.did, skip_deleted_versions=True)) == set(non_deleted_docs), \
+        "the versions returned do not match non-deleted records created"
 
 
 def test_updating_metadata(index_client):

@@ -280,25 +280,22 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False, hide_deleted_urls=False):
+    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=False):
         """
+        Get the latest version given did
         Args:
             did (str): document id of an existing entry whose latest version is requested
             skip_null_versions (bool): if True, exclude entries without a version
-            hide_deleted_urls (bool): if True, remove deleted url endpoints from document
+            skip_deleted_versions (bool): if True, exclude entries marked as deleted in metadata
         Returns:
             Document: latest version of the entry
         """
 
-        params = {"has_version": "true" if skip_null_versions else "false"}
+        params = {
+            "has_version": "true" if skip_null_versions else "false",
+            "not_deleted": "true" if skip_deleted_versions else "false",
+        }
         doc = self._get("index", did, "latest", params=params).json()
-
-        if doc and hide_deleted_urls:
-            urls_to_remove = [url for url, metadata in doc.urls_metadata.items()
-                              if metadata.get('state', None) == 'deleted']
-            for url in urls_to_remove:
-                doc.urls.remove(url)
-                del doc.urls_metadata[url]
 
         if doc and "did" in doc:
             return Document(self, doc["did"], doc)
@@ -319,12 +316,22 @@ class IndexClient(object):
             return Document(self, rev_doc["did"])
         return None
 
-    def list_versions(self, did):
-        # type: (str) -> list[Document]
-        versions_dict = self._get("index", did, "versions").json()  # type: dict
+    def list_versions(self, did, skip_deleted_versions=False):
+        """
+        Get all record versions given did
+        Args:
+            did (str): document id of an existing record
+            skip_deleted_versions (bool): if True, exclude records marked as deleted in metadata
+        Returns:
+            list: Document versions
+        """
+
+        params = {"not_deleted": "true" if skip_deleted_versions else "false"}
+
+        versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
         versions = []
 
-        for _, version in versions_dict.items():
+        for version in versions_dict.values():
             versions.append(Document(self, version["did"], version))
         return versions
 
