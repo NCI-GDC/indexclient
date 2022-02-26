@@ -119,8 +119,8 @@ def test_get_latest_version_with_skip_deleted(index_client):
     deleted_doc.metadata = {"deleted": "True"}
     deleted_doc.patch()
 
-    assert non_deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=True)
-    assert deleted_doc == index_client.get_latest_version(did)
+    assert non_deleted_doc == index_client.get_latest_version(did)
+    assert deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=False)
 
 
 @pytest.mark.parametrize("arg, exception", [("AAA", HTTPError), (None, TypeError)])

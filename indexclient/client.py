@@ -280,7 +280,7 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=False):
+    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=True):
         """
         Get the latest version given did
         Args:
