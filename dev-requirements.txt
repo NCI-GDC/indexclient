@@ -96,7 +96,7 @@ importlib-resources==3.2.1
     # via
     #   pre-commit
     #   virtualenv
-git+https://github.com/NCI-GDC/indexd.git@ccda4e432ab32b74baa031238189dda1355decec#egg=indexd
+git+https://github.com/NCI-GDC/indexd.git@a3f9e68d76d194e5cf7e5b08526301367064bdd4#egg=indexd
     # via -r dev-requirements.in
 ipaddress==1.0.23
     # via cryptography
