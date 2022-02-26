@@ -191,9 +191,9 @@ def test_list_versions_with_delete(index_client):
             doc.patch()
             deleted_docs.append(doc)
 
-    assert set(index_client.list_versions(did)) == set(non_deleted_docs + deleted_docs), \
+    assert set(index_client.list_versions(did, skip_deleted_versions=False)) == set(non_deleted_docs + deleted_docs), \
         "the versions returned do not match all records created"
-    assert set(index_client.list_versions(doc.did, skip_deleted_versions=True)) == set(non_deleted_docs), \
+    assert set(index_client.list_versions(did)) == set(non_deleted_docs), \
         "the versions returned do not match non-deleted records created"
 
 
