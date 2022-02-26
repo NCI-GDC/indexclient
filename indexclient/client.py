@@ -316,7 +316,7 @@ class IndexClient(object):
             return Document(self, rev_doc["did"])
         return None
 
-    def list_versions(self, did, skip_deleted_versions=False):
+    def list_versions(self, did, skip_deleted_versions=True):
         """
         Get all record versions given did
         Args:
