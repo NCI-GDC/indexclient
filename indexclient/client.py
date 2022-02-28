@@ -115,28 +115,33 @@ class IndexClient(object):
             for doc in response.json()
         ]
 
-    def bulk_get_latest(self, dids, skip_null=False):
+    def bulk_get_latest(self, dids, skip_null=False, skip_deleted=True):
         """
         bulk get latest version
         Args:
             dids (list): list of dids
-            skip_null (boolean): skip null version
+            skip_null (boolean): skip null versions
+            skip_deleted (boolean): skip deleted versions
 
         Returns:
             list: Document objects
 
         """
-        headers = {'content-type': 'application/json'}
+        headers = {"content-type": "application/json"}
         try:
-            response = self._post("bulk/documents/latest", params={"skip_null": skip_null},
-                                  json=dids, headers=headers)
+            response = self._post(
+                "bulk/documents/latest",
+                params={"skip_null": skip_null, "skip_deleted": skip_deleted},
+                json=dids,
+                headers=headers
+            )
         except requests.HTTPError as exception:
             if exception.response.status_code == 404:
                 return None
             else:
                 raise exception
         return [
-            Document(self, doc['did'], json=doc)
+            Document(self, doc["did"], json=doc)
             for doc in response.json()
         ]
 

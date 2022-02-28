@@ -269,6 +269,21 @@ def test_bulk_request(index_client):
 
 
 def test_bulk_get_latest(index_client):
+    """ Test bulk_get_latest() with default parameters """
+    dids = []
+    latest_dids = set()
+    for i in range(20):
+        doc = create_random_index(index_client)
+        rev_doc = create_random_index_version(index_client, did=doc.did)
+        dids.append(doc.did)
+        latest_dids.add(rev_doc.did)
+
+    latest_docs = index_client.bulk_get_latest(dids)
+    assert {doc.did for doc in latest_docs} == latest_dids
+
+
+def test_bulk_get_latest_with_skip_null(index_client):
+    """ Test bulk_get_latest() with skip_null parameters """
     dids = []
     new_dids = set()
     null_dids = set()
@@ -284,6 +299,31 @@ def test_bulk_get_latest(index_client):
     docs_null_included = index_client.bulk_get_latest(dids, skip_null=False)
     assert {doc.did for doc in docs_null_excluded} == new_dids
     assert {doc.did for doc in docs_null_included} == null_dids
+
+
+def test_bulk_get_latest_with_skip_deleted(index_client):
+    """ Test bulk_get_latest() with skip_deleted parameters """
+    dids = []
+    new_dids = set()
+    deleted_dids = set()
+    for i in range(20):
+        doc = create_random_index(index_client)
+        rev_doc = create_random_index_version(index_client, did=doc.did)
+        if i < 5:
+            deleted_doc = create_random_index_version(index_client, did=doc.did)
+            deleted_doc.metadata = {"deleted": "True"}
+            deleted_doc.patch()
+        else:
+            deleted_doc = rev_doc
+
+        dids.append(doc.did)
+        new_dids.add(rev_doc.did)
+        deleted_dids.add(deleted_doc.did)
+
+    docs_deleted_excluded = index_client.bulk_get_latest(dids, skip_deleted=True)
+    docs_deleted_included = index_client.bulk_get_latest(dids, skip_deleted=False)
+    assert {doc.did for doc in docs_deleted_excluded} == new_dids
+    assert {doc.did for doc in docs_deleted_included} == deleted_dids
 
 
 @pytest.mark.parametrize("exclude, expectation", [
