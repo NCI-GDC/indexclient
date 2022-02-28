@@ -10,7 +10,7 @@ cfgv~=2.0.1
 more-itertools<6
 
 git+https://github.com/uc-cdis/cdis-python-utils.git@1.0.0#egg=cdispyutils
-git+https://github.com/NCI-GDC/indexd.git@a3f9e68d76d194e5cf7e5b08526301367064bdd4#egg=indexd
+git+https://github.com/NCI-GDC/indexd.git@674cdcb6b891395e52c9ed81dd1947bd45437ecb#egg=indexd
 git+https://github.com/uc-cdis/doiclient.git@1.0.0#egg=doiclient
 git+https://github.com/uc-cdis/dosclient.git@1.0.0#egg=dosclient
 cdislogging==1.0.0
