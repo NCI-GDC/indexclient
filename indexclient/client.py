@@ -120,8 +120,8 @@ class IndexClient(object):
         bulk get latest version
         Args:
             dids (list): list of dids
-            skip_null (boolean): skip null versions
-            skip_deleted (boolean): skip deleted versions
+            skip_null (bool): skip null versions
+            skip_deleted (bool): skip deleted versions
 
         Returns:
             list: Document objects
