@@ -297,8 +297,8 @@ class IndexClient(object):
         """
 
         params = {
-            "has_version": "true" if skip_null_versions else "false",
-            "not_deleted": "true" if skip_deleted_versions else "false",
+            "has_version": json.dumps(skip_null_versions),
+            "not_deleted": json.dumps(skip_deleted_versions),
         }
         doc = self._get("index", did, "latest", params=params).json()
 
@@ -331,7 +331,7 @@ class IndexClient(object):
             list: Document versions
         """
 
-        params = {"not_deleted": "true" if skip_deleted_versions else "false"}
+        params = {"not_deleted": json.dumps(skip_deleted_versions)}
 
         versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
         versions = []
