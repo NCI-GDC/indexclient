@@ -12,21 +12,14 @@ attrs==21.4.0
     # via
     #   jsonschema
     #   pytest
-cdiserrors==0.1.2
-    # via cdispyutils
 cdislogging==1.0.0
     # via
     #   -r dev-requirements.in
-    #   cdiserrors
     #   indexd
-cdispyutils @ git+https://github.com/uc-cdis/cdis-python-utils.git@1.0.0
-    # via -r dev-requirements.in
 certifi==2021.10.8
     # via
     #   -c requirements.txt
     #   requests
-cffi==1.15.0
-    # via cryptography
 cfgv==3.3.1
     # via pre-commit
 charset-normalizer==2.0.12
@@ -35,25 +28,16 @@ charset-normalizer==2.0.12
     #   requests
 click==7.1.2
     # via flask
-cryptography==2.9.2
-    # via cdispyutils
 distlib==0.3.4
     # via virtualenv
 doiclient @ git+https://github.com/uc-cdis/doiclient.git@1.0.0
-    # via
-    #   -r dev-requirements.in
-    #   indexd
+    # via indexd
 dosclient @ git+https://github.com/uc-cdis/dosclient.git@1.0.0
-    # via
-    #   -r dev-requirements.in
-    #   indexd
+    # via indexd
 filelock==3.6.0
     # via virtualenv
 flask==1.1.4
-    # via
-    #   cdiserrors
-    #   cdispyutils
-    #   indexd
+    # via indexd
 future==0.18.2
     # via indexd
 identify==2.4.11
@@ -97,10 +81,6 @@ psycopg2==2.9.3
     # via indexd
 py==1.11.0
     # via pytest
-pycparser==2.21
-    # via cffi
-pyjwt==1.7.1
-    # via cdispyutils
 pyparsing==3.0.7
     # via packaging
 pyrsistent==0.18.1
@@ -114,10 +94,10 @@ pyyaml==6.0
 requests==2.27.1
     # via
     #   -c requirements.txt
-    #   cdispyutils
+    #   doiclient
+    #   dosclient
 six==1.16.0
     # via
-    #   cryptography
     #   jsonschema
     #   pre-commit
     #   pytest
@@ -146,7 +126,6 @@ wcwidth==0.2.5
     # via pytest
 werkzeug==0.16.1
     # via
-    #   cdiserrors
     #   flask
     #   indexd
 zipp==3.7.0
