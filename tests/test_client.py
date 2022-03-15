@@ -106,6 +106,23 @@ def test_get_latest_version_with_skip(index_client):
     assert v_doc.baseid == doc_2.baseid
 
 
+def test_get_latest_version_with_skip_deleted(index_client):
+    """
+    Tests retrieval of latest record version not flagged as deleted
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
+    non_deleted_doc = create_random_index(index_client)
+    did = non_deleted_doc.did
+
+    deleted_doc = create_random_index_version(index_client, did=did)
+    deleted_doc.metadata = {"deleted": "True"}
+    deleted_doc.patch()
+
+    assert non_deleted_doc == index_client.get_latest_version(did)
+    assert deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=False)
+
+
 @pytest.mark.parametrize("arg, exception", [("AAA", HTTPError), (None, TypeError)])
 def test_invalid_input(arg, exception, index_client):
     """
@@ -150,6 +167,34 @@ def test_list_versions(index_client):
     # list versions
     versions = index_client.list_versions(doc.did)
     assert len(versions) == 2
+
+
+def test_list_versions_with_delete(index_client):
+    """
+    Tests retrieval of all versions of document not flagged as deleted
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
+    doc = create_random_index(index_client)
+    did = doc.did
+
+    non_deleted_docs = [doc]
+    deleted_docs = []
+
+    for i in range(10):
+        doc = create_random_index_version(index_client, did=did)
+
+        if i % 2 == 0:
+            non_deleted_docs.append(doc)
+        else:
+            doc.metadata = {"deleted": "True"}
+            doc.patch()
+            deleted_docs.append(doc)
+
+    assert set(index_client.list_versions(did, skip_deleted_versions=False)) == set(non_deleted_docs + deleted_docs), \
+        "the versions returned do not match all records created"
+    assert set(index_client.list_versions(did)) == set(non_deleted_docs), \
+        "the versions returned do not match non-deleted records created"
 
 
 def test_updating_metadata(index_client):
@@ -224,6 +269,21 @@ def test_bulk_request(index_client):
 
 
 def test_bulk_get_latest(index_client):
+    """ Test bulk_get_latest() with default parameters """
+    dids = []
+    latest_dids = set()
+    for i in range(20):
+        doc = create_random_index(index_client)
+        rev_doc = create_random_index_version(index_client, did=doc.did)
+        dids.append(doc.did)
+        latest_dids.add(rev_doc.did)
+
+    latest_docs = index_client.bulk_get_latest(dids)
+    assert {doc.did for doc in latest_docs} == latest_dids
+
+
+def test_bulk_get_latest_with_skip_null(index_client):
+    """ Test bulk_get_latest() with skip_null parameters """
     dids = []
     new_dids = set()
     null_dids = set()
@@ -239,6 +299,31 @@ def test_bulk_get_latest(index_client):
     docs_null_included = index_client.bulk_get_latest(dids, skip_null=False)
     assert {doc.did for doc in docs_null_excluded} == new_dids
     assert {doc.did for doc in docs_null_included} == null_dids
+
+
+def test_bulk_get_latest_with_skip_deleted(index_client):
+    """ Test bulk_get_latest() with skip_deleted parameters """
+    dids = []
+    new_dids = set()
+    deleted_dids = set()
+    for i in range(20):
+        doc = create_random_index(index_client)
+        rev_doc = create_random_index_version(index_client, did=doc.did)
+        if i < 5:
+            deleted_doc = create_random_index_version(index_client, did=doc.did)
+            deleted_doc.metadata = {"deleted": "True"}
+            deleted_doc.patch()
+        else:
+            deleted_doc = rev_doc
+
+        dids.append(doc.did)
+        new_dids.add(rev_doc.did)
+        deleted_dids.add(deleted_doc.did)
+
+    docs_deleted_excluded = index_client.bulk_get_latest(dids, skip_deleted=True)
+    docs_deleted_included = index_client.bulk_get_latest(dids, skip_deleted=False)
+    assert {doc.did for doc in docs_deleted_excluded} == new_dids
+    assert {doc.did for doc in docs_deleted_included} == deleted_dids
 
 
 @pytest.mark.parametrize("exclude, expectation", [

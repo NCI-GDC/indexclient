@@ -119,28 +119,33 @@ class IndexClient(object):
             for doc in response.json()
         ]
 
-    def bulk_get_latest(self, dids, skip_null=False):
+    def bulk_get_latest(self, dids, skip_null=False, skip_deleted=True):
         """
         bulk get latest version
         Args:
             dids (list): list of dids
-            skip_null (boolean): skip null version
+            skip_null (bool): skip null versions
+            skip_deleted (bool): skip deleted versions
 
         Returns:
             list: Document objects
 
         """
-        headers = {'content-type': 'application/json'}
+        headers = {"content-type": "application/json"}
         try:
-            response = self._post("bulk/documents/latest", params={"skip_null": skip_null},
-                                  json=dids, headers=headers)
+            response = self._post(
+                "bulk/documents/latest",
+                params={"skip_null": skip_null, "skip_deleted": skip_deleted},
+                json=dids,
+                headers=headers
+            )
         except requests.HTTPError as exception:
             if exception.response.status_code == 404:
                 return None
             else:
                 raise exception
         return [
-            Document(self, doc['did'], json=doc)
+            Document(self, doc["did"], json=doc)
             for doc in response.json()
         ]
 
@@ -284,16 +289,21 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False):
+    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=True):
         """
+        Get the latest version given did
         Args:
             did (str): document id of an existing entry whose latest version is requested
             skip_null_versions (bool): if True, exclude entries without a version
+            skip_deleted_versions (bool): if True, exclude entries marked as deleted in metadata
         Returns:
             Document: latest version of the entry
         """
 
-        params = {"has_version": "true" if skip_null_versions else "false"}
+        params = {
+            "has_version": json.dumps(skip_null_versions),
+            "not_deleted": json.dumps(skip_deleted_versions),
+        }
         doc = self._get("index", did, "latest", params=params).json()
 
         if doc and "did" in doc:
@@ -315,12 +325,22 @@ class IndexClient(object):
             return Document(self, rev_doc["did"])
         return None
 
-    def list_versions(self, did):
-        # type: (str) -> list[Document]
-        versions_dict = self._get("index", did, "versions").json()  # type: dict
+    def list_versions(self, did, skip_deleted_versions=True):
+        """
+        Get all record versions given did
+        Args:
+            did (str): document id of an existing record
+            skip_deleted_versions (bool): if True, exclude records marked as deleted in metadata
+        Returns:
+            list: Document versions
+        """
+
+        params = {"not_deleted": json.dumps(skip_deleted_versions)}
+
+        versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
         versions = []
 
-        for _, version in versions_dict.items():
+        for version in versions_dict.values():
             versions.append(Document(self, version["did"], version))
         return versions
 
