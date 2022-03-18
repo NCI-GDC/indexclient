@@ -325,17 +325,17 @@ class IndexClient(object):
             return Document(self, rev_doc["did"])
         return None
 
-    def list_versions(self, did, skip_deleted_versions=True):
+    def list_versions(self, did, exclude_deleted=False):
         """
         Get all record versions given did
         Args:
             did (str): document id of an existing record
-            skip_deleted_versions (bool): if True, exclude records marked as deleted in metadata
+            exclude_deleted (bool): if True, exclude records marked as deleted in metadata
         Returns:
             list: Document versions
         """
 
-        params = {"not_deleted": json.dumps(skip_deleted_versions)}
+        params = {"exclude_deleted": json.dumps(exclude_deleted)}
 
         versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
         versions = []

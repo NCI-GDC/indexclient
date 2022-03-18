@@ -169,9 +169,9 @@ def test_list_versions(index_client):
     assert len(versions) == 2
 
 
-def test_list_versions_with_delete(index_client):
+def test_list_versions_with_exclude_deleted(index_client):
     """
-    Tests retrieval of all versions of document not flagged as deleted
+    Tests retrieval of all versions of document using exclude_deleted parameter
     Args:
         index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
     """
@@ -191,9 +191,9 @@ def test_list_versions_with_delete(index_client):
             doc.patch()
             deleted_docs.append(doc)
 
-    assert set(index_client.list_versions(did, skip_deleted_versions=False)) == set(non_deleted_docs + deleted_docs), \
+    assert set(index_client.list_versions(did)) == set(non_deleted_docs + deleted_docs), \
         "the versions returned do not match all records created"
-    assert set(index_client.list_versions(did)) == set(non_deleted_docs), \
+    assert set(index_client.list_versions(did, exclude_deleted=True)) == set(non_deleted_docs), \
         "the versions returned do not match non-deleted records created"
 
 
