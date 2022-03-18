@@ -360,6 +360,26 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
     assert expectation == total_urls
 
 
+def test_query_url_exclude_deleted(index_client):
+    """ Tests query_urls() with the exclude_deleted parameter """
+    total_count = 0
+    deleted_count = 0
+
+    for i in range(10):
+        doc = create_random_index(index_client)
+
+        if i % 2 == 0:
+            total_count += 1
+        else:
+            doc.metadata = {"deleted": "True"}
+            doc.patch()
+            deleted_count += 1
+            total_count += 1
+
+    assert len(list(index_client.query_url())) == total_count
+    assert len(list(index_client.query_url(exclude_deleted=True))) == total_count - deleted_count
+
+
 @pytest.mark.parametrize("params, expected", [
     ({"url":"s3://localhost:7000/test_bucket_2", "key":"type", "value":"aws", "page_size":2}, 4),
     ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3}, 5),

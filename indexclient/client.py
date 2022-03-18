@@ -379,12 +379,16 @@ class IndexClient(object):
             params["limit"] = min(limit, page_size)
             params["offset"] += len(response)
 
-    def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset=0, page_size=100):
+    def query_url(
+            self, exclude=None, include=None, versioned=False, exclude_deleted=False, fields=None, limit=100, offset=0,
+            page_size=100
+    ):
         """ Queries indexd entries using URL patterns, which can be either full or partial URLs
         Args:
             exclude (str): A URL pattern to exclude. All URLs matching this pattern will not be included in the return
             include (str): All entries with URL matching this pattern will be included
-            versioned (str): whether or not is versioned
+            versioned (bool): whether or not is versioned
+            exclude_deleted (bool): if True, excludes deleted docs from search
             fields: (str): comma separated list of fields to return
             limit: (int): max results to return
             offset: (int) where to start the next query from
@@ -396,6 +400,7 @@ class IndexClient(object):
             "exclude": exclude,
             "include": include,
             "versioned": versioned,
+            "exclude_deleted": exclude_deleted,
             "fields": fields,
             "limit": limit if limit < page_size else page_size,
             "offset": offset
