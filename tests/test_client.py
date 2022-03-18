@@ -191,10 +191,11 @@ def test_list_versions_with_exclude_deleted(index_client):
             doc.patch()
             deleted_docs.append(doc)
 
-    assert set(index_client.list_versions(did)) == set(non_deleted_docs + deleted_docs), \
-        "the versions returned do not match all records created"
-    assert set(index_client.list_versions(did, exclude_deleted=True)) == set(non_deleted_docs), \
-        "the versions returned do not match non-deleted records created"
+    includes_deleted = index_client.list_versions(did)
+    assert set(includes_deleted) == set(non_deleted_docs + deleted_docs)
+
+    excludes_deleted = index_client.list_versions(did, exclude_deleted=True)
+    assert set(excludes_deleted) == set(non_deleted_docs)
 
 
 def test_updating_metadata(index_client):
@@ -302,28 +303,35 @@ def test_bulk_get_latest_with_skip_null(index_client):
 
 
 def test_bulk_get_latest_with_exclude_deleted(index_client):
-    """ Test bulk_get_latest() with exclude_deleted parameter """
+    """
+    Tests bulk_get_latest() with exclude_deleted parameter
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
     dids = []
-    new_dids = set()
-    deleted_dids = set()
+    latest_non_deleted_dids = set()
+    latest_dids = set()
+
     for i in range(20):
         doc = create_random_index(index_client)
         rev_doc = create_random_index_version(index_client, did=doc.did)
+        latest_non_deleted_dids.add(rev_doc.did)
+
         if i < 5:
-            deleted_doc = create_random_index_version(index_client, did=doc.did)
-            deleted_doc.metadata = {"deleted": "True"}
-            deleted_doc.patch()
+            latest_doc = create_random_index_version(index_client, did=doc.did)
+            latest_doc.metadata = {"deleted": "True"}
+            latest_doc.patch()
         else:
-            deleted_doc = rev_doc
+            latest_doc = rev_doc
 
         dids.append(doc.did)
-        new_dids.add(rev_doc.did)
-        deleted_dids.add(deleted_doc.did)
+        latest_dids.add(latest_doc.did)
 
-    docs_deleted_excluded = index_client.bulk_get_latest(dids, exclude_deleted=True)
-    docs_deleted_included = index_client.bulk_get_latest(dids)
-    assert {doc.did for doc in docs_deleted_excluded} == new_dids
-    assert {doc.did for doc in docs_deleted_included} == deleted_dids
+    includes_deleted = index_client.bulk_get_latest(dids)
+    assert set(doc.did for doc in includes_deleted) == latest_dids
+
+    excludes_deleted = index_client.bulk_get_latest(dids, exclude_deleted=True)
+    assert set(doc.did for doc in excludes_deleted) == latest_non_deleted_dids
 
 
 @pytest.mark.parametrize("exclude, expectation", [
@@ -361,23 +369,29 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
 
 
 def test_query_url_exclude_deleted(index_client):
-    """ Tests query_url() with the exclude_deleted parameter """
-    total_count = 0
+    """
+    Tests query_url() with exclude_deleted parameter
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
+    non_deleted_count = 0
     deleted_count = 0
 
     for i in range(10):
         doc = create_random_index(index_client)
 
         if i % 2 == 0:
-            total_count += 1
+            non_deleted_count += 1
         else:
             doc.metadata = {"deleted": "True"}
             doc.patch()
             deleted_count += 1
-            total_count += 1
 
-    assert len(list(index_client.query_url())) == total_count
-    assert len(list(index_client.query_url(exclude_deleted=True))) == total_count - deleted_count
+    includes_deleted = list(index_client.query_url())
+    assert len(includes_deleted) == non_deleted_count + deleted_count
+
+    excludes_deleted = list(index_client.query_url(exclude_deleted=True))
+    assert len(excludes_deleted) == non_deleted_count
 
 
 @pytest.mark.parametrize("params, expected", [
@@ -398,28 +412,32 @@ def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
 
 
 def test_query_urls_metadata_exclude_deleted(index_client):
-    """ Tests query_urls_metadata() with the exclude_deleted parameter """
+    """
+    Tests query_urls_metadata() with exclude_deleted parameter
+    Args:
+        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+    """
 
     # all docs created with create_random_index() have a url matching this pattern and a corresponding key-value pair
     url_match = "s3://super-safe.com/"
     key = "a"
     value = "b"
 
-    total_count = 0
+    non_deleted_count = 0
     deleted_count = 0
 
     for i in range(10):
         doc = create_random_index(index_client)
 
         if i % 2 == 0:
-            total_count += 1
+            non_deleted_count += 1
         else:
             doc.metadata = {"deleted": "True"}
             doc.patch()
             deleted_count += 1
-            total_count += 1
 
-    assert len(list(index_client.query_urls_metadata(url=url_match, key=key, value=value))) == total_count
-    assert len(
-        list(index_client.query_urls_metadata(url=url_match, key=key, value=value, exclude_deleted=True))
-    ) == total_count - deleted_count
+    includes_deleted = list(index_client.query_urls_metadata(url=url_match, key=key, value=value))
+    assert len(includes_deleted) == non_deleted_count + deleted_count
+
+    excludes_deleted = list(index_client.query_urls_metadata(url=url_match, key=key, value=value, exclude_deleted=True))
+    assert len(excludes_deleted) == deleted_count
