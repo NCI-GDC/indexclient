@@ -106,9 +106,9 @@ def test_get_latest_version_with_skip(index_client):
     assert v_doc.baseid == doc_2.baseid
 
 
-def test_get_latest_version_with_skip_deleted(index_client):
+def test_get_latest_version_with_exclude_deleted(index_client):
     """
-    Tests retrieval of latest record version not flagged as deleted
+    Tests retrieval of latest record version using exclude_deleted parameter
     Args:
         index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
     """
@@ -119,8 +119,8 @@ def test_get_latest_version_with_skip_deleted(index_client):
     deleted_doc.metadata = {"deleted": "True"}
     deleted_doc.patch()
 
-    assert non_deleted_doc == index_client.get_latest_version(did)
-    assert deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=False)
+    assert non_deleted_doc == index_client.get_latest_version(did, exclude_deleted=True)
+    assert deleted_doc == index_client.get_latest_version(did)
 
 
 @pytest.mark.parametrize("arg, exception", [("AAA", HTTPError), (None, TypeError)])

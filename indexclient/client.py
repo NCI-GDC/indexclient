@@ -289,20 +289,20 @@ class IndexClient(object):
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=True):
+    def get_latest_version(self, did, skip_null_versions=False, exclude_deleted=False):
         """
         Get the latest version given did
         Args:
             did (str): document id of an existing entry whose latest version is requested
             skip_null_versions (bool): if True, exclude entries without a version
-            skip_deleted_versions (bool): if True, exclude entries marked as deleted in metadata
+            exclude_deleted (bool): if True, exclude entries marked as deleted in metadata
         Returns:
             Document: latest version of the entry
         """
 
         params = {
             "has_version": json.dumps(skip_null_versions),
-            "not_deleted": json.dumps(skip_deleted_versions),
+            "exclude_deleted": json.dumps(exclude_deleted),
         }
         doc = self._get("index", did, "latest", params=params).json()
 
