@@ -301,8 +301,8 @@ def test_bulk_get_latest_with_skip_null(index_client):
     assert {doc.did for doc in docs_null_included} == null_dids
 
 
-def test_bulk_get_latest_with_skip_deleted(index_client):
-    """ Test bulk_get_latest() with skip_deleted parameters """
+def test_bulk_get_latest_with_exclude_deleted(index_client):
+    """ Test bulk_get_latest() with exclude_deleted parameter """
     dids = []
     new_dids = set()
     deleted_dids = set()
@@ -320,8 +320,8 @@ def test_bulk_get_latest_with_skip_deleted(index_client):
         new_dids.add(rev_doc.did)
         deleted_dids.add(deleted_doc.did)
 
-    docs_deleted_excluded = index_client.bulk_get_latest(dids, skip_deleted=True)
-    docs_deleted_included = index_client.bulk_get_latest(dids, skip_deleted=False)
+    docs_deleted_excluded = index_client.bulk_get_latest(dids, exclude_deleted=True)
+    docs_deleted_included = index_client.bulk_get_latest(dids)
     assert {doc.did for doc in docs_deleted_excluded} == new_dids
     assert {doc.did for doc in docs_deleted_included} == deleted_dids
 

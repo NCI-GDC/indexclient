@@ -119,13 +119,13 @@ class IndexClient(object):
             for doc in response.json()
         ]
 
-    def bulk_get_latest(self, dids, skip_null=False, skip_deleted=True):
+    def bulk_get_latest(self, dids, skip_null=False, exclude_deleted=False):
         """
         bulk get latest version
         Args:
             dids (list): list of dids
             skip_null (bool): skip null versions
-            skip_deleted (bool): skip deleted versions
+            exclude_deleted (bool): exclude deleted versions
 
         Returns:
             list: Document objects
@@ -135,7 +135,7 @@ class IndexClient(object):
         try:
             response = self._post(
                 "bulk/documents/latest",
-                params={"skip_null": skip_null, "skip_deleted": skip_deleted},
+                params={"skip_null": skip_null, "exclude_deleted": exclude_deleted},
                 json=dids,
                 headers=headers
             )
