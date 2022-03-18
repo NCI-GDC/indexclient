@@ -344,13 +344,17 @@ class IndexClient(object):
             versions.append(Document(self, version["did"], version))
         return versions
 
-    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset=0, page_size=100):
+    def query_urls_metadata(
+            self, url, key, value, fields=None, versioned=False, exclude_deleted=False, limit=100, offset=0,
+            page_size=100
+    ):
         """ Queries indexd entries using URL patterns, which can be either full or partial URLs
         Args:
             url (str): A URL pattern to match
             key (str): metadata key
             value (str): metadata value for key
-            versioned (str): whether or not is versioned
+            versioned (bool): whether or not is versioned
+            exclude_deleted (bool): If true, exclude deleted documents from search
             fields: (str): comma separated list of fields to return
             limit: (int): max results to return
             offset: (int) where to start the next query from
@@ -364,6 +368,7 @@ class IndexClient(object):
             "value": value,
             "fields": fields,
             "versioned": versioned,
+            "exclude_deleted": exclude_deleted,
             "limit": limit if limit < page_size else page_size,
             "offset": offset
         }

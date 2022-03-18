@@ -361,7 +361,7 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
 
 
 def test_query_url_exclude_deleted(index_client):
-    """ Tests query_urls() with the exclude_deleted parameter """
+    """ Tests query_url() with the exclude_deleted parameter """
     total_count = 0
     deleted_count = 0
 
@@ -395,3 +395,31 @@ def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
     urls = indexd_client.query_urls_metadata(**params)
 
     assert expected == len(list(urls))
+
+
+def test_query_urls_metadata_exclude_deleted(index_client):
+    """ Tests query_urls_metadata() with the exclude_deleted parameter """
+
+    # all docs created with create_random_index() have a url matching this pattern and a corresponding key-value pair
+    url_match = "s3://super-safe.com/"
+    key = "a"
+    value = "b"
+
+    total_count = 0
+    deleted_count = 0
+
+    for i in range(10):
+        doc = create_random_index(index_client)
+
+        if i % 2 == 0:
+            total_count += 1
+        else:
+            doc.metadata = {"deleted": "True"}
+            doc.patch()
+            deleted_count += 1
+            total_count += 1
+
+    assert len(list(index_client.query_urls_metadata(url=url_match, key=key, value=value))) == total_count
+    assert len(
+        list(index_client.query_urls_metadata(url=url_match, key=key, value=value, exclude_deleted=True))
+    ) == total_count - deleted_count
