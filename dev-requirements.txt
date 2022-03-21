@@ -40,7 +40,7 @@ flask==1.1.4
     # via indexd
 future==0.18.2
     # via indexd
-identify==2.4.11
+identify==2.4.12
     # via pre-commit
 idna==3.3
     # via
@@ -53,11 +53,7 @@ importlib-metadata==4.11.3
     #   pre-commit
     #   pytest
     #   virtualenv
-importlib-resources==3.2.1
-    # via
-    #   pre-commit
-    #   virtualenv
-git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd
+indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2
     # via -r dev-requirements.in
 itsdangerous==1.1.0
     # via flask
@@ -120,11 +116,11 @@ toml==0.10.2
     # via pre-commit
 typing-extensions==4.1.1
     # via importlib-metadata
-urllib3==1.26.8
+urllib3==1.26.9
     # via
     #   -c requirements.txt
     #   requests
-virtualenv==20.13.3
+virtualenv==20.13.4
     # via pre-commit
 wcwidth==0.2.5
     # via pytest
