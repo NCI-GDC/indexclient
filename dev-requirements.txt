@@ -53,7 +53,11 @@ importlib-metadata==4.11.3
     #   pre-commit
     #   pytest
     #   virtualenv
-indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.1
+importlib-resources==3.2.1
+    # via
+    #   pre-commit
+    #   virtualenv
+git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd
     # via -r dev-requirements.in
 itsdangerous==1.1.0
     # via flask
