@@ -30,7 +30,7 @@ def handle_error(resp):
             resp.raise_for_status()
 
 
-class IndexClient(object):
+class IndexClient:
 
     def __init__(self, baseurl, version="v0", auth=None):
         self.auth = auth
@@ -348,8 +348,7 @@ class IndexClient(object):
             response = self._get("_query/urls/metadata/q", params=params).json()
             if not response:
                 break
-            for entry in response:
-                yield entry
+            yield from response
 
             limit -= len(response)
             params["limit"] = min(limit, page_size)
@@ -382,8 +381,7 @@ class IndexClient(object):
 
             if not response:
                 break
-            for entry in response:
-                yield entry
+            yield from response
 
             limit -= len(response)
             params["limit"] = min(limit, page_size)
@@ -414,7 +412,7 @@ class DocumentDeletedError(Exception):
     pass
 
 
-class Document(object):
+class Document:
 
     def __init__(self, client, did, json=None):
         self.client = client
@@ -452,14 +450,14 @@ class Document(object):
             <Document(size=1, form=object, file_name=filename.txt, ...)>
         """
         attributes = ', '.join([
-            '{}={}'.format(attr, self.__dict__[attr])
+            f'{attr}={self.__dict__[attr]}'
             for attr in self._attrs
         ])
         return '<Document(' + attributes + ')>'
 
     def _check_deleted(self):
         if self._deleted:
-            raise DocumentDeletedError("document {} has been deleted".format(self.did))
+            raise DocumentDeletedError(f"document {self.did} has been deleted")
 
     def _render(self, include_rev=True):
         self._check_deleted()
@@ -597,6 +595,6 @@ def recursive_sort(value):
             for key in value.keys()
         }
     elif isinstance(value, list):
-        return sorted([recursive_sort(element) for element in value])
+        return sorted(recursive_sort(element) for element in value)
     else:
         return value

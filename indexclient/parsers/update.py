@@ -25,7 +25,7 @@ def update_record(host, port, did, rev, size, hashes, urls, **kwargs):
 
     urls_set = set(urls)
 
-    hash_set = set((h,v) for h,v in hashes)
+    hash_set = {(h,v) for h,v in hashes}
     hash_dict = {h:v for h,v in hash_set}
 
     if len(hash_dict) < len(hash_set):
@@ -35,7 +35,7 @@ def update_record(host, port, did, rev, size, hashes, urls, **kwargs):
             hash_set.remove(h)
 
         for h, _ in hash_set:
-            logging.error('multiple values specified for {h}'.format(h=h))
+            logging.error(f'multiple values specified for {h}')
 
         raise ValueError('conflicting hashes provided')
 
