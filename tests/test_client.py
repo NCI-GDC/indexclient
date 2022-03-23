@@ -107,10 +107,14 @@ def test_get_latest_version_with_skip(index_client):
 
 
 def test_get_latest_version_with_exclude_deleted(index_client):
-    """
-    Tests retrieval of latest record version using exclude_deleted parameter
+    """Test retrieval of latest record version using exclude_deleted param.
+
+    This test creates two documents, a primary document with default values
+    and then a deleted version of this document. It then verifies that using
+    the exclude_deleted parameter gets the correct version of the document.
+
     Args:
-        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+        index_client (indexclient.client.IndexClient): IndexClient fixture
     """
     non_deleted_doc = create_random_index(index_client)
     did = non_deleted_doc.did
@@ -170,10 +174,14 @@ def test_list_versions(index_client):
 
 
 def test_list_versions_with_exclude_deleted(index_client):
-    """
-    Tests retrieval of all versions of document using exclude_deleted parameter
+    """Test retrieval of all versions of a doc using exclude_deleted param.
+
+    This test creates a version hierarchy of documents with some marked as
+    deleted. It then verifies that using the exclude_deleted parameter filters
+    deleted documents from the results.
+
     Args:
-        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+        index_client (indexclient.client.IndexClient): IndexClient fixture
     """
     doc = create_random_index(index_client)
     did = doc.did
@@ -303,10 +311,15 @@ def test_bulk_get_latest_with_skip_null(index_client):
 
 
 def test_bulk_get_latest_with_exclude_deleted(index_client):
-    """
-    Tests bulk_get_latest() with exclude_deleted parameter
+    """Test bulk retrieval of latest versions of docs using exclude_deleted.
+
+    This test creates several version hierarchies of documents with the latest
+    versions in each hierarchy marked as deleted. It then verifies that using
+    the exclude_deleted parameter returns the correct latest version of docs
+    in each hierarchy.
+
     Args:
-        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+        index_client (indexclient.client.IndexClient): IndexClient fixture
     """
     dids = []
     latest_non_deleted_dids = set()
@@ -369,10 +382,14 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
 
 
 def test_query_url_exclude_deleted(index_client):
-    """
-    Tests query_url() with exclude_deleted parameter
+    """Test doc retrieval using the query_url exclude_deleted param.
+
+    This test creates several documents, marking some documents as deleted.
+    It then verifies that using the exclude_deleted parameter filters out the
+    deleted documents.
+
     Args:
-        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+        index_client (indexclient.client.IndexClient): IndexClient fixture
     """
     non_deleted_count = 0
     deleted_count = 0
@@ -412,10 +429,14 @@ def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
 
 
 def test_query_urls_metadata_exclude_deleted(index_client):
-    """
-    Tests query_urls_metadata() with exclude_deleted parameter
+    """Test doc retrieval using the query_urls_metadata exclude_deleted param.
+
+    This test creates several documents, marking some documents as deleted.
+    It then verifies that using the exclude_deleted parameter filters out the
+    deleted documents.
+
     Args:
-        index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
+        index_client (indexclient.client.IndexClient): IndexClient fixture
     """
 
     # all docs created with create_random_index() have a url matching this pattern and a corresponding key-value pair
