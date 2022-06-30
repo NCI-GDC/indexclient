@@ -1,0 +1,26 @@
+[tool.poetry]
+authors = ["Your Name <you@example.com>"]
+description = "A library for interacting with the GDC's IndexD API"
+license = "Apache-2.0"
+name = "indexclient"
+version = "0.0.0"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+requests = "^2.27.1"
+
+[tool.poetry.dev-dependencies]
+SQLAlchemy = "<1.4.0"
+indexd = {git = "https://github.com/NCI-GDC/indexd.git", tag = "2.9.0-rc.2"}
+pre-commit = "^2.17.0"
+pytest = "^7.0.1"
+
+[tool.poetry-dynamic-versioning]
+dirty = true
+enable = true
+metadata = true
+pattern = "default-unprefixed"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
