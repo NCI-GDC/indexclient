@@ -22,7 +22,7 @@ before_install:
 install:
   - pipx install poetry
   - pipx inject poetry poetry-dynamic-versioning
-  - pip install poetry tox-travis tox-poetry
+  - pip install tox-travis tox-poetry
 
 prerelease_install: &prerelease_install
   # For py37 and py38 setuptools 62.X.X is causing failures in creating virtual
