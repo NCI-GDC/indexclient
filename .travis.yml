@@ -1,6 +1,8 @@
 os: linux
 dist: bionic
 language: python
+python:
+  - "3.7"
 
 sudo: false
 
@@ -18,20 +20,12 @@ before_install:
   - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
   - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
   - sudo pg_ctlcluster 13 main restart
+  - sudo /usr/bin/python3 -m pip install pipx --user
 
 install:
-  - /usr/bin/python3 -m pip install pipx --user
   - pipx install poetry
   - pipx inject poetry poetry-dynamic-versioning
   - pip install tox-travis tox-poetry
-
-prerelease_install: &prerelease_install
-  # For py37 and py38 setuptools 62.X.X is causing failures in creating virtual
-  # environments. This has been solved in the latest pre-release and this should
-  # be a temporary measure until the 63.X.X is officially released.
-  install:
-    - pip install setuptools --pre --force-reinstall
-    - pip install poetry tox-travis tox-poetry poetry-dynamic-versioning
 
 script:
   - tox
@@ -39,11 +33,3 @@ script:
 jobs:
   allow_failures:
     - python: "3.11-dev"
-  include:
-    - python: "3.7"
-    # - python: "3.8"
-    #   <<: *prerelease_install
-    # - python: "3.6"
-    # - python: "3.9"
-    # - python: "3.10"
-    # - python: "3.11-dev"
