@@ -10,6 +10,7 @@ addons:
     packages:
       - postgresql-13
       - postgresql-client-13
+      - pipx
 
 before_install:
   # Copy custom configs from the repo because PG-13 isn't set up to run like
@@ -19,7 +20,6 @@ before_install:
   - sudo pg_ctlcluster 13 main restart
 
 install:
-  - /usr/bin/python3 -m pip install pipx --user
   - pipx install poetry
   - pipx inject poetry poetry-dynamic-versioning
   - pip install poetry tox-travis tox-poetry
@@ -40,7 +40,6 @@ jobs:
     - python: "3.11-dev"
   include:
     - python: "3.7"
-      <<: *prerelease_install
     # - python: "3.8"
     #   <<: *prerelease_install
     # - python: "3.6"
