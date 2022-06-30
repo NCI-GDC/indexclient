@@ -10,6 +10,7 @@ addons:
     packages:
       - postgresql-13
       - postgresql-client-13
+      - python3-pip
 
 before_install:
   # Copy custom configs from the repo because PG-13 isn't set up to run like
