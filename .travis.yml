@@ -17,7 +17,7 @@ before_install:
   # - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
   # - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
   # - sudo pg_ctlcluster 13 main restart
-  - /usr/bin/python3 -m pip install pipx
+  - /usr/bin/python3 -m pip install pipx --user
 
 install:
   - pip install poetry tox-travis tox-poetry poetry-dynamic-versioning
