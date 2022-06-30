@@ -14,13 +14,15 @@ addons:
 before_install:
   # Copy custom configs from the repo because PG-13 isn't set up to run like
   # it normally does on Travis out of the box.
-  # - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
-  # - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
-  # - sudo pg_ctlcluster 13 main restart
-  - /usr/bin/python3 -m pip install pipx --user
+  - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
+  - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
+  - sudo pg_ctlcluster 13 main restart
 
 install:
-  - pip install poetry tox-travis tox-poetry poetry-dynamic-versioning
+  - /usr/bin/python3 -m pip install pipx --user
+  - pipx install poetry
+  - pipx inject poetry poetry-dynamic-versioning
+  - pip install poetry tox-travis tox-poetry
 
 prerelease_install: &prerelease_install
   # For py37 and py38 setuptools 62.X.X is causing failures in creating virtual
