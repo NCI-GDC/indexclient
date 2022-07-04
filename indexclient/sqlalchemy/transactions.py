@@ -16,7 +16,7 @@ class IndexTransaction(object):
         exc_type=None,
         exc_val=None,
         exc_tb=None,
-    ) -> None:
+    ):
         """Tries to commit amd close provided session. Rollback changes if an exception occurs"""
         try:
             self.session.commit()
