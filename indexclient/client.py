@@ -179,9 +179,9 @@ class IndexClient(object):
                 raise e
         if not response.json()['records']:
             return None
-        json = response.json()['records'][0]
-        did = json['did']
-        return Document(self, did, json=json)
+        document_dict = response.json()['records'][0]
+        did = document_dict['did']
+        return Document(self, did, json=document_dict)
 
     def list(self, limit=float("inf"), start=None, page_size=100):
         """ Returns a generator of document objects. """
@@ -254,7 +254,7 @@ class IndexClient(object):
 
         if urls is None:
             urls = []
-        json = {
+        document_dict = {
             "urls": urls,
             "form": "object",
             "hashes": hashes,
@@ -267,10 +267,10 @@ class IndexClient(object):
             "version": version
         }
         if did:
-            json["did"] = did
+            document_dict["did"] = did
         resp = self._post(
             "index/", headers={"content-type": "application/json"},
-            data=json_dumps(json), auth=self.auth)
+            data=json_dumps(document_dict), auth=self.auth)
         return Document(self, resp.json()["did"])
 
     def create_alias(

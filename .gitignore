@@ -69,3 +69,4 @@ settings.yaml
 
 # sqlite
 *.sq3
+_version.py

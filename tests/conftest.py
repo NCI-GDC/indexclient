@@ -2,6 +2,8 @@ import hashlib
 import json
 
 import pytest
+
+from indexclient.sqlalchemy.transactions import IndexDatabaseClient
 from indexd_test_utils import (
     alias_driver,
     auth_driver,
@@ -48,3 +50,9 @@ def indexd_loader(indexd_client):
         return docs
 
     return load
+
+
+@pytest.fixture(scope="session")
+def db_client():
+    url = "postgresql://test:test@localhost/indexd_test"  #pragma: allowlist secret
+    return IndexDatabaseClient(url=url)
