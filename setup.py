@@ -10,7 +10,7 @@ setup(
     setup_requires=["setuptools_scm<6"],
     packages=find_packages(),
     package_data= {
-        "indexclient": ["py.typed"]
+        "indexclient": ["py.typed", "*.pyi"]
     },
     install_requires=[
         "requests>=2.5",
