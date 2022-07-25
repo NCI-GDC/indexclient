@@ -33,7 +33,7 @@ def index_client(indexd_client):
 def indexd_loader(indexd_client):
     def load(file_name):
         docs = []  # type: list[client.Document]
-        with open(file_name, "r") as f:
+        with open(file_name) as f:
             doc_data = json.load(f)
         doc_data = doc_data["docs"]
         for doc in doc_data:

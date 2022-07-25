@@ -52,7 +52,7 @@ def truncate_tables(driver, base):
         for table in reversed(base.metadata.sorted_tables):
             # do not clear schema versions so each test does not re-trigger migration.
             if table.name not in ["index_schema_version", "alias_schema_version"]:
-                txn.execute("TRUNCATE {} CASCADE;".format(table.name))
+                txn.execute(f"TRUNCATE {table.name} CASCADE;")
 
 
 @pytest.fixture
@@ -157,7 +157,7 @@ def indexd_server():
 
 
 def wait_for_indexd_alive(port):
-    url = 'http://localhost:{}'.format(port)
+    url = f'http://localhost:{port}'
     try:
         requests.get(url)
     except requests.ConnectionError:
@@ -166,10 +166,10 @@ def wait_for_indexd_alive(port):
         return
 
 
-class MockServer(object):
+class MockServer:
     def __init__(self, port):
         self.port = port
-        self.baseurl = 'http://localhost:{}'.format(port)
+        self.baseurl = f'http://localhost:{port}'
 
 
 def create_random_index(index_client, did=None, version=None, hashes=None):
@@ -200,9 +200,9 @@ def create_random_index(index_client, did=None, version=None, hashes=None):
         size=random.randint(10, 1000),
         version=version,
         acl=["a", "b"],
-        file_name="{}_warning_huge_file.svs".format(did),
-        urls=["s3://super-safe.com/{}_warning_huge_file.svs".format(did)],
-        urls_metadata={"s3://super-safe.com/{}_warning_huge_file.svs".format(did): {"a": "b"}}
+        file_name=f"{did}_warning_huge_file.svs",
+        urls=[f"s3://super-safe.com/{did}_warning_huge_file.svs"],
+        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}}
     )
 
     return doc
@@ -234,11 +234,11 @@ def create_random_index_version(index_client, did, version_did=None, version=Non
     data["acl"] = ["ax", "bx"]
     data["size"] = random.randint(10, 1000)
     data["hashes"] = {"md5": md5_hasher.hexdigest()}
-    data["urls"] = ["s3://super-safe.com/{}_warning_huge_file.svs".format(file_name)]
+    data["urls"] = [f"s3://super-safe.com/{file_name}_warning_huge_file.svs"]
     data["form"] = "object"
-    data["file_name"] = "{}_warning_huge_file.svs".format(file_name)
+    data["file_name"] = f"{file_name}_warning_huge_file.svs"
     data["urls_metadata"] = {
-        "s3://super-safe.com/{}_warning_huge_file.svs".format(file_name): {"a": "b"}
+        f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}
     }
 
     if version:
@@ -246,7 +246,7 @@ def create_random_index_version(index_client, did, version_did=None, version=Non
 
     doc = index_client.add_version(did, Document(None, None, data))
 
-    want_filename = "{}_warning_huge_file.svs".format(file_name)
+    want_filename = f"{file_name}_warning_huge_file.svs"
     want_url = 's3://super-safe.com/' + want_filename
 
     assert doc

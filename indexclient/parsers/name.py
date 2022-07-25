@@ -27,18 +27,18 @@ def name_record(host, port, name, rev, size, hashes,
 
     host_set = set(hosts)
 
-    hash_set = set((h,v) for h,v in hashes)
+    hash_set = {(h,v) for h,v in hashes}
     hash_dict = {h:v for h,v in hash_set}
 
     if len(hash_dict) < len(hash_set):
         logging.error('multiple incompatible hashes specified')
-        
+
         for h in hash_dict.items():
             hash_set.remove(h)
-        
+
         for h, _ in hash_set:
-            logging.error('multiple values specified for {h}'.format(h=h))
-        
+            logging.error(f'multiple values specified for {h}')
+
         raise ValueError('conflicting hashes provided')
 
     data = {

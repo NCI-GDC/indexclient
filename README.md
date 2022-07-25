@@ -109,7 +109,12 @@ These queries are handled via requests and wrapped into the index client.
 
 ### Retrieve a record
 
-***TODO***
+```bash
+> ./bin/index --host 'indexd.service.consul' --port 80 retrieve 00000073-27e1-4dcd-bfdc-e458c31feec2 | jq '.did,.created_date'
+"00000073-27e1-4dcd-bfdc-e458c31feec2"
+"2021-12-14T01:47:28.566542"
+```
+
 
 ### Update a record
 
