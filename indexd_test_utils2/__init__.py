@@ -171,11 +171,18 @@ def indexd_server(pg_url):
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
     hostname = 'localhost'
-    port = 8001
-    debug = False
-    t = threading.Thread(target=app.run, kwargs={'host': hostname, 'port': port, 'debug': debug})
-    t.setDaemon(True)
-    t.start()
+    while True:
+        try:
+            port = random.randint(8000, 9000)
+            debug = False
+            t = threading.Thread(target=app.run, kwargs={'host': hostname, 'port': port, 'debug': debug})
+            t.setDaemon(True)
+            t.start()
+        except OSError:
+            continue
+        else:
+            break
+
     wait_for_indexd_alive(port)
     yield MockServer(port=port)
 
