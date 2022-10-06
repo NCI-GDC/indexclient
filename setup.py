@@ -16,6 +16,11 @@ setup(
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
             "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd",
+        ],
+        "test_utils2": [
+            "psycopg",
+            "pytest-parallel",
+            "pytest-postgresql",
         ]
     }
 )

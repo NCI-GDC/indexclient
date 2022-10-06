@@ -4,9 +4,12 @@ import uuid
 import threading
 import pytest
 import requests
+import flask
+
+from pytest_postgresql.janitor import DatabaseJanitor
 
 from indexclient.client import Document, IndexClient
-from indexd import get_app
+from indexd import app_init
 from indexd.alias.drivers.alchemy import (
     Base as alias_base,
     SQLAlchemyAliasDriver,
@@ -18,11 +21,16 @@ from indexd.index.drivers.alchemy import (
 )
 from indexd.utils import setup_database, try_drop_test_data
 
-PG_URL = 'postgresql://test:test@localhost/indexd_test'
+from indexd_test_utils2 import indexd_settings
+
+
+@pytest.fixture(scope="session", autouse=True)
+def pg_url(postgresql_proc):
+    yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/indexd_test"
 
 
 @pytest.fixture(scope='session', autouse=True)
-def setup_indexd_test_database(request):
+def setup_indexd_test_database(postgresql_proc):
     """Set up the database to be used for the tests.
 
     autouse: every test runs this fixture, without calling it directly
@@ -34,8 +42,22 @@ def setup_indexd_test_database(request):
 
     # try_drop_test_data() is run before the tests starts and after the tests
     # complete. This ensures a clean database on start and end of the tests.
-    setup_database()
-    request.addfinalizer(try_drop_test_data)
+    with DatabaseJanitor(
+        user=postgresql_proc.user,
+        host=postgresql_proc.host,
+        port=postgresql_proc.port,
+        dbname="indexd_test",
+        version=postgresql_proc.version,
+        password=postgresql_proc.password
+    ):
+        yield setup_database(
+            user=postgresql_proc.user,
+            password=postgresql_proc.password,
+            database="indexd_test",
+            host=f"{postgresql_proc.host}:{postgresql_proc.port}",
+            no_drop=True,
+            no_user=True
+        )
 
 
 def truncate_tables(driver, base):
@@ -56,24 +78,24 @@ def truncate_tables(driver, base):
 
 
 @pytest.fixture
-def index_driver():
-    driver = SQLAlchemyIndexDriver(PG_URL, auto_migrate=False)
+def index_driver(pg_url):
+    driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
     truncate_tables(driver, index_base)
     driver.dispose()
 
 
 @pytest.fixture
-def alias_driver():
-    driver = SQLAlchemyAliasDriver(PG_URL, auto_migrate=False)
+def alias_driver(pg_url):
+    driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
     truncate_tables(driver, alias_base)
     driver.dispose()
 
 
 @pytest.fixture(scope="session")
-def auth_driver():
-    driver = SQLAlchemyAuthDriver(PG_URL)
+def auth_driver(pg_url):
+    driver = SQLAlchemyAuthDriver(pg_url)
     yield driver
     driver.dispose()
 
@@ -87,24 +109,24 @@ def indexd_admin_user(auth_driver):
 
 
 @pytest.fixture
-def index_driver_no_migrate():
+def index_driver_no_migrate(pg_url):
     """
     This fixture is designed for testing migration scripts and can be used for
     any other situation where a migration is not desired on instantiation.
     """
-    driver = SQLAlchemyIndexDriver(PG_URL, auto_migrate=False)
+    driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
     truncate_tables(driver, index_base)
     driver.dispose()
 
 
 @pytest.fixture
-def alias_driver_no_migrate():
+def alias_driver_no_migrate(pg_url):
     """
     This fixture is designed for testing migration scripts and can be used for
     any other situation where a migration is not desired on instantiation.
     """
-    driver = SQLAlchemyAliasDriver(PG_URL, auto_migrate=False)
+    driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
     truncate_tables(driver, alias_base)
     driver.dispose()
@@ -137,7 +159,7 @@ def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
 
 
 @pytest.fixture(scope='session')
-def indexd_server():
+def indexd_server(pg_url):
     """
     Starts the indexd server, and cleans up its mess.
     Most tests will use the client which stems from this
@@ -145,7 +167,9 @@ def indexd_server():
 
     Runs once per test session.
     """
-    app = get_app()
+    app = flask.Flask("indexd")
+    settings = indexd_settings.get_settings(pg_url)
+    app_init(app, settings)
     hostname = 'localhost'
     port = 8001
     debug = False

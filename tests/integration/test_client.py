@@ -1,10 +1,19 @@
+import os
 import pytest
 import pkg_resources
-from indexd_test_utils import (
-    create_random_index,
-    create_random_index_version,
-)
+
 from requests import HTTPError
+
+if os.getenv("USE_UTILS2", "false").lower() == "true":
+    from indexd_test_utils2 import (
+        create_random_index,
+        create_random_index_version,
+    )
+else:
+    from indexd_test_utils import (
+        create_random_index,
+        create_random_index_version,
+    )
 
 
 def test_instantiate(index_client):
