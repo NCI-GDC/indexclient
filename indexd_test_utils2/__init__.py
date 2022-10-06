@@ -5,6 +5,7 @@ import threading
 import pytest
 import requests
 import flask
+import socket
 
 from pytest_postgresql.janitor import DatabaseJanitor
 
@@ -170,18 +171,19 @@ def indexd_server(pg_url):
     app = flask.Flask("indexd")
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
+
     hostname = 'localhost'
-    while True:
-        try:
-            port = random.randint(8000, 9000)
-            debug = False
-            t = threading.Thread(target=app.run, kwargs={'host': hostname, 'port': port, 'debug': debug})
-            t.setDaemon(True)
-            t.start()
-        except OSError:
-            continue
-        else:
-            break
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    debug = False
+
+    port = random.randint(8000, 9000)
+    while sock.connect_ex((hostname, port)) == 0:
+        port = random.randint(8000, 9000)
+
+    t = threading.Thread(target=app.run, kwargs={'host': hostname, 'port': port, 'debug': debug})
+    t.setDaemon(True)
+    t.start()
 
     wait_for_indexd_alive(port)
     yield MockServer(port=port)
