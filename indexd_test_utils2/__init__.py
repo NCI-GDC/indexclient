@@ -15,12 +15,12 @@ from indexd.alias.drivers.alchemy import (
     Base as alias_base,
     SQLAlchemyAliasDriver,
 )
-from indexd.auth.drivers.alchemy import Base as auth_base, SQLAlchemyAuthDriver
+from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import (
     Base as index_base,
     SQLAlchemyIndexDriver,
 )
-from indexd.utils import setup_database, try_drop_test_data
+from indexd.utils import setup_database
 
 from indexd_test_utils2 import indexd_settings
 
