@@ -27,3 +27,8 @@ install:
     - "pip install tox-travis"
 
 script: "tox"
+
+env:
+  matrix:
+    USE_UTILS2=false
+    USE_UTILS2=true
