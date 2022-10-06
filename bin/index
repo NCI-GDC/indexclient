@@ -146,7 +146,7 @@ if __name__ == "__main__":
     except errors.BaseIndexError as err:
         status = err.code
         reason = str(err)
-        logging.error("{status}:{reason}".format(status=status, reason=reason))
+        logging.error(f"{status}:{reason}")
         sys.exit(1)
     except requests.exceptions.ConnectionError as err:
         logging.error("{reason}".format(reason="connection error"))
