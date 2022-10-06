@@ -8,12 +8,12 @@ from requests import HTTPError
 
 
 def test_instantiate(index_client):
-    baseid = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-    urls = ['s3://url/bucket/key']
-    urls_metadata = {url: {'state': 'doing ok'} for url in urls}
+    baseid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    urls = ["s3://url/bucket/key"]
+    urls_metadata = {url: {"state": "doing ok"} for url in urls}
     size = 5
-    acl = ['a', 'b']
-    hashes = {'md5': 'ab167e49d25b488939b1ede42752458b'}
+    acl = ["a", "b"]
+    hashes = {"md5": "ab167e49d25b488939b1ede42752458b"}
     doc = index_client.create(
         hashes=hashes,
         size=size,
@@ -32,12 +32,12 @@ def test_instantiate(index_client):
 
 
 def test_create_with_metadata(index_client):
-    urls = ['s3://bucket/key']
-    urls_metadata = {'s3://bucket/key': {'k': 'v'}}
+    urls = ["s3://bucket/key"]
+    urls_metadata = {"s3://bucket/key": {"k": "v"}}
     size = 5
-    acl = ['a', 'b']
-    hashes = {'md5': 'ab167e49d25b488939b1ede42752458b'}
-    metadata = {'test': 'value'}
+    acl = ["a", "b"]
+    hashes = {"md5": "ab167e49d25b488939b1ede42752458b"}
+    metadata = {"test": "value"}
     doc = index_client.create(
         hashes=hashes,
         size=size,
@@ -51,13 +51,12 @@ def test_create_with_metadata(index_client):
 
 
 def test_list_with_params(index_client):
-    hashes = {'md5': 'ab167e49d25b488939b1ede42752458c'}
+    hashes = {"md5": "ab167e49d25b488939b1ede42752458c"}
     doc1 = create_random_index(index_client, hashes=hashes)
     doc2 = create_random_index(index_client, hashes=hashes)
 
     docs_with_hashes = index_client.list_with_params(
-        page_size=1,
-        params={'hashes': hashes}
+        page_size=1, params={"hashes": hashes}
     )
     dids = [doc1.did, doc2.did]
     found = []
@@ -68,13 +67,10 @@ def test_list_with_params(index_client):
 
 
 def test_list_with_params_negate(index_client):
-    doc1 = create_random_index(index_client, version='1'
-                               )
-    create_random_index(index_client, version='2')
+    doc1 = create_random_index(index_client, version="1")
+    create_random_index(index_client, version="2")
 
-    docs = index_client.list_with_params(
-        negate_params={'version': '2'}
-    )
+    docs = index_client.list_with_params(negate_params={"version": "2"})
 
     dids = {record.did for record in docs}
     assert dids == {doc1.did}
@@ -120,7 +116,9 @@ def test_get_latest_version_with_skip_deleted(index_client):
     deleted_doc.patch()
 
     assert non_deleted_doc == index_client.get_latest_version(did)
-    assert deleted_doc == index_client.get_latest_version(did, skip_deleted_versions=False)
+    assert deleted_doc == index_client.get_latest_version(
+        did, skip_deleted_versions=False
+    )
 
 
 @pytest.mark.parametrize("arg, exception", [("AAA", HTTPError), (None, TypeError)])
@@ -191,10 +189,12 @@ def test_list_versions_with_delete(index_client):
             doc.patch()
             deleted_docs.append(doc)
 
-    assert set(index_client.list_versions(did, skip_deleted_versions=False)) == set(non_deleted_docs + deleted_docs), \
-        "the versions returned do not match all records created"
-    assert set(index_client.list_versions(did)) == set(non_deleted_docs), \
-        "the versions returned do not match non-deleted records created"
+    assert set(index_client.list_versions(did, skip_deleted_versions=False)) == set(
+        non_deleted_docs + deleted_docs
+    ), "the versions returned do not match all records created"
+    assert set(index_client.list_versions(did)) == set(
+        non_deleted_docs
+    ), "the versions returned do not match non-deleted records created"
 
 
 def test_updating_metadata(index_client):
@@ -205,13 +205,13 @@ def test_updating_metadata(index_client):
     doc = create_random_index(index_client)
 
     doc.metadata["dummy_field"] = "Dummy Var"
-    doc.urls_metadata[doc.urls[0]] = {'a': 'b'}
+    doc.urls_metadata[doc.urls[0]] = {"a": "b"}
     doc.patch()
 
     same_doc = index_client.get(doc.did)
     assert same_doc.metadata is not None
     assert same_doc.metadata.get("dummy_field", None) == "Dummy Var"
-    assert same_doc.urls_metadata == {doc.urls[0]: {'a': 'b'}}
+    assert same_doc.urls_metadata == {doc.urls[0]: {"a": "b"}}
 
 
 def test_updating_acl(index_client):
@@ -221,11 +221,11 @@ def test_updating_acl(index_client):
     """
     doc = create_random_index(index_client)
 
-    doc.acl = ['a']
+    doc.acl = ["a"]
     doc.patch()
 
     same_doc = index_client.get(doc.did)
-    assert same_doc.acl == ['a']
+    assert same_doc.acl == ["a"]
 
 
 def test_updating_hashes(index_client):
@@ -233,14 +233,16 @@ def test_updating_hashes(index_client):
     Args:
         index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
     """
-    doc = create_random_index(index_client, hashes={'md5': '3e8335931696df6261d8d437139d0463'})
+    doc = create_random_index(
+        index_client, hashes={"md5": "3e8335931696df6261d8d437139d0463"}
+    )
 
-    new_hash = '2a6f7de6a11b8adafc5dc55646978142'
-    doc.hashes['md5'] = new_hash
+    new_hash = "2a6f7de6a11b8adafc5dc55646978142"
+    doc.hashes["md5"] = new_hash
     doc.patch()
 
     same_doc = index_client.get(doc.did)
-    assert same_doc.hashes['md5'] == new_hash
+    assert same_doc.hashes["md5"] == new_hash
 
 
 def test_updating_size(index_client):
@@ -258,10 +260,7 @@ def test_updating_size(index_client):
 
 
 def test_bulk_request(index_client):
-    dids = [
-        create_random_index(index_client).did
-        for _ in range(20)
-    ]
+    dids = [create_random_index(index_client).did for _ in range(20)]
 
     docs = index_client.bulk_request(dids)
     for doc in docs:
@@ -269,7 +268,7 @@ def test_bulk_request(index_client):
 
 
 def test_bulk_get_latest(index_client):
-    """ Test bulk_get_latest() with default parameters """
+    """Test bulk_get_latest() with default parameters"""
     dids = []
     latest_dids = set()
     for i in range(20):
@@ -283,14 +282,16 @@ def test_bulk_get_latest(index_client):
 
 
 def test_bulk_get_latest_with_skip_null(index_client):
-    """ Test bulk_get_latest() with skip_null parameters """
+    """Test bulk_get_latest() with skip_null parameters"""
     dids = []
     new_dids = set()
     null_dids = set()
     for i in range(20):
         doc = create_random_index(index_client, version="1")
         rev_doc = create_random_index_version(index_client, did=doc.did, version="2")
-        null_doc = create_random_index_version(index_client, did=doc.did) if i < 5 else rev_doc
+        null_doc = (
+            create_random_index_version(index_client, did=doc.did) if i < 5 else rev_doc
+        )
         dids.append(doc.did)
         new_dids.add(rev_doc.did)
         null_dids.add(null_doc.did)
@@ -302,7 +303,7 @@ def test_bulk_get_latest_with_skip_null(index_client):
 
 
 def test_bulk_get_latest_with_skip_deleted(index_client):
-    """ Test bulk_get_latest() with skip_deleted parameters """
+    """Test bulk_get_latest() with skip_deleted parameters"""
     dids = []
     new_dids = set()
     deleted_dids = set()
@@ -326,10 +327,13 @@ def test_bulk_get_latest_with_skip_deleted(index_client):
     assert {doc.did for doc in docs_deleted_included} == deleted_dids
 
 
-@pytest.mark.parametrize("exclude, expectation", [
-    ("01.txt", 4),
-    ("test_bucket", 0),
-])
+@pytest.mark.parametrize(
+    "exclude, expectation",
+    [
+        ("01.txt", 4),
+        ("test_bucket", 0),
+    ],
+)
 def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation):
     test_file = pkg_resources.resource_filename("tests", "data/documents.json")
     indexd_loader(test_file)
@@ -344,10 +348,13 @@ def test_query_urls__exclude(indexd_loader, indexd_client, exclude, expectation)
     assert expectation == total_urls
 
 
-@pytest.mark.parametrize("include, expectation", [
-    ("01.txt", 1),
-    ("test_bucket", 5),
-])
+@pytest.mark.parametrize(
+    "include, expectation",
+    [
+        ("01.txt", 1),
+        ("test_bucket", 5),
+    ],
+)
 def test_query_urls__include(indexd_loader, indexd_client, include, expectation):
     test_file = pkg_resources.resource_filename("tests", "data/documents.json")
     indexd_loader(test_file)
@@ -360,14 +367,59 @@ def test_query_urls__include(indexd_loader, indexd_client, include, expectation)
     assert expectation == total_urls
 
 
-@pytest.mark.parametrize("params, expected", [
-    ({"url":"s3://localhost:7000/test_bucket_2", "key":"type", "value":"aws", "page_size":2}, 4),
-    ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3}, 5),
-    ({"url":"", "key":"state", "value":"invalidated", "page_size":2}, 0),
-    ({"url":"s3://localhost:7000/test_bucket/03.txt", "key":"state", "value":"validated", "page_size":3}, 1),
-    ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3, "limit":4}, 4),
-    ({"url":"s3://localhost:7000/test_bucket", "key":"type", "value":"cleversafe", "page_size":3, "limit":0}, 0)
-])
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        (
+            {
+                "url": "s3://localhost:7000/test_bucket_2",
+                "key": "type",
+                "value": "aws",
+                "page_size": 2,
+            },
+            4,
+        ),
+        (
+            {
+                "url": "s3://localhost:7000/test_bucket",
+                "key": "type",
+                "value": "cleversafe",
+                "page_size": 3,
+            },
+            5,
+        ),
+        ({"url": "", "key": "state", "value": "invalidated", "page_size": 2}, 0),
+        (
+            {
+                "url": "s3://localhost:7000/test_bucket/03.txt",
+                "key": "state",
+                "value": "validated",
+                "page_size": 3,
+            },
+            1,
+        ),
+        (
+            {
+                "url": "s3://localhost:7000/test_bucket",
+                "key": "type",
+                "value": "cleversafe",
+                "page_size": 3,
+                "limit": 4,
+            },
+            4,
+        ),
+        (
+            {
+                "url": "s3://localhost:7000/test_bucket",
+                "key": "type",
+                "value": "cleversafe",
+                "page_size": 3,
+                "limit": 0,
+            },
+            0,
+        ),
+    ],
+)
 def test_query_urls_metadata(indexd_loader, indexd_client, params, expected):
     test_file = pkg_resources.resource_filename("tests", "data/documents.json")
     indexd_loader(test_file)

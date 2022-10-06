@@ -18,10 +18,10 @@ from indexd.index.drivers.alchemy import (
 )
 from indexd.utils import setup_database, try_drop_test_data
 
-PG_URL = 'postgresql://test:test@localhost/indexd_test'
+PG_URL = "postgresql://test:test@localhost/indexd_test"
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def setup_indexd_test_database(request):
     """Set up the database to be used for the tests.
 
@@ -121,7 +121,8 @@ def create_indexd_tables(index_driver, alias_driver, auth_driver):
 
 @pytest.fixture
 def create_indexd_tables_no_migrate(
-        index_driver_no_migrate, alias_driver_no_migrate, auth_driver):
+    index_driver_no_migrate, alias_driver_no_migrate, auth_driver
+):
     """Make sure the tables are created but don't operate on them directly.
 
     There is no migration required for the SQLAlchemyAuthDriver.
@@ -133,10 +134,12 @@ def create_indexd_tables_no_migrate(
 @pytest.fixture
 def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
     """Create the tables and add an auth user"""
-    return IndexClient(indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1]))
+    return IndexClient(
+        indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1])
+    )
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def indexd_server():
     """
     Starts the indexd server, and cleans up its mess.
@@ -146,10 +149,12 @@ def indexd_server():
     Runs once per test session.
     """
     app = get_app()
-    hostname = 'localhost'
+    hostname = "localhost"
     port = 8001
     debug = False
-    t = threading.Thread(target=app.run, kwargs={'host': hostname, 'port': port, 'debug': debug})
+    t = threading.Thread(
+        target=app.run, kwargs={"host": hostname, "port": port, "debug": debug}
+    )
     t.setDaemon(True)
     t.start()
     wait_for_indexd_alive(port)
@@ -157,7 +162,7 @@ def indexd_server():
 
 
 def wait_for_indexd_alive(port):
-    url = f'http://localhost:{port}'
+    url = f"http://localhost:{port}"
     try:
         requests.get(url)
     except requests.ConnectionError:
@@ -169,7 +174,7 @@ def wait_for_indexd_alive(port):
 class MockServer:
     def __init__(self, port):
         self.port = port
-        self.baseurl = f'http://localhost:{port}'
+        self.baseurl = f"http://localhost:{port}"
 
 
 def create_random_index(index_client, did=None, version=None, hashes=None):
@@ -192,7 +197,7 @@ def create_random_index(index_client, did=None, version=None, hashes=None):
     if not hashes:
         md5_hasher = hashlib.md5()
         md5_hasher.update(did.encode("utf-8"))
-        hashes = {'md5': md5_hasher.hexdigest()}
+        hashes = {"md5": md5_hasher.hexdigest()}
 
     doc = index_client.create(
         did=did,
@@ -202,7 +207,7 @@ def create_random_index(index_client, did=None, version=None, hashes=None):
         acl=["a", "b"],
         file_name=f"{did}_warning_huge_file.svs",
         urls=[f"s3://super-safe.com/{did}_warning_huge_file.svs"],
-        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}}
+        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}},
     )
 
     return doc
@@ -247,16 +252,16 @@ def create_random_index_version(index_client, did, version_did=None, version=Non
     doc = index_client.add_version(did, Document(None, None, data))
 
     want_filename = f"{file_name}_warning_huge_file.svs"
-    want_url = 's3://super-safe.com/' + want_filename
+    want_url = "s3://super-safe.com/" + want_filename
 
     assert doc
-    assert sorted(doc.acl) == ['ax', 'bx']
+    assert sorted(doc.acl) == ["ax", "bx"]
     assert doc.size
-    assert doc.hashes.get('md5')
+    assert doc.hashes.get("md5")
     assert doc.urls[0] == want_url
-    assert doc.form == 'object'
+    assert doc.form == "object"
     assert doc.file_name == want_filename
-    assert doc.urls_metadata.get(want_url) == {'a': 'b'}
+    assert doc.urls_metadata.get(want_url) == {"a": "b"}
     if version:
         assert doc.version == version
 
