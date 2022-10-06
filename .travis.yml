@@ -44,3 +44,9 @@ jobs:
           - USE_UTILS2=true
       script:
         - tox
+    - name: test parallel
+      env:
+        global:
+          - USE_UTILS2=true
+      script:
+        - tox -e parallel
