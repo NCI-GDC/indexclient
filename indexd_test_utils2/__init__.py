@@ -66,11 +66,11 @@ def truncate_tables(driver, base):
 
     This has the same effect as deleting the sqlite file. Your test will have a
     fresh database for it's run.
-    """
 
-    # Drop tables in reverse order to avoid cascade drop errors.
-    # metadata is a sqlalchemy property.
-    # sorted_tables is a list of tables sorted by their dependencies.
+    Drop tables in reverse order to avoid cascade drop errors.
+    metadata is a sqlalchemy property.
+    sorted_tables is a list of tables sorted by their dependencies.
+    """
     with driver.engine.begin() as txn:
         for table in reversed(base.metadata.sorted_tables):
             # do not clear schema versions so each test does not re-trigger migration.
