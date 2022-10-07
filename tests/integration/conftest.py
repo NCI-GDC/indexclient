@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-if os.getenv("USE_UTILS2", "false").lower() == "true":
+if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
     from indexd_test_utils2 import (
         alias_driver,
         auth_driver,

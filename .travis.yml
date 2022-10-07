@@ -35,13 +35,13 @@ jobs:
     - name: test
       env:
         global:
-          - USE_UTILS2=false
+          - USE_TEST_UTILS2=false
       script:
         - tox
     - name: test utils2
       env:
         global:
-          - USE_UTILS2=true
+          - USE_TEST_UTILS2=true
       script:
         - tox
     - name: test parallel
