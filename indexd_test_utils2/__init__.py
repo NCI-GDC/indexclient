@@ -2,6 +2,8 @@ import hashlib
 import random
 import uuid
 import threading
+from typing import Tuple, Optional, Dict
+
 import pytest
 import requests
 import flask
@@ -9,30 +11,32 @@ import socket
 import os
 
 from pytest_postgresql.janitor import DatabaseJanitor
+from pytest_postgresql.executor import PostgreSQLExecutor
 
 from indexclient.client import Document, IndexClient
 from indexd import app_init
 from indexd.alias.drivers.alchemy import (
-    Base as alias_base,
+    Base as AliasBase,
     SQLAlchemyAliasDriver,
 )
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import (
-    Base as index_base,
+    Base as IndexBase,
     SQLAlchemyIndexDriver,
 )
+from indexd.index.drivers.alchemy import IndexDriverABC
 from indexd.utils import setup_database
 
 from indexd_test_utils2 import indexd_settings
 
 
 @pytest.fixture(scope="session", autouse=True)
-def pg_url(postgresql_proc):
+def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
     yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/indexd_test"
 
 
 @pytest.fixture(scope='session', autouse=True)
-def setup_indexd_test_database(postgresql_proc):
+def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
     """Set up the database to be used for the tests.
 
     autouse: every test runs this fixture, without calling it directly
@@ -62,7 +66,7 @@ def setup_indexd_test_database(postgresql_proc):
         )
 
 
-def truncate_tables(driver, base):
+def truncate_tables(driver: IndexDriverABC, base) -> None:
     """Drop all the tables in this application's scope.
 
     This has the same effect as deleting the sqlite file. Your test will have a
@@ -80,30 +84,30 @@ def truncate_tables(driver, base):
 
 
 @pytest.fixture
-def index_driver(pg_url):
+def index_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, index_base)
+    truncate_tables(driver, IndexBase)
     driver.dispose()
 
 
 @pytest.fixture
-def alias_driver(pg_url):
+def alias_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, alias_base)
+    truncate_tables(driver, AliasBase)
     driver.dispose()
 
 
 @pytest.fixture(scope="session")
-def auth_driver(pg_url):
+def auth_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyAuthDriver(pg_url)
     yield driver
     driver.dispose()
 
 
 @pytest.fixture
-def indexd_admin_user(auth_driver):
+def indexd_admin_user(auth_driver: IndexDriverABC) -> Tuple[str, str]:
     username = password = "admin"
     auth_driver.add(username, password)
     yield username, password
@@ -111,31 +115,31 @@ def indexd_admin_user(auth_driver):
 
 
 @pytest.fixture
-def index_driver_no_migrate(pg_url):
+def index_driver_no_migrate(pg_url: str) -> IndexDriverABC:
     """
     This fixture is designed for testing migration scripts and can be used for
     any other situation where a migration is not desired on instantiation.
     """
     driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, index_base)
+    truncate_tables(driver, IndexBase)
     driver.dispose()
 
 
 @pytest.fixture
-def alias_driver_no_migrate(pg_url):
+def alias_driver_no_migrate(pg_url: str) -> IndexDriverABC:
     """
     This fixture is designed for testing migration scripts and can be used for
     any other situation where a migration is not desired on instantiation.
     """
     driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, alias_base)
+    truncate_tables(driver, AliasBase)
     driver.dispose()
 
 
 @pytest.fixture
-def create_indexd_tables(index_driver, alias_driver, auth_driver):
+def create_indexd_tables(index_driver: IndexDriverABC, alias_driver: IndexDriverABC, auth_driver: IndexDriverABC) -> None:
     """Make sure the tables are created but don't operate on them directly.
     Also set up the password to be accessed by the client tests.
     Migration not required as tables will be created with most recent models
@@ -145,8 +149,8 @@ def create_indexd_tables(index_driver, alias_driver, auth_driver):
 
 @pytest.fixture
 def create_indexd_tables_no_migrate(
-        index_driver_no_migrate, alias_driver_no_migrate, auth_driver
-):
+        index_driver_no_migrate: IndexDriverABC, alias_driver_no_migrate: IndexDriverABC, auth_drive: IndexDriverABC
+) -> None:
     """Make sure the tables are created but don't operate on them directly.
 
     There is no migration required for the SQLAlchemyAuthDriver.
@@ -156,13 +160,20 @@ def create_indexd_tables_no_migrate(
 
 
 @pytest.fixture
-def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
+def indexd_client(indexd_server: IndexDriverABC, create_indexd_tables: IndexDriverABC, indexd_admin_user: IndexDriverABC) -> IndexClient:
     """Create the tables and add an auth user"""
     return IndexClient(indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1]))
 
 
+class MockServer:
+    def __init__(self, host: str, port: str):
+        self.host = host
+        self.port = port
+        self.baseurl = f'http://{host}:{port}'
+
+
 @pytest.fixture(scope='session')
-def indexd_server(pg_url):
+def indexd_server(pg_url: str) -> MockServer:
     """
     Starts the indexd server, and cleans up its mess.
     Most tests will use the client which stems from this
@@ -201,14 +212,7 @@ def wait_for_indexd_alive(host, port):
         return
 
 
-class MockServer:
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
-        self.baseurl = f'http://{host}:{port}'
-
-
-def create_random_index(index_client, did=None, version=None, hashes=None):
+def create_random_index(index_client: IndexClient, did: Optional[str] = None, version: Optional[str] = None, hashes: Optional[Dict[str, str]]=None) -> Document:
     """
     Shorthand for creating new index entries for test purposes.
     Note:
@@ -244,7 +248,7 @@ def create_random_index(index_client, did=None, version=None, hashes=None):
     return doc
 
 
-def create_random_index_version(index_client, did, version_did=None, version=None):
+def create_random_index_version(index_client: IndexClient, did: str, version_did: Optional[str] = None, version: Optional[str] = None) -> Document:
     """
     Shorthand for creating a dummy version of an existing index, use wisely as it does not assume any versioning
     scheme and null versions are allowed
