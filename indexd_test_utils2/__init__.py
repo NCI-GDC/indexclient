@@ -35,7 +35,7 @@ def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
     yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/indexd_test"
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
     """Set up the database to be used for the tests.
 
@@ -54,7 +54,7 @@ def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
         port=postgresql_proc.port,
         dbname="indexd_test",
         version=postgresql_proc.version,
-        password=postgresql_proc.password
+        password=postgresql_proc.password,
     ):
         yield setup_database(
             user=postgresql_proc.user,
@@ -62,7 +62,7 @@ def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
             database="indexd_test",
             host=f"{postgresql_proc.host}:{postgresql_proc.port}",
             no_drop=True,
-            no_user=True
+            no_user=True,
         )
 
 
@@ -139,7 +139,11 @@ def alias_driver_no_migrate(pg_url: str) -> IndexDriverABC:
 
 
 @pytest.fixture
-def create_indexd_tables(index_driver: IndexDriverABC, alias_driver: IndexDriverABC, auth_driver: IndexDriverABC) -> None:
+def create_indexd_tables(
+    index_driver: IndexDriverABC,
+    alias_driver: IndexDriverABC,
+    auth_driver: IndexDriverABC,
+) -> None:
     """Make sure the tables are created but don't operate on them directly.
     Also set up the password to be accessed by the client tests.
     Migration not required as tables will be created with most recent models
@@ -149,7 +153,9 @@ def create_indexd_tables(index_driver: IndexDriverABC, alias_driver: IndexDriver
 
 @pytest.fixture
 def create_indexd_tables_no_migrate(
-        index_driver_no_migrate: IndexDriverABC, alias_driver_no_migrate: IndexDriverABC, auth_drive: IndexDriverABC
+    index_driver_no_migrate: IndexDriverABC,
+    alias_driver_no_migrate: IndexDriverABC,
+    auth_drive: IndexDriverABC,
 ) -> None:
     """Make sure the tables are created but don't operate on them directly.
 
@@ -160,19 +166,25 @@ def create_indexd_tables_no_migrate(
 
 
 @pytest.fixture
-def indexd_client(indexd_server: IndexDriverABC, create_indexd_tables: IndexDriverABC, indexd_admin_user: IndexDriverABC) -> IndexClient:
+def indexd_client(
+    indexd_server: IndexDriverABC,
+    create_indexd_tables: IndexDriverABC,
+    indexd_admin_user: IndexDriverABC,
+) -> IndexClient:
     """Create the tables and add an auth user"""
-    return IndexClient(indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1]))
+    return IndexClient(
+        indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1])
+    )
 
 
 class MockServer:
     def __init__(self, host: str, port: str):
         self.host = host
         self.port = port
-        self.baseurl = f'http://{host}:{port}'
+        self.baseurl = f"http://{host}:{port}"
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def indexd_server(pg_url: str) -> MockServer:
     """
     Starts the indexd server, and cleans up its mess.
@@ -185,7 +197,7 @@ def indexd_server(pg_url: str) -> MockServer:
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
 
-    host = os.getenv("INDEXD_HOST") or 'localhost'
+    host = os.getenv("INDEXD_HOST") or "localhost"
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     debug = False
@@ -194,7 +206,9 @@ def indexd_server(pg_url: str) -> MockServer:
     while sock.connect_ex((host, port)) == 0:
         port = random.randint(8000, 9000)
 
-    t = threading.Thread(target=app.run, kwargs={'host': host, 'port': port, 'debug': debug})
+    t = threading.Thread(
+        target=app.run, kwargs={"host": host, "port": port, "debug": debug}
+    )
     t.setDaemon(True)
     t.start()
 
@@ -203,7 +217,7 @@ def indexd_server(pg_url: str) -> MockServer:
 
 
 def wait_for_indexd_alive(host, port):
-    url = f'http://{host}:{port}'
+    url = f"http://{host}:{port}"
     try:
         requests.get(url)
     except requests.ConnectionError:
@@ -212,7 +226,12 @@ def wait_for_indexd_alive(host, port):
         return
 
 
-def create_random_index(index_client: IndexClient, did: Optional[str] = None, version: Optional[str] = None, hashes: Optional[Dict[str, str]]=None) -> Document:
+def create_random_index(
+    index_client: IndexClient,
+    did: Optional[str] = None,
+    version: Optional[str] = None,
+    hashes: Optional[Dict[str, str]] = None,
+) -> Document:
     """
     Shorthand for creating new index entries for test purposes.
     Note:
@@ -232,7 +251,7 @@ def create_random_index(index_client: IndexClient, did: Optional[str] = None, ve
     if not hashes:
         md5_hasher = hashlib.md5()
         md5_hasher.update(did.encode("utf-8"))
-        hashes = {'md5': md5_hasher.hexdigest()}
+        hashes = {"md5": md5_hasher.hexdigest()}
 
     doc = index_client.create(
         did=did,
@@ -242,13 +261,18 @@ def create_random_index(index_client: IndexClient, did: Optional[str] = None, ve
         acl=["a", "b"],
         file_name=f"{did}_warning_huge_file.svs",
         urls=[f"s3://super-safe.com/{did}_warning_huge_file.svs"],
-        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}}
+        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}},
     )
 
     return doc
 
 
-def create_random_index_version(index_client: IndexClient, did: str, version_did: Optional[str] = None, version: Optional[str] = None) -> Document:
+def create_random_index_version(
+    index_client: IndexClient,
+    did: str,
+    version_did: Optional[str] = None,
+    version: Optional[str] = None,
+) -> Document:
     """
     Shorthand for creating a dummy version of an existing index, use wisely as it does not assume any versioning
     scheme and null versions are allowed
