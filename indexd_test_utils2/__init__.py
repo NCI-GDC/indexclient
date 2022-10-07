@@ -39,10 +39,10 @@ def setup_indexd_test_database(postgresql_proc):
 
     Basically this only runs once at the beginning of the full test run. This
     sets up the test database and test user to use for the rest of the tests.
-    """
 
-    # try_drop_test_data() is run before the tests starts and after the tests
-    # complete. This ensures a clean database on start and end of the tests.
+    With Database Janitor, we no longer need tear down the db here. The DatabaseJanitor
+    will take care of the db tear down.
+    """
     with DatabaseJanitor(
         user=postgresql_proc.user,
         host=postgresql_proc.host,
