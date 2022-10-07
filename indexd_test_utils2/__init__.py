@@ -284,20 +284,4 @@ def create_random_index_version(index_client: IndexClient, did: str, version_did
     if version:
         data["version"] = version
 
-    doc = index_client.add_version(did, Document(None, None, data))
-
-    want_filename = f"{file_name}_warning_huge_file.svs"
-    want_url = 's3://super-safe.com/' + want_filename
-
-    assert doc
-    assert sorted(doc.acl) == ['ax', 'bx']
-    assert doc.size
-    assert doc.hashes.get('md5')
-    assert doc.urls[0] == want_url
-    assert doc.form == 'object'
-    assert doc.file_name == want_filename
-    assert doc.urls_metadata.get(want_url) == {'a': 'b'}
-    if version:
-        assert doc.version == version
-
-    return doc
+    return index_client.add_version(did, Document(None, None, data))
