@@ -32,7 +32,7 @@ else:
 from indexclient import client
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def index_client(indexd_client):
     """
     Handles getting all the docs from an

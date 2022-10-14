@@ -1,16 +1,16 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='indexclient',
-    version='2.0.0',
+    name="indexclient",
+    version="2.0.0",
     packages=find_packages(),
     install_requires=[
-        'requests~=2.5',
+        "requests~=2.5",
     ],
     extras_require={
         "dev": [
             "cdislogging==1.0.0",
-            "markupsafe~=1.1.1",         # newer version not compatible
+            "markupsafe~=1.1.1",  # newer version not compatible
             "pre-commit~=1.21.0",
             "pytest~=6.2.0",
             "sqlalchemy~=1.3.0",
@@ -21,6 +21,6 @@ setup(
             "psycopg",
             "pytest-parallel",
             "pytest-postgresql",
-        ]
-    }
+        ],
+    },
 )

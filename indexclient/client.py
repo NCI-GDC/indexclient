@@ -6,9 +6,14 @@ from urllib.parse import urljoin
 import requests
 
 UPDATABLE_ATTRS = [
-    'file_name', 'urls', 'version',
-    'metadata', 'acl', 'urls_metadata',
-    'hashes', 'size'
+    "file_name",
+    "urls",
+    "version",
+    "metadata",
+    "acl",
+    "urls_metadata",
+    "hashes",
+    "size",
 ]
 
 
@@ -31,7 +36,6 @@ def handle_error(resp):
 
 
 class IndexClient:
-
     def __init__(self, baseurl, version="v0", auth=None):
         self.auth = auth
         self.url = baseurl
@@ -42,7 +46,7 @@ class IndexClient:
 
     def check_status(self):
         """Check that the API we are trying to communicate with is online"""
-        resp = requests.get(self.url + '/index')
+        resp = requests.get(self.url + "/index")
         handle_error(resp)
 
     def global_get(self, did, no_dist=False):
@@ -60,7 +64,7 @@ class IndexClient:
         """
         try:
             if no_dist:
-                response = self._get(did, params={'no_dist': ''})
+                response = self._get(did, params={"no_dist": ""})
             else:
                 response = self._get(did)
         except requests.HTTPError as e:
@@ -101,7 +105,7 @@ class IndexClient:
             list: Document objects representing  index records
         """
 
-        headers = {'content-type': 'application/json'}
+        headers = {"content-type": "application/json"}
         try:
             response = self._post("bulk/documents", json=dids, headers=headers)
         except requests.HTTPError as exception:
@@ -110,10 +114,7 @@ class IndexClient:
             else:
                 raise exception
 
-        return [
-            Document(self, doc['did'], json=doc)
-            for doc in response.json()
-        ]
+        return [Document(self, doc["did"], json=doc) for doc in response.json()]
 
     def bulk_get_latest(self, dids, skip_null=False, skip_deleted=True):
         """
@@ -133,17 +134,14 @@ class IndexClient:
                 "bulk/documents/latest",
                 params={"skip_null": skip_null, "skip_deleted": skip_deleted},
                 json=dids,
-                headers=headers
+                headers=headers,
             )
         except requests.HTTPError as exception:
             if exception.response.status_code == 404:
                 return None
             else:
                 raise exception
-        return [
-            Document(self, doc["did"], json=doc)
-            for doc in response.json()
-        ]
+        return [Document(self, doc["did"], json=doc) for doc in response.json()]
 
     def get_with_params(self, params=None):
         """
@@ -154,36 +152,43 @@ class IndexClient:
         # index client like signpost or indexd will need to handle the
         # query param `'hash': 'hash_type:hash'`
         params_copy = copy.deepcopy(params) or {}
-        if 'hashes' in params_copy:
-            params_copy['hash'] = params_copy.pop('hashes')
+        if "hashes" in params_copy:
+            params_copy["hash"] = params_copy.pop("hashes")
         reformatted_params = dict()
-        for param in ['hash', 'metadata']:
+        for param in ["hash", "metadata"]:
             if param in params_copy:
                 reformatted_params[param] = []
                 for k, v in params_copy[param].items():
-                    reformatted_params[param].append(str(k) + ':' + str(v))
+                    reformatted_params[param].append(str(k) + ":" + str(v))
                 del params_copy[param]
         reformatted_params.update(params_copy)
-        reformatted_params['limit'] = 1
+        reformatted_params["limit"] = 1
 
         try:
-            response = self._get('index', params=reformatted_params)
+            response = self._get("index", params=reformatted_params)
         except requests.HTTPError as e:
             if e.response.status_code == 404:
                 return None
             else:
                 raise e
-        if not response.json()['records']:
+        if not response.json()["records"]:
             return None
-        json = response.json()['records'][0]
-        did = json['did']
+        json = response.json()["records"][0]
+        did = json["did"]
         return Document(self, did, json=json)
 
     def list(self, limit=float("inf"), start=None, page_size=100):
-        """ Returns a generator of document objects. """
+        """Returns a generator of document objects."""
         return self.list_with_params(limit, start, page_size)
 
-    def list_with_params(self, limit=float("inf"), start=None, page_size=100, params=None, negate_params=None):
+    def list_with_params(
+        self,
+        limit=float("inf"),
+        start=None,
+        page_size=100,
+        params=None,
+        negate_params=None,
+    ):
         """
         Return a generator of document object corresponding to the supplied parameters, such
         as ``{'hashes': {'md5': '...'},
@@ -193,16 +198,16 @@ class IndexClient:
              }``.
         """
         params_copy = copy.deepcopy(params) or {}
-        if 'hashes' in params_copy:
-            params_copy['hash'] = params_copy.pop('hashes')
-        if 'urls_metadata' in params_copy:
-            params_copy['urls_metadata'] = json.dumps(params_copy.pop('urls_metadata'))
+        if "hashes" in params_copy:
+            params_copy["hash"] = params_copy.pop("hashes")
+        if "urls_metadata" in params_copy:
+            params_copy["urls_metadata"] = json.dumps(params_copy.pop("urls_metadata"))
         reformatted_params = dict()
-        for param in ['hash', 'metadata']:
+        for param in ["hash", "metadata"]:
             if param in params_copy:
                 reformatted_params[param] = []
                 for k, v in params_copy[param].items():
-                    reformatted_params[param].append(str(k) + ':' + str(v))
+                    reformatted_params[param].append(str(k) + ":" + str(v))
                 del params_copy[param]
         reformatted_params.update(params_copy)
         reformatted_params.update({"limit": page_size, "start": start})
@@ -221,15 +226,25 @@ class IndexClient:
                     yielded += 1
                 else:
                     return
-            if len(json_str['records']) == page_size:
-                reformatted_params['start'] = json_str['records'][-1]['did']
+            if len(json_str["records"]) == page_size:
+                reformatted_params["start"] = json_str["records"][-1]["did"]
             else:
                 # There's no more results
                 return
 
     def create(
-            self, hashes, size, did=None, urls=None, file_name=None,
-            metadata=None, baseid=None, acl=None, urls_metadata=None, version=None):
+        self,
+        hashes,
+        size,
+        did=None,
+        urls=None,
+        file_name=None,
+        metadata=None,
+        baseid=None,
+        acl=None,
+        urls_metadata=None,
+        version=None,
+    ):
         """Create a new entry in indexd
 
         Args:
@@ -260,32 +275,46 @@ class IndexClient:
             "urls_metadata": urls_metadata,
             "baseid": baseid,
             "acl": acl,
-            "version": version
+            "version": version,
         }
         if did:
             json["did"] = did
         resp = self._post(
-            "index/", headers={"content-type": "application/json"},
-            data=json_dumps(json), auth=self.auth)
+            "index/",
+            headers={"content-type": "application/json"},
+            data=json_dumps(json),
+            auth=self.auth,
+        )
         return Document(self, resp.json()["did"])
 
     def create_alias(
-            self, record, size, hashes, release=None,
-            metastring=None, host_authorities=None, keeper_authority=None):
-        data = json_dumps({
-            'size': size,
-            'hashes': hashes,
-            'release': release,
-            'metastring': metastring,
-            'host_authorities': host_authorities,
-            'keeper_authority': keeper_authority
-        })
-        url = '/alias/' + record
-        headers = {'content-type': 'application/json'}
+        self,
+        record,
+        size,
+        hashes,
+        release=None,
+        metastring=None,
+        host_authorities=None,
+        keeper_authority=None,
+    ):
+        data = json_dumps(
+            {
+                "size": size,
+                "hashes": hashes,
+                "release": release,
+                "metastring": metastring,
+                "host_authorities": host_authorities,
+                "keeper_authority": keeper_authority,
+            }
+        )
+        url = "/alias/" + record
+        headers = {"content-type": "application/json"}
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(self, did, skip_null_versions=False, skip_deleted_versions=True):
+    def get_latest_version(
+        self, did, skip_null_versions=False, skip_deleted_versions=True
+    ):
         """
         Get the latest version given did
         Args:
@@ -316,7 +345,9 @@ class IndexClient:
             Document: the version that was just added
         """
 
-        rev_doc = self._post("index", current_did, json=new_doc.to_json(), auth=self.auth).json()
+        rev_doc = self._post(
+            "index", current_did, json=new_doc.to_json(), auth=self.auth
+        ).json()
         if rev_doc and "did" in rev_doc:
             return Document(self, rev_doc["did"])
         return None
@@ -333,15 +364,27 @@ class IndexClient:
 
         params = {"not_deleted": json.dumps(skip_deleted_versions)}
 
-        versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
+        versions_dict = self._get(
+            "index", did, "versions", params=params
+        ).json()  # type: dict
         versions = []
 
         for version in versions_dict.values():
             versions.append(Document(self, version["did"], version))
         return versions
 
-    def query_urls_metadata(self, url, key, value, fields=None, versioned=False, limit=100, offset=0, page_size=100):
-        """ Queries indexd entries using URL patterns, which can be either full or partial URLs
+    def query_urls_metadata(
+        self,
+        url,
+        key,
+        value,
+        fields=None,
+        versioned=False,
+        limit=100,
+        offset=0,
+        page_size=100,
+    ):
+        """Queries indexd entries using URL patterns, which can be either full or partial URLs
         Args:
             url (str): A URL pattern to match
             key (str): metadata key
@@ -361,7 +404,7 @@ class IndexClient:
             "fields": fields,
             "versioned": versioned,
             "limit": limit if limit < page_size else page_size,
-            "offset": offset
+            "offset": offset,
         }
 
         while limit > 0:
@@ -374,8 +417,17 @@ class IndexClient:
             params["limit"] = min(limit, page_size)
             params["offset"] += len(response)
 
-    def query_url(self, exclude=None, include=None, versioned=False, fields=None, limit=100, offset=0, page_size=100):
-        """ Queries indexd entries using URL patterns, which can be either full or partial URLs
+    def query_url(
+        self,
+        exclude=None,
+        include=None,
+        versioned=False,
+        fields=None,
+        limit=100,
+        offset=0,
+        page_size=100,
+    ):
+        """Queries indexd entries using URL patterns, which can be either full or partial URLs
         Args:
             exclude (str): A URL pattern to exclude. All URLs matching this pattern will not be included in the return
             include (str): All entries with URL matching this pattern will be included
@@ -393,7 +445,7 @@ class IndexClient:
             "versioned": versioned,
             "fields": fields,
             "limit": limit if limit < page_size else page_size,
-            "offset": offset
+            "offset": offset,
         }
         while limit > 0:
 
@@ -433,7 +485,6 @@ class DocumentDeletedError(Exception):
 
 
 class Document:
-
     def __init__(self, client, did, json=None):
         self.client = client
         self.did = did
@@ -469,11 +520,10 @@ class Document:
         Example:
             <Document(size=1, form=object, file_name=filename.txt, ...)>
         """
-        attributes = ', '.join([
-            f'{attr}={self.__dict__[attr]}'
-            for attr in self._attrs
-        ])
-        return '<Document(' + attributes + ')>'
+        attributes = ", ".join(
+            [f"{attr}={self.__dict__[attr]}" for attr in self._attrs]
+        )
+        return "<Document(" + attributes + ")>"
 
     def _check_deleted(self):
         if self._deleted:
@@ -482,7 +532,9 @@ class Document:
     def _render(self, include_rev=True):
         self._check_deleted()
         if not self._fetched:
-            raise RuntimeError("Document must be fetched from the server before being rendered as json")
+            raise RuntimeError(
+                "Document must be fetched from the server before being rendered as json"
+            )
         return self._doc
 
     def to_json(self, include_rev=True):
@@ -492,7 +544,7 @@ class Document:
         return json
 
     def _load(self, json=None):
-        """ Load the document contents from the server or from the provided dictionary """
+        """Load the document contents from the server or from the provided dictionary"""
         self._check_deleted()
         json = json or self.client._get("index", self.did).json()
         # set attributes to current Document
@@ -506,7 +558,7 @@ class Document:
         return document with subset of attributes that are allowed
         to be updated
         """
-        return {k:v for k,v in self._doc.items() if k in UPDATABLE_ATTRS}
+        return {k: v for k, v in self._doc.items() if k in UPDATABLE_ATTRS}
 
     @property
     def _doc(self):
@@ -529,18 +581,21 @@ class Document:
         """
 
         self._check_deleted()
-        self.client._put("index", self.did,
-                         params={"rev": self.rev},
-                         headers={"content-type": "application/json"},
-                         auth=self.client.auth,
-                         data=json.dumps(self._doc_for_update()))
+        self.client._put(
+            "index",
+            self.did,
+            params={"rev": self.rev},
+            headers={"content-type": "application/json"},
+            auth=self.client.auth,
+            data=json.dumps(self._doc_for_update()),
+        )
         self._load()  # to sync new rev from server
 
     def delete(self):
         self._check_deleted()
-        self.client._delete("index", self.did,
-                            auth=self.client.auth,
-                            params={"rev": self.rev})
+        self.client._delete(
+            "index", self.did, auth=self.client.auth, params={"rev": self.rev}
+        )
         self._deleted = True
 
     def get_url_metadata_by_type(self, url_type):
@@ -556,7 +611,9 @@ class Document:
         urls_metadata = self._doc.get("urls_metadata", {})
         requested_metadata = [
             UrlMetadata(
-                url=url, state=metadata.get("state"), type=metadata.get("type"),
+                url=url,
+                state=metadata.get("state"),
+                type=metadata.get("type"),
             )
             for url, metadata in urls_metadata.items()
             if metadata.get("type") == url_type
@@ -610,10 +667,7 @@ def recursive_sort(value):
     dictionary's contents being the same instead of comparing their order.
     """
     if isinstance(value, dict):
-        return {
-            key: recursive_sort(value[key])
-            for key in value.keys()
-        }
+        return {key: recursive_sort(value[key]) for key in value.keys()}
     elif isinstance(value, list):
         return sorted(recursive_sort(element) for element in value)
     else:
