@@ -1,17 +1,33 @@
 import hashlib
 import json
+import os
 
 import pytest
-from indexd_test_utils import (
-    alias_driver,
-    auth_driver,
-    create_indexd_tables,
-    index_driver,
-    indexd_client,
-    indexd_admin_user,
-    indexd_server,
-    setup_indexd_test_database,
-)
+
+if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
+    from indexd_test_utils2 import (
+        alias_driver,
+        auth_driver,
+        create_indexd_tables,
+        index_driver,
+        indexd_client,
+        indexd_admin_user,
+        indexd_server,
+        pg_url,
+        setup_indexd_test_database,
+    )
+else:
+    from indexd_test_utils import (
+        alias_driver,
+        auth_driver,
+        create_indexd_tables,
+        index_driver,
+        indexd_client,
+        indexd_admin_user,
+        indexd_server,
+        setup_indexd_test_database,
+    )
+
 
 from indexclient import client
 
