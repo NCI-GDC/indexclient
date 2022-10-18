@@ -1,22 +1,20 @@
 import hashlib
 import random
-import uuid
 import threading
+import uuid
+
 import pytest
 import requests
+from indexd import get_app
+from indexd.alias.drivers.alchemy import Base as alias_base
+from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
+from indexd.auth.drivers.alchemy import Base as auth_base
+from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
+from indexd.index.drivers.alchemy import Base as index_base
+from indexd.index.drivers.alchemy import SQLAlchemyIndexDriver
+from indexd.utils import setup_database, try_drop_test_data
 
 from indexclient.client import Document, IndexClient
-from indexd import get_app
-from indexd.alias.drivers.alchemy import (
-    Base as alias_base,
-    SQLAlchemyAliasDriver,
-)
-from indexd.auth.drivers.alchemy import Base as auth_base, SQLAlchemyAuthDriver
-from indexd.index.drivers.alchemy import (
-    Base as index_base,
-    SQLAlchemyIndexDriver,
-)
-from indexd.utils import setup_database, try_drop_test_data
 
 PG_URL = "postgresql://test:test@localhost/indexd_test"
 

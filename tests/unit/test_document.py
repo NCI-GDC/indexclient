@@ -1,7 +1,8 @@
-import pytest
 import uuid
 
-from indexclient.client import Document, recursive_sort, UrlMetadata
+import pytest
+
+from indexclient.client import Document, UrlMetadata, recursive_sort
 
 
 def create_document(
