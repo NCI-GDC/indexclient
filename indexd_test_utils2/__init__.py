@@ -1,32 +1,25 @@
 import hashlib
+import os
 import random
-import uuid
+import socket
 import threading
-from typing import Tuple, Optional, Dict
+import uuid
+from typing import Dict, Optional, Tuple
 
+import flask
 import pytest
 import requests
-import flask
-import socket
-import os
-
-from pytest_postgresql.janitor import DatabaseJanitor
+from indexd import app_init
+from indexd.alias.drivers.alchemy import Base as AliasBase
+from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
+from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
+from indexd.index.drivers.alchemy import Base as IndexBase
+from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
+from indexd.utils import setup_database
 from pytest_postgresql.executor import PostgreSQLExecutor
+from pytest_postgresql.janitor import DatabaseJanitor
 
 from indexclient.client import Document, IndexClient
-from indexd import app_init
-from indexd.alias.drivers.alchemy import (
-    Base as AliasBase,
-    SQLAlchemyAliasDriver,
-)
-from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
-from indexd.index.drivers.alchemy import (
-    Base as IndexBase,
-    SQLAlchemyIndexDriver,
-)
-from indexd.index.drivers.alchemy import IndexDriverABC
-from indexd.utils import setup_database
-
 from indexd_test_utils2 import indexd_settings
 
 
