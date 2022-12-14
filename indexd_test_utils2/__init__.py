@@ -10,7 +10,6 @@ import flask
 import socket
 import os
 
-from pytest_postgresql.janitor import DatabaseJanitor
 from pytest_postgresql.executor import PostgreSQLExecutor
 
 from indexclient.client import Document, IndexClient
@@ -30,40 +29,28 @@ from indexd.utils import setup_database
 from indexd_test_utils2 import indexd_settings
 
 
-@pytest.fixture(scope="session", autouse=True)
-def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
-    yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/indexd_test"
+@pytest.fixture(autouse=True)
+def pg_url(postgresql: PostgreSQLExecutor) -> str:
+    yield f"postgresql://{postgresql.info.user}:{postgresql.info.password}@{postgresql.info.host}:{postgresql.info.port}/{postgresql.info.dbname}"
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
+@pytest.fixture(autouse=True)
+def setup_indexd_test_database(postgresql: PostgreSQLExecutor) -> None:
     """Set up the database to be used for the tests.
 
     autouse: every test runs this fixture, without calling it directly
     session scope: all tests share the same fixture
 
-    Basically this only runs once at the beginning of the full test run. This
-    sets up the test database and test user to use for the rest of the tests.
-
-    With Database Janitor, we no longer need tear down the db here. The DatabaseJanitor
-    will take care of the db tear down.
+    This sets up the test database and test user to use for the rest of the tests.
     """
-    with DatabaseJanitor(
-        user=postgresql_proc.user,
-        host=postgresql_proc.host,
-        port=postgresql_proc.port,
-        dbname="indexd_test",
-        version=postgresql_proc.version,
-        password=postgresql_proc.password,
-    ):
-        yield setup_database(
-            user=postgresql_proc.user,
-            password=postgresql_proc.password,
-            database="indexd_test",
-            host=f"{postgresql_proc.host}:{postgresql_proc.port}",
-            no_drop=True,
-            no_user=True,
-        )
+    yield setup_database(
+        user=postgresql.info.user,
+        password=postgresql.info.password,
+        database=postgresql.info.dbname,
+        host=f"{postgresql.info.host}:{postgresql.info.port}",
+        no_drop=True,
+        no_user=True,
+    )
 
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:
@@ -99,7 +86,7 @@ def alias_driver(pg_url: str) -> IndexDriverABC:
     driver.dispose()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def auth_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyAuthDriver(pg_url)
     yield driver
@@ -184,7 +171,7 @@ class MockServer:
         self.baseurl = f"http://{host}:{port}"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def indexd_server(pg_url: str) -> MockServer:
     """
     Starts the indexd server, and cleans up its mess.
@@ -199,12 +186,12 @@ def indexd_server(pg_url: str) -> MockServer:
 
     host = os.getenv("INDEXD_HOST") or "localhost"
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     debug = False
-
     port = random.randint(8000, 9000)
-    while sock.connect_ex((host, port)) == 0:
-        port = random.randint(8000, 9000)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        while sock.connect_ex((host, port)) == 0:
+            port = random.randint(8000, 9000)
 
     t = threading.Thread(
         target=app.run, kwargs={"host": host, "port": port, "debug": debug}
