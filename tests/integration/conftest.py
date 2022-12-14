@@ -10,8 +10,8 @@ if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
         auth_driver,
         create_indexd_tables,
         index_driver,
-        indexd_client,
         indexd_admin_user,
+        indexd_client,
         indexd_server,
         pg_url,
         setup_indexd_test_database,
@@ -27,7 +27,6 @@ else:
         indexd_server,
         setup_indexd_test_database,
     )
-
 
 from indexclient import client
 
