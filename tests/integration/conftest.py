@@ -14,7 +14,6 @@ if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
         indexd_client,
         indexd_server,
         pg_url,
-        setup_indexd_test_database,
     )
 else:
     from indexd_test_utils import (

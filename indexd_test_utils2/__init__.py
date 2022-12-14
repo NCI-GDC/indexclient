@@ -10,64 +10,24 @@ import flask
 import pytest
 import requests
 from indexd import app_init
-from indexd.alias.drivers.alchemy import Base as AliasBase
 from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
-from indexd.index.drivers.alchemy import Base as IndexBase
 from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
-from indexd.utils import setup_database
 from pytest_postgresql.executor import PostgreSQLExecutor
 
 from indexclient.client import Document, IndexClient
 from indexd_test_utils2 import indexd_settings
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def pg_url(postgresql: PostgreSQLExecutor) -> str:
     yield f"postgresql://{postgresql.info.user}:{postgresql.info.password}@{postgresql.info.host}:{postgresql.info.port}/{postgresql.info.dbname}"
-
-
-@pytest.fixture(autouse=True)
-def setup_indexd_test_database(postgresql: PostgreSQLExecutor) -> None:
-    """Set up the database to be used for the tests.
-
-    autouse: every test runs this fixture, without calling it directly
-    session scope: all tests share the same fixture
-
-    This sets up the test database and test user to use for the rest of the tests.
-    """
-    yield setup_database(
-        user=postgresql.info.user,
-        password=postgresql.info.password,
-        database=postgresql.info.dbname,
-        host=f"{postgresql.info.host}:{postgresql.info.port}",
-        no_drop=True,
-        no_user=True,
-    )
-
-
-def truncate_tables(driver: IndexDriverABC, base) -> None:
-    """Drop all the tables in this application's scope.
-
-    This has the same effect as deleting the sqlite file. Your test will have a
-    fresh database for it's run.
-
-    Drop tables in reverse order to avoid cascade drop errors.
-    metadata is a sqlalchemy property.
-    sorted_tables is a list of tables sorted by their dependencies.
-    """
-    with driver.engine.begin() as txn:
-        for table in reversed(base.metadata.sorted_tables):
-            # do not clear schema versions so each test does not re-trigger migration.
-            if table.name not in ["index_schema_version", "alias_schema_version"]:
-                txn.execute(f"TRUNCATE {table.name} CASCADE;")
 
 
 @pytest.fixture
 def index_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, IndexBase)
     driver.dispose()
 
 
@@ -75,7 +35,6 @@ def index_driver(pg_url: str) -> IndexDriverABC:
 def alias_driver(pg_url: str) -> IndexDriverABC:
     driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, AliasBase)
     driver.dispose()
 
 
@@ -102,7 +61,6 @@ def index_driver_no_migrate(pg_url: str) -> IndexDriverABC:
     """
     driver = SQLAlchemyIndexDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, IndexBase)
     driver.dispose()
 
 
@@ -114,7 +72,6 @@ def alias_driver_no_migrate(pg_url: str) -> IndexDriverABC:
     """
     driver = SQLAlchemyAliasDriver(pg_url, auto_migrate=False)
     yield driver
-    truncate_tables(driver, AliasBase)
     driver.dispose()
 
 
