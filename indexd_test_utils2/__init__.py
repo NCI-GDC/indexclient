@@ -15,8 +15,8 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as IndexBase
 from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
+from pytest_postgresql import factories
 from pytest_postgresql.executor import PostgreSQLExecutor
-from pytest_postgresql.janitor import DatabaseJanitor
 
 from indexclient.client import Document, IndexClient
 from indexd_test_utils2 import indexd_settings
@@ -25,29 +25,9 @@ INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
 
 
 @pytest.fixture(scope="session")
-@pytest.mark.usefixtures("setup_indexd_test_database")
 def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
+    factories.postgresql_proc(dbname=INDEXD_DBNAME)
     yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/{INDEXD_DBNAME}"
-
-
-@pytest.fixture(scope="session")
-def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
-    """Set up the database to be used for the tests.
-
-    Basically this only runs once at the beginning of the full test run. This
-    sets up the test database and test user to use for the rest of the tests.
-    With Database Janitor, we no longer need tear down the db here. The DatabaseJanitor
-    will take care of the db tear down.
-    """
-    with DatabaseJanitor(
-        user=postgresql_proc.user,
-        host=postgresql_proc.host,
-        port=postgresql_proc.port,
-        dbname=INDEXD_DBNAME,
-        version=postgresql_proc.version,
-        password=postgresql_proc.password,
-    ):
-        yield
 
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:
