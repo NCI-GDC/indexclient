@@ -48,3 +48,6 @@ jobs:
     - name: test parallel
       script:
         - tox -e parallel
+    - name: test xdist
+      script:
+        - tox -e xdist

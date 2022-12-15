@@ -22,6 +22,7 @@ setup(
             "pytest~=6.2.0",
             "pytest-parallel",
             "pytest-postgresql",
+            "pytest-xdist",
             "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd",
         ],
     },
