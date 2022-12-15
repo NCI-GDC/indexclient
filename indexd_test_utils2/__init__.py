@@ -164,6 +164,7 @@ def indexd_server(pg_url: str) -> MockServer:
     Runs once per test session.
     """
     app = flask.Flask("indexd")
+    # the side effect of the following line creates the db and tables.
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
 
