@@ -52,8 +52,10 @@ def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:
     """Drop all the tables in this application's scope.
+
     This has the same effect as deleting the sqlite file. Your test will have a
     fresh database for it's run.
+
     Drop tables in reverse order to avoid cascade drop errors.
     metadata is a sqlalchemy property.
     sorted_tables is a list of tables sorted by their dependencies.
