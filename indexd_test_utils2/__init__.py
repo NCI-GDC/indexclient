@@ -23,11 +23,16 @@ from indexd_test_utils2 import indexd_settings
 
 INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
 
+postgresql_proc_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
+
 
 @pytest.fixture(scope="session")
-def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
-    factories.postgresql_proc(dbname=INDEXD_DBNAME)
-    yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/{INDEXD_DBNAME}"
+def pg_url(postgresql_proc_indexd: PostgreSQLExecutor) -> str:
+    user = postgresql_proc_indexd.user
+    password = postgresql_proc_indexd.password
+    host = postgresql_proc_indexd.host
+    port = postgresql_proc_indexd.port
+    yield f"postgresql://{user}:{password}@{host}:{port}/{INDEXD_DBNAME}"
 
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:

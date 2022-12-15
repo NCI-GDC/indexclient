@@ -14,6 +14,7 @@ if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
         indexd_client,
         indexd_server,
         pg_url,
+        postgresql_proc_indexd,
     )
 else:
     from indexd_test_utils import (
