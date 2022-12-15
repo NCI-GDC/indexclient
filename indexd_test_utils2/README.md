@@ -53,3 +53,8 @@ kern.sysv.shmmni=32
 kern.sysv.shmseg=8
 kern.maxprocperuid=5332
 ```
+
+#### Database and tables management
+The database server is set up by pytest-postgresql. But the database and tables is
+managed by this pacakge. This undesired situation is to make sure indexd server is
+a session scope fixture to speed up our tests.
