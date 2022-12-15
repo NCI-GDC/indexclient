@@ -32,7 +32,8 @@ def pg_url(postgresql_proc_indexd: PostgreSQLExecutor) -> str:
     password = postgresql_proc_indexd.password
     host = postgresql_proc_indexd.host
     port = postgresql_proc_indexd.port
-    yield f"postgresql://{user}:{password}@{host}:{port}/{INDEXD_DBNAME}"
+    dbname = postgresql_proc_indexd.dbname
+    yield f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:
