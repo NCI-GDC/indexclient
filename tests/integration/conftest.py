@@ -5,17 +5,7 @@ import os
 import pytest
 
 if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
-    from indexd_test_utils2 import (
-        alias_driver,
-        auth_driver,
-        create_indexd_tables,
-        index_driver,
-        indexd_admin_user,
-        indexd_client,
-        indexd_server,
-        pg_url,
-        postgresql_proc_indexd,
-    )
+    from indexd_test_utils2.plugin import *
 else:
     from indexd_test_utils import (
         alias_driver,

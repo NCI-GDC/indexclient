@@ -1,3 +1,13 @@
+"""This module is to help setup indexd server and client for testing.
+
+Many of our tests needs a running indexd server. This module helps to set up an indexd
+server.
+
+The database server is set up by pytest-postgresql. But the database and tables is
+managed by this module. This undesired situation is to make sure indexd server is
+a session scope fixture to speed up our tests.
+
+"""
 import hashlib
 import os
 import random
