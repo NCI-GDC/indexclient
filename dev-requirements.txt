@@ -30,6 +30,8 @@ doiclient @ git+https://github.com/uc-cdis/doiclient.git@1.0.0
     # via indexd
 dosclient @ git+https://github.com/uc-cdis/dosclient.git@1.0.0
     # via indexd
+execnet==1.9.0
+    # via pytest-xdist
 filelock==3.6.0
     # via virtualenv
 flask==1.1.4
@@ -92,9 +94,12 @@ pytest==6.2.5
     #   indexclient (setup.py)
     #   pytest-parallel
     #   pytest-postgresql
+    #   pytest-xdist
 pytest-parallel==0.1.1
     # via indexclient (setup.py)
 pytest-postgresql==4.1.1
+    # via indexclient (setup.py)
+pytest-xdist==3.1.0
     # via indexclient (setup.py)
 pyyaml==6.0
     # via
