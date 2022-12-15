@@ -115,7 +115,7 @@ def create_indexd_tables(
 def create_indexd_tables_no_migrate(
     index_driver_no_migrate: IndexDriverABC,
     alias_driver_no_migrate: IndexDriverABC,
-    auth_drive: IndexDriverABC,
+    auth_driver: IndexDriverABC,
 ) -> None:
     """Make sure the tables are created but don't operate on them directly.
 
