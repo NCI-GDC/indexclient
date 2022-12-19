@@ -23,16 +23,23 @@ from indexd_test_utils2 import indexd_settings
 
 INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
 
-postgresql_proc_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
+postgresql_server_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
+if os.getenv("USE_RUNNING_POSTGRES", "true").lower() == "true":
+    postgresql_server_indexd = factories.postgresql_noproc(
+        host=os.getenv("PG_INDEXD_HOST", "localhost"),
+        user=os.getenv("PG_INDEXD_USER", "postgres"),
+        password=os.getenv("PG_INDEXD_PASS", ""),
+        dbname=os.getenv("PG_INDEXD_NAME", "indexd_test"),
+    )
 
 
 @pytest.fixture(scope="session")
-def pg_url(postgresql_proc_indexd: PostgreSQLExecutor) -> str:
-    user = postgresql_proc_indexd.user
-    password = postgresql_proc_indexd.password
-    host = postgresql_proc_indexd.host
-    port = postgresql_proc_indexd.port
-    dbname = postgresql_proc_indexd.dbname
+def pg_url(postgresql_server_indexd: PostgreSQLExecutor) -> str:
+    user = postgresql_server_indexd.user
+    password = postgresql_server_indexd.password
+    host = postgresql_server_indexd.host
+    port = postgresql_server_indexd.port
+    dbname = postgresql_server_indexd.dbname
     yield f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
 

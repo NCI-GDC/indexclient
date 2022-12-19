@@ -7,5 +7,5 @@ from indexd_test_utils2 import (
     indexd_client,
     indexd_server,
     pg_url,
-    postgresql_proc_indexd,
+    postgresql_server_indexd,
 )
