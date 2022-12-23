@@ -175,14 +175,10 @@ def indexd_server(pg_url: str) -> MockServer:
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
 
-    host = os.getenv("INDEXD_HOST") or "localhost"
+    host = "localhost"
 
     debug = False
-    port = random.randint(8000, 9000)
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        while sock.connect_ex((host, port)) == 0:
-            port = random.randint(8000, 9000)
+    port = get_available_port(host)
 
     t = threading.Thread(
         target=app.run, kwargs={"host": host, "port": port, "debug": debug}
@@ -192,6 +188,14 @@ def indexd_server(pg_url: str) -> MockServer:
 
     wait_for_indexd_alive(host, port)
     yield MockServer(host=host, port=port)
+
+
+def get_available_port(host):
+    port = random.randint(8000, 9000)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        while sock.connect_ex((host, port)) == 0:
+            port = random.randint(8000, 9000)
+    return port
 
 
 def wait_for_indexd_alive(host, port):
