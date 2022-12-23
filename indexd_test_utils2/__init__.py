@@ -177,7 +177,7 @@ def indexd_server(pg_url: str) -> MockServer:
 
     host = "localhost"
 
-    debug = False
+    debug = os.getenv("DEBUG", False)
     port = get_available_port(host)
 
     t = threading.Thread(
