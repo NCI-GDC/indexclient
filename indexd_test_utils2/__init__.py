@@ -23,14 +23,15 @@ from indexd_test_utils2 import indexd_settings
 
 INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
 
-postgresql_server_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
-if os.getenv("USE_RUNNING_POSTGRES", "true").lower() == "true":
+if os.getenv("USE_RUNNING_PG", "true").lower() == "true":
     postgresql_server_indexd = factories.postgresql_noproc(
         host=os.getenv("PG_INDEXD_HOST", "localhost"),
         user=os.getenv("PG_INDEXD_USER", "postgres"),
         password=os.getenv("PG_INDEXD_PASS", ""),
         dbname=os.getenv("PG_INDEXD_NAME", "indexd_test"),
     )
+else:
+    postgresql_server_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
 
 
 @pytest.fixture(scope="session")
