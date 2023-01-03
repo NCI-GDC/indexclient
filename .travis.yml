@@ -48,7 +48,7 @@ jobs:
       env:
         global:
           - USE_TEST_UTILS2=true
-          - USE_RUNNING_POSTGRES=false
+          - USE_RUNNING_PG=false
       script:
         - tox
     - name: test parallel
