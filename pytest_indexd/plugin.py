@@ -1,4 +1,4 @@
-from indexd_test_utils2 import (
+from pytest_indexd import (
     alias_driver,
     auth_driver,
     create_indexd_tables,

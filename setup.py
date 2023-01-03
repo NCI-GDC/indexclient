@@ -7,7 +7,7 @@ setup(
     install_requires=[
         "requests~=2.5",
     ],
-    entry_points={"pytest11": ["indexd_test_utils2 = indexd_test_utils2.plugin"]},
+    entry_points={"pytest11": ["pytest_indexd = pytest_indexd.plugin"]},
     extras_require={
         "dev": [
             "cdislogging==1.0.0",

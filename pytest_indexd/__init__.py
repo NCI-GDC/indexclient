@@ -19,7 +19,7 @@ from pytest_postgresql import factories
 from pytest_postgresql.executor import PostgreSQLExecutor
 
 from indexclient.client import Document, IndexClient
-from indexd_test_utils2 import indexd_settings
+from pytest_indexd import indexd_settings
 
 INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
 

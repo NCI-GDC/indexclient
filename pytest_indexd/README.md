@@ -1,4 +1,4 @@
-# Indexd Test Utils 2
+# Pytest Indexd
 
 Many of your repos depends on indexd. So, the integration tests
 of them need indexd test utils.
