@@ -14,15 +14,15 @@ on the same dev machine.
 
 The travis tests is updated to 3 jobs:
 1. Run indexclient tests with old indexd_test_utils
-2. Run indexclient tests with new indexd_test_utils2 in single process.
-3. Run indexclient tests with new indexd_test_utils2 with pytest-parallel.
-4. Run indexclient tests with new indexd_test_utils2 with pytest-xdist.
+2. Run indexclient tests with new pytest_indexd in single process.
+3. Run indexclient tests with new pytest_indexd with pytest-parallel.
+4. Run indexclient tests with new pytest_indexd with pytest-xdist.
 
 ## How to Usage
 
 1. We still need to install postgres database.
 2. Make sure `pg_config` is exported correctly in command line
-3. To use indexd_test_utils2, you will need:
+3. To use pytest_indexd, you will need:
     ```yaml
     pytest<7(required by current version of pytest-postgresql)
     pytest-postgresql
