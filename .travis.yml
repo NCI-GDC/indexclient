@@ -29,7 +29,7 @@ jobs:
     - name: test
       env:
         global:
-          - USE_TEST_UTILS2=false
+          - USE_PYTEST_INDEXD=false
       before_script:
         # Copy custom configs from the repo because PG-13 isn't set up to run like
         # it normally does on Travis out of the box.
@@ -41,13 +41,13 @@ jobs:
     - name: test utils2 noproc
       env:
         global:
-          - USE_TEST_UTILS2=true
+          - USE_PYTEST_INDEXD=true
       script:
         - tox
     - name: test utils2 proc
       env:
         global:
-          - USE_TEST_UTILS2=true
+          - USE_PYTEST_INDEXD=true
           - USE_RUNNING_PG=false
       script:
         - tox
