@@ -17,15 +17,8 @@ addons:
       - postgresql-13
       - postgresql-client-13
 
-before_install:
-  # Copy custom configs from the repo because PG-13 isn't set up to run like
-  # it normally does on Travis out of the box.
-  - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
-  - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
-  - sudo pg_ctlcluster 13 main restart
-
 install:
-  - pip install tox-travis
+  - pip install tox-travis 'tox<4'
 
 cache:
   - pip
@@ -36,15 +29,31 @@ jobs:
     - name: test
       env:
         global:
-          - USE_TEST_UTILS2=false
+          - USE_PYTEST_INDEXD=false
+      before_script:
+        # Copy custom configs from the repo because PG-13 isn't set up to run like
+        # it normally does on Travis out of the box.
+        - sudo cp travis/postgresql.conf /etc/postgresql/13/main/postgresql.conf
+        - sudo cp travis/pg_hba.conf /etc/postgresql/13/main/pg_hba.conf
+        - sudo pg_ctlcluster 13 main restart
       script:
         - tox
-    - name: test utils2
+    - name: test utils2 noproc
       env:
         global:
-          - USE_TEST_UTILS2=true
+          - USE_PYTEST_INDEXD=true
+      script:
+        - tox
+    - name: test utils2 proc
+      env:
+        global:
+          - USE_PYTEST_INDEXD=true
+          - USE_RUNNING_PG=false
       script:
         - tox
     - name: test parallel
       script:
         - tox -e parallel
+    - name: test xdist
+      script:
+        - tox -e xdist

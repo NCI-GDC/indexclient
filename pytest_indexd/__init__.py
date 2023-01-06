@@ -15,48 +15,33 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as IndexBase
 from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
-from indexd.utils import setup_database
+from pytest_postgresql import factories
 from pytest_postgresql.executor import PostgreSQLExecutor
-from pytest_postgresql.janitor import DatabaseJanitor
 
 from indexclient.client import Document, IndexClient
-from indexd_test_utils2 import indexd_settings
+from pytest_indexd import indexd_settings
+
+INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
+
+if os.getenv("USE_RUNNING_PG", "true").lower() == "true":
+    postgresql_server_indexd = factories.postgresql_noproc(
+        host=os.getenv("PG_INDEXD_HOST", "localhost"),
+        user=os.getenv("PG_INDEXD_USER", "postgres"),
+        password=os.getenv("PG_INDEXD_PASS", ""),
+        dbname=os.getenv("PG_INDEXD_NAME", "indexd_test"),
+    )
+else:
+    postgresql_server_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def pg_url(postgresql_proc: PostgreSQLExecutor) -> str:
-    yield f"postgresql://{postgresql_proc.user}:{postgresql_proc.password}@{postgresql_proc.host}:{postgresql_proc.port}/indexd_test"
-
-
-@pytest.fixture(scope="session", autouse=True)
-def setup_indexd_test_database(postgresql_proc: PostgreSQLExecutor) -> None:
-    """Set up the database to be used for the tests.
-
-    autouse: every test runs this fixture, without calling it directly
-    session scope: all tests share the same fixture
-
-    Basically this only runs once at the beginning of the full test run. This
-    sets up the test database and test user to use for the rest of the tests.
-
-    With Database Janitor, we no longer need tear down the db here. The DatabaseJanitor
-    will take care of the db tear down.
-    """
-    with DatabaseJanitor(
-        user=postgresql_proc.user,
-        host=postgresql_proc.host,
-        port=postgresql_proc.port,
-        dbname="indexd_test",
-        version=postgresql_proc.version,
-        password=postgresql_proc.password,
-    ):
-        yield setup_database(
-            user=postgresql_proc.user,
-            password=postgresql_proc.password,
-            database="indexd_test",
-            host=f"{postgresql_proc.host}:{postgresql_proc.port}",
-            no_drop=True,
-            no_user=True,
-        )
+@pytest.fixture(scope="session")
+def pg_url(postgresql_server_indexd: PostgreSQLExecutor) -> str:
+    user = postgresql_server_indexd.user
+    password = postgresql_server_indexd.password
+    host = postgresql_server_indexd.host
+    port = postgresql_server_indexd.port
+    dbname = postgresql_server_indexd.dbname
+    yield f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
 
 def truncate_tables(driver: IndexDriverABC, base) -> None:
@@ -148,7 +133,7 @@ def create_indexd_tables(
 def create_indexd_tables_no_migrate(
     index_driver_no_migrate: IndexDriverABC,
     alias_driver_no_migrate: IndexDriverABC,
-    auth_drive: IndexDriverABC,
+    auth_driver: IndexDriverABC,
 ) -> None:
     """Make sure the tables are created but don't operate on them directly.
 
@@ -187,17 +172,14 @@ def indexd_server(pg_url: str) -> MockServer:
     Runs once per test session.
     """
     app = flask.Flask("indexd")
+    # the side effect of the following line creates the db and tables.
     settings = indexd_settings.get_settings(pg_url)
     app_init(app, settings)
 
-    host = os.getenv("INDEXD_HOST") or "localhost"
+    host = "localhost"
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    debug = False
-
-    port = random.randint(8000, 9000)
-    while sock.connect_ex((host, port)) == 0:
-        port = random.randint(8000, 9000)
+    debug = os.getenv("DEBUG", False)
+    port = get_available_port(host)
 
     t = threading.Thread(
         target=app.run, kwargs={"host": host, "port": port, "debug": debug}
@@ -207,6 +189,14 @@ def indexd_server(pg_url: str) -> MockServer:
 
     wait_for_indexd_alive(host, port)
     yield MockServer(host=host, port=port)
+
+
+def get_available_port(host):
+    port = random.randint(8000, 9000)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        while sock.connect_ex((host, port)) == 0:
+            port = random.randint(8000, 9000)
+    return port
 
 
 def wait_for_indexd_alive(host, port):

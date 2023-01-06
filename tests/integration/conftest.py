@@ -4,19 +4,7 @@ import os
 
 import pytest
 
-if os.getenv("USE_TEST_UTILS2", "false").lower() == "true":
-    from indexd_test_utils2 import (
-        alias_driver,
-        auth_driver,
-        create_indexd_tables,
-        index_driver,
-        indexd_admin_user,
-        indexd_client,
-        indexd_server,
-        pg_url,
-        setup_indexd_test_database,
-    )
-else:
+if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
     from indexd_test_utils import (
         alias_driver,
         auth_driver,
@@ -44,7 +32,7 @@ def index_client(indexd_client):
     return indexd_client
 
 
-@pytest.fixture()
+@pytest.fixture
 def indexd_loader(indexd_client):
     def load(file_name):
         docs = []  # type: list[client.Document]
