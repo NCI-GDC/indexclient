@@ -9,3 +9,4 @@ from pytest_indexd import (
     pg_url,
     postgresql_server_indexd,
 )
+from pytest_indexd.index_client_test_specific_subclass import indexd_client_tss

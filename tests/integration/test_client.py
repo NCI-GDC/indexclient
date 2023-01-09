@@ -6,13 +6,16 @@ from requests import HTTPError
 
 if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "true":
     from pytest_indexd import create_random_index, create_random_index_version
+    from pytest_indexd.index_client_test_specific_subclass import (
+        indexd_client_tss as indexd_client,
+    )
 else:
     from indexd_test_utils import create_random_index, create_random_index_version
 
 
 def test_instantiate(index_client):
     baseid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-    urls = ["s3://url/bucket/key"]
+    urls = ["s3://url/bucket/key", "s3://url/bucket/key1"]
     urls_metadata = {url: {"state": "doing ok"} for url in urls}
     size = 5
     acl = ["a", "b"]
