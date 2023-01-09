@@ -4,8 +4,10 @@ from typing import Dict, Iterable, List, Optional
 import pytest
 import sqlalchemy
 from indexdmodels.sqlalchemy import models, sessions
-from sqlalchemy import and_
+from requests import HTTPError
+from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
 
 from indexclient.client import Document
 
@@ -31,7 +33,7 @@ class IndexClientTestSpecificSubclass:
         """
         with self.driver.transaction() as t:
             record = t.query(models.IndexRecord).get(did)
-        return record
+        return Document(None, did, record)
 
     def create(
         self,
@@ -169,7 +171,7 @@ class IndexClientTestSpecificSubclass:
             if negate_params:
                 query = self._negate_filter(query, **negate_params)
 
-            return (r for r in query)
+            return (Document(None, r.did, dict(r)) for r in query)
 
     def _negate_filter(
         self,
@@ -207,6 +209,50 @@ class IndexClientTestSpecificSubclass:
         if version is not None:
             query = query.filter(models.IndexRecord.version != version)
         return query
+
+    def get_latest_version(
+        self, did, skip_null_versions=False, skip_deleted_versions=True
+    ):
+        """
+        Get the latest version given did
+        Args:
+            did (str): document id of an existing entry whose latest version is requested
+            skip_null_versions (bool): if True, exclude entries without a version
+            skip_deleted_versions (bool): if True, exclude entries marked as deleted in metadata
+        Returns:
+            Document: latest version of the entry
+        """
+
+        try:
+            uuid.UUID(did)
+        except ValueError:
+            raise HTTPError
+
+        with self.driver.transaction() as transaction:
+            query = transaction.query(models.IndexRecord)
+            query = query.filter(models.IndexRecord.did == did)
+
+            try:
+                record = query.one()
+                baseid = record.baseid
+            except NoResultFound:
+                baseid = did
+
+            query = transaction.query(models.IndexRecord)
+            query = query.filter(models.IndexRecord.baseid == baseid).order_by(
+                models.IndexRecord.created_date.desc()
+            )
+            if skip_null_versions:
+                query = query.filter(models.IndexRecord.version.isnot(None))
+            if skip_deleted_versions:
+                query = query.filter(
+                    (
+                        func.lower(models.IndexRecord.index_metadata["deleted"].astext)
+                        == "true"
+                    ).isnot(True)
+                )
+            record = query.first()
+            return Document(None, record.did, dict(record))
 
 
 @pytest.fixture

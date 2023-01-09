@@ -4,7 +4,7 @@ import pkg_resources
 import pytest
 from requests import HTTPError
 
-if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "true":
+if os.getenv("USE_PYTEST_INDEXD", "true").lower() == "true":
     from pytest_indexd import create_random_index, create_random_index_version
     from pytest_indexd.index_client_test_specific_subclass import (
         indexd_client_tss as indexd_client,
