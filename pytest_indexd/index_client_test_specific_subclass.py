@@ -149,19 +149,10 @@ class IndexClientTestSpecificSubclass:
                 if value is not None:
                     query = query.filter(getattr(models.IndexRecord, s) == s)
 
-            urls = params.get("urls")
-            if urls:
-                query = query.join(models.IndexRecord.urls_metadata)
-                for u in urls:
-                    query = query.filter(models.IndexRecordUrlMetadataJsonb.url == u)
-
-            acl = params.get("acl")
-            if acl:
-                query = query.join(models.IndexRecord.acl)
-                for u in acl:
-                    query = query.filter(models.IndexRecordACE.ace == u)
-            elif acl == []:
-                query = query.filter(models.IndexRecord.acl == None)
+            for s in ("urls", "acl", "metadata", "urls_metadata"):
+                value = params.get(s)
+                if value:
+                    raise NotImplementedError(f"param {s} not implemented")
 
             hashes = params.get("hashes")
             if hashes:
@@ -176,13 +167,12 @@ class IndexClientTestSpecificSubclass:
                     query = query.filter(models.IndexRecord.did.in_(sub.subquery()))
 
             if negate_params:
-                query = self._negate_filter(transaction, query, **negate_params)
+                query = self._negate_filter(query, **negate_params)
 
             return (r for r in query)
 
-    @staticmethod
     def _negate_filter(
-        transaction: sessions.IndexdTransaction,
+        self,
         query: sqlalchemy.orm.query,
         urls: Optional[List[str]] = None,
         acl: List[str] = None,
@@ -210,6 +200,10 @@ class IndexClientTestSpecificSubclass:
         Returns:
             Database query
         """
+        if urls or acl or file_name or metadata or urls_metadata:
+            raise NotImplementedError(
+                f"param not implemented in _negate_filter {self.__class__.__name__}"
+            )
         if version is not None:
             query = query.filter(models.IndexRecord.version != version)
         return query
