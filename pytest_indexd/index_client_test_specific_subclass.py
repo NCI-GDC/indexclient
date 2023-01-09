@@ -48,6 +48,7 @@ class IndexClientTestSpecificSubclass:
         urls_metadata: Optional[Dict] = None,
         version: Optional[str] = None,
         uploader: Optional[str] = None,
+        rev: Optional[str] = None,
     ):
         """Create a new entry in indexd
 
@@ -105,7 +106,7 @@ class IndexClientTestSpecificSubclass:
                 baseid=baseid,
                 file_name=file_name,
                 version=version,
-                rev=str(uuid.uuid4())[:8],
+                rev=rev or str(uuid.uuid4())[:8],
                 size=size,
                 index_metadata=metadata,
                 acl=record_acl,
@@ -253,6 +254,25 @@ class IndexClientTestSpecificSubclass:
                 )
             record = query.first()
             return Document(None, record.did, dict(record))
+
+    def add_version(self, current_did, new_doc):
+        """Add new version of existing document.
+
+        Args:
+            current_did (str): did of an existing index whose baseid will be shared
+            new_doc (Document): the document version to add
+        Return:
+            Document: the version that was just added
+        """
+        with self.driver.transaction() as transaction:
+            record = transaction.query(models.IndexRecord).get(current_did)
+            data = dict(record)
+        for key in ("created_date", "updated_date", "did", "version", "form"):
+            if key in data:
+                data.pop(key)
+        data.update(new_doc.to_json())
+
+        return self.create(**data)
 
 
 @pytest.fixture
