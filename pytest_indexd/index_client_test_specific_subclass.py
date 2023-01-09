@@ -2,7 +2,10 @@ import uuid
 from typing import Dict, Iterable, List, Optional
 
 import pytest
+import sqlalchemy
 from indexdmodels.sqlalchemy import models, sessions
+from sqlalchemy import and_
+from sqlalchemy.orm import joinedload
 
 from indexclient.client import Document
 
@@ -28,7 +31,7 @@ class IndexClientTestSpecificSubclass:
         """
         with self.driver.transaction() as t:
             record = t.query(models.IndexRecord).get(did)
-        return Document(None, did, dict(record))
+        return record
 
     def create(
         self,
@@ -112,6 +115,104 @@ class IndexClientTestSpecificSubclass:
             t.commit()
 
             return Document(None, did, dict(record))
+
+    def list_with_params(
+        self,
+        limit: int = float("inf"),
+        start: Optional[str] = None,
+        page_size: int = 100,
+        params: Optional[Dict] = None,
+        negate_params: Optional[Dict] = None,
+    ):
+        """Return a generator of document object corresponding to the supplied parameters.
+
+        example: ``{'hashes': {'md5': '...'},
+              'size': '...',
+              'metadata': {'file_state': '...'},
+              'urls_metadata': {'s3://url': {'state': '...'}
+             }``.
+        """
+        with self.driver.transaction() as transaction:
+            query = transaction.query(models.IndexRecord)
+
+            query = query.options(joinedload(models.IndexRecord.urls_metadata))
+            query = query.options(joinedload(models.IndexRecord.acl))
+            query = query.options(joinedload(models.IndexRecord.hashes))
+            query = query.options(joinedload(models.IndexRecord.aliases))
+
+            if start is not None:
+                query = query.filter(models.IndexRecord.did > start)
+
+            params = params or {}
+            for s in ("size", "file_name", "version", "uploader", "release_number"):
+                value = params.get(s)
+                if value is not None:
+                    query = query.filter(getattr(models.IndexRecord, s) == s)
+
+            urls = params.get("urls")
+            if urls:
+                query = query.join(models.IndexRecord.urls_metadata)
+                for u in urls:
+                    query = query.filter(models.IndexRecordUrlMetadataJsonb.url == u)
+
+            acl = params.get("acl")
+            if acl:
+                query = query.join(models.IndexRecord.acl)
+                for u in acl:
+                    query = query.filter(models.IndexRecordACE.ace == u)
+            elif acl == []:
+                query = query.filter(models.IndexRecord.acl == None)
+
+            hashes = params.get("hashes")
+            if hashes:
+                for hash_type, hash_value in hashes.items():
+                    sub = transaction.query(models.IndexRecordHash.did)
+                    sub = sub.filter(
+                        and_(
+                            models.IndexRecordHash.hash_type == hash_type,
+                            models.IndexRecordHash.hash_value == hash_value,
+                        )
+                    )
+                    query = query.filter(models.IndexRecord.did.in_(sub.subquery()))
+
+            if negate_params:
+                query = self._negate_filter(transaction, query, **negate_params)
+
+            return (r for r in query)
+
+    @staticmethod
+    def _negate_filter(
+        transaction: sessions.IndexdTransaction,
+        query: sqlalchemy.orm.query,
+        urls: Optional[List[str]] = None,
+        acl: List[str] = None,
+        file_name=None,
+        version=None,
+        metadata=None,
+        urls_metadata=None,
+    ):
+        """
+        param_values passed in here will be negated
+        for string (version, file_name), filter with value != <value>
+        for list (urls, acl), filter with doc that don't HAS <value>
+        for dict (metadata, urls_metadata). In each (key,value) pair:
+        - if value is None or empty: then filter with key doesn't exist
+        - if value is provided, then filter with value != <value> OR key doesn't exist
+        Args:
+            session: db session
+            query: sqlalchemy query
+            urls (list): doc.urls don't have any <url> in the urls list
+            acl (list): doc.acl don't have any <acl> in the acl list
+            file_name (str): doc.file_name != <file_name>
+            version (str): doc.version != <version>
+            metadata (dict): see above for dict
+            urls_metadata (dict): see above for dict
+        Returns:
+            Database query
+        """
+        if version is not None:
+            query = query.filter(models.IndexRecord.version != version)
+        return query
 
 
 @pytest.fixture
