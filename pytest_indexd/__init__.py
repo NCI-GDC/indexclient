@@ -282,6 +282,7 @@ def create_random_index_version(
     data["size"] = random.randint(10, 1000)
     data["hashes"] = {"md5": md5_hasher.hexdigest()}
     data["urls"] = [f"s3://super-safe.com/{file_name}_warning_huge_file.svs"]
+    data["form"] = "object"
     data["file_name"] = f"{file_name}_warning_huge_file.svs"
     data["urls_metadata"] = {
         f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}
