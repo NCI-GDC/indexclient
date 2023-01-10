@@ -24,6 +24,8 @@ charset-normalizer==2.0.12
     # via requests
 click==7.1.2
     # via flask
+deepdiff==6.2.3
+    # via indexclient (setup.py)
 distlib==0.3.4
     # via virtualenv
 doiclient @ git+https://github.com/uc-cdis/doiclient.git@1.0.0
@@ -69,6 +71,10 @@ mirakuru==2.4.2
     # via pytest-postgresql
 nodeenv==1.6.0
     # via pre-commit
+ordered-set==4.1.0
+    # via deepdiff
+orjson==3.8.5
+    # via deepdiff
 packaging==21.3
     # via pytest
 platformdirs==2.5.1

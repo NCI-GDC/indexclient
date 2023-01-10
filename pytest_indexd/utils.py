@@ -3,6 +3,8 @@ import random
 import uuid
 from typing import Dict, Optional
 
+import deepdiff
+
 from indexclient.client import Document, IndexClient
 from indexclient.types import IndexData, IndexHash
 
@@ -102,3 +104,27 @@ def create_random_index_version(
         data["version"] = version
 
     return index_client.add_version(did, Document(None, None, data))
+
+
+def verify_indexd_contents(client, expected_docs):
+    """Verify that indexd has documents with at least the given fields."""
+    # client.list() returns a generator of indexd documents
+    docs_by_id = {doc.did: doc.to_json() for doc in client.list()}
+
+    # Indexd generates some fields that are hard to test and that we don't
+    # really care about, but we can at least confirm that the fields we do
+    # care about are set properly.
+    for expected_doc in expected_docs:
+        did = expected_doc["did"]
+        assert did in docs_by_id
+
+        json_doc = {
+            key: value for key, value in docs_by_id[did].items() if key in expected_doc
+        }
+
+        assert (
+            deepdiff.DeepDiff(
+                json_doc, expected_doc, ignore_order=True, report_repetition=False
+            )
+            == {}
+        )
