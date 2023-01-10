@@ -8,7 +8,7 @@ import pytest
 import requests
 from indexd import app_init
 
-from pytest_indexd import indexd_settings
+from pytest_indexd.fixtures import indexd_settings
 
 
 class MockServer:
