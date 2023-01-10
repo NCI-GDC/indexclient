@@ -24,7 +24,7 @@ class IndexData(TypedDict, total=False):
     metadata: IndexMetaData
     urls_metadata: Dict[str, UrlMetadata]
 
-class IndexDocument(Protocol):
+class Document(Protocol):
     acl: List[str]
     did: str
     size: int
