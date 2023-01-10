@@ -4,6 +4,7 @@ import uuid
 from typing import Dict, Optional
 
 from indexclient.client import Document, IndexClient
+from indexclient.types import IndexData, IndexHash
 
 
 def create_random_index(
@@ -44,6 +45,30 @@ def create_random_index(
         urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}},
     )
 
+    return doc
+
+
+def mock_doc(doc: IndexData) -> IndexData:
+    """Adds fields needed by indexd create request to the input doc object"""
+
+    # add dummy md5hash if no hash is specified
+    if "hashes" not in doc:
+        md5 = hashlib.md5()
+        md5.update(doc["did"].encode("utf-8"))
+        doc["hashes"] = IndexHash(md5=md5.hexdigest())
+    if "size" not in doc:
+        doc["size"] = random.randint(10, 1000)
+    if "acl" not in doc:
+        doc["acl"] = ["open"]
+    if "urls_metadata" not in doc:
+        doc["urls_metadata"] = {
+            f"s3://ceph.service.consul/data-tools/{doc['did']}_test_file.svs": {
+                "type": "cleversafe",
+                "state": "validated",
+            }
+        }
+    if "urls" not in doc:
+        doc["urls"] = list(doc.get("urls_metadata", {}).keys())
     return doc
 
 
