@@ -7,5 +7,5 @@ from pytest_indexd.db import (
     pg_url,
     postgresql_server_indexd,
 )
-from pytest_indexd.indexd_client_fixture import indexd_client
+from pytest_indexd.indexd_client_fixture import indexd_client, indexd_loader
 from pytest_indexd.indexd_server_fixture import indexd_server
