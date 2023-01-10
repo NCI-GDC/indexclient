@@ -12,6 +12,11 @@ run multiple postgres process on different port. And random assign port number
 to mock indexd server so multiple indexd server could be used at the same time
 on the same dev machine.
 
+The reason we do not use the client of pytest_postgresql.factories is that we need to use
+a mock indexd server. The server needs the database. The server setup is time consuming.
+So we set the server as session scope. So we can not use function scope client provided
+by the pytest_postgresql.
+
 The travis tests is updated to 3 jobs:
 1. Run indexclient tests with old indexd_test_utils
 2. Run indexclient tests with new pytest_indexd in single process.
