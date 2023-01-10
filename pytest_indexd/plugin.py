@@ -5,7 +5,7 @@ from pytest_indexd import (
     index_driver,
     indexd_admin_user,
     indexd_client,
-    indexd_server,
     pg_url,
     postgresql_server_indexd,
 )
+from pytest_indexd.indexd_server_fixture import indexd_server
