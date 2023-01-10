@@ -1,14 +1,17 @@
+from typing import Tuple
+
 import pytest
-from indexd.index.driver import IndexDriverABC
+from _pytest.fixtures import fixture
 
 from indexclient.client import IndexClient
+from pytest_indexd.indexd_server_fixture import MockServer
 
 
 @pytest.fixture
 def indexd_client(
-    indexd_server: IndexDriverABC,
-    create_indexd_tables: IndexDriverABC,
-    indexd_admin_user: IndexDriverABC,
+    indexd_server: MockServer,
+    create_indexd_tables: fixture,  # usefixtures will cause failure for this one
+    indexd_admin_user: Tuple[str, str],
 ) -> IndexClient:
     """Create the tables and add an auth user"""
     return IndexClient(
