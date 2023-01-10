@@ -10,7 +10,6 @@ from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
 from pytest_postgresql import factories
 from pytest_postgresql.executor import PostgreSQLExecutor
 
-from indexclient.client import IndexClient
 from pytest_indexd import indexd_settings
 
 INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
@@ -133,15 +132,3 @@ def create_indexd_tables_no_migrate(
     Also set up the password to be accessed by the client tests.
     """
     pass
-
-
-@pytest.fixture
-def indexd_client(
-    indexd_server: IndexDriverABC,
-    create_indexd_tables: IndexDriverABC,
-    indexd_admin_user: IndexDriverABC,
-) -> IndexClient:
-    """Create the tables and add an auth user"""
-    return IndexClient(
-        indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1])
-    )
