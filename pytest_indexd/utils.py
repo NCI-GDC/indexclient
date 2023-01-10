@@ -106,10 +106,10 @@ def create_random_index_version(
     return index_client.add_version(did, Document(None, None, data))
 
 
-def verify_indexd_contents(client, expected_docs):
+def verify_indexd_contents(index_client: IndexClient, expected_docs: IndexData):
     """Verify that indexd has documents with at least the given fields."""
     # client.list() returns a generator of indexd documents
-    docs_by_id = {doc.did: doc.to_json() for doc in client.list()}
+    docs_by_id = {doc.did: doc.to_json() for doc in index_client.list()}
 
     # Indexd generates some fields that are hard to test and that we don't
     # really care about, but we can at least confirm that the fields we do
