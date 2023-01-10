@@ -29,21 +29,9 @@ def create_random_index(
 
     did = str(uuid.uuid4()) if did is None else did
 
-    if not hashes:
-        md5_hasher = hashlib.md5()
-        md5_hasher.update(did.encode("utf-8"))
-        hashes = {"md5": md5_hasher.hexdigest()}
+    doc_data = mock_doc({"did": did, "version": version, "hashes": hashes})
 
-    doc = index_client.create(
-        did=did,
-        hashes=hashes,
-        size=random.randint(10, 1000),
-        version=version,
-        acl=["a", "b"],
-        file_name=f"{did}_warning_huge_file.svs",
-        urls=[f"s3://super-safe.com/{did}_warning_huge_file.svs"],
-        urls_metadata={f"s3://super-safe.com/{did}_warning_huge_file.svs": {"a": "b"}},
-    )
+    doc = index_client.create(**doc_data)
 
     return doc
 
@@ -52,7 +40,7 @@ def mock_doc(doc: IndexData) -> IndexData:
     """Adds fields needed by indexd create request to the input doc object"""
 
     # add dummy md5hash if no hash is specified
-    if "hashes" not in doc:
+    if "hashes" not in doc or doc["hashes"] is None:
         md5 = hashlib.md5()
         md5.update(doc["did"].encode("utf-8"))
         doc["hashes"] = IndexHash(md5=md5.hexdigest())
