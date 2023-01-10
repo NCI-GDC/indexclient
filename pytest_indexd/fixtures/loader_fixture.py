@@ -10,7 +10,7 @@ from pytest_indexd.utils import mock_doc
 
 
 @pytest.fixture()
-def indexd_loader(indexd_client: IndexClient) -> hints.IndexRecordLoader:
+def indexd_loader(indexd_client_tss: IndexClient) -> hints.IndexRecordLoader:
     """Loads index documents from file"""
 
     def load(resource: Union[str, Iterable[IndexData]]) -> List[Document]:
@@ -29,7 +29,7 @@ def indexd_loader(indexd_client: IndexClient) -> hints.IndexRecordLoader:
                 docs_data = doc_data["docs"]
 
         for doc in docs_data:
-            document = indexd_client.create(**mock_doc(doc))
+            document = indexd_client_tss.create(**mock_doc(doc))
             docs.append(document)
         return docs
 
