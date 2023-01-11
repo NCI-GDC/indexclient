@@ -16,6 +16,10 @@ default:
       alias: postgres
   before_script:
     - !reference [.load_github_key, script]
+    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee /etc/apt/sources.list.d/pgdg.list
+    - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+    - apt-get update
+    - apt-get install -y postgresql-client-13
     - pip install "tox<4"
   tags:
     - dind
