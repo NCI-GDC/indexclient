@@ -28,6 +28,8 @@ variables:
     - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
     - apt-get update
     - apt-get install -y postgresql-client-13
+    - rm /usr/bin/pg_config
+    - ln /usr/lib/postgresql/13/bin/pg_config /usr/bin/
     - pip install "tox<4"
 
 tox:
