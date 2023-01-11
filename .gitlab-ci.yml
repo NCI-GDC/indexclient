@@ -14,23 +14,28 @@ default:
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
       alias: postgres
-  before_script:
-    - !reference [.load_github_key, script]
-    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee /etc/apt/sources.list.d/pgdg.list
-    - apt-get update
-    - apt-get install -y postgresql-client-13
-    - pip install "tox<4"
   tags:
     - dind
 
 variables:
   PG_INDEXD_HOST: postgres
 
+.prepareTox:
+  script:
+    - !reference [.load_github_key, script]
+    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee /etc/apt/sources.list.d/pgdg.list
+    - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7FCC7D46ACCC4CF8
+    - apt-get update
+    - apt-get install -y postgresql-client-13
+    - pip install "tox<4"
+
 tox:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'false'
     USE_RUNNING_PG: 'true'
+  before_script:
+    - !reference [.prepareTox, script]
   script:
     - tox
 
@@ -39,6 +44,8 @@ test utils2 proc:
   variables:
     USE_PYTEST_INDEXD: 'true'
     USE_RUNNING_PG: 'false'
+  before_script:
+    - !reference [.prepareTox, script]
   script:
     - tox
 
@@ -46,15 +53,21 @@ test utils2 noproc:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'true'
+  before_script:
+    - !reference [.prepareTox, script]
   script:
     - tox
 
 tox parallel:
   stage: test
+  before_script:
+    - !reference [.prepareTox, script]
   script:
     - tox -e parallel
 
 xdist:
   stage: test
+  before_script:
+    - !reference [.prepareTox, script]
   script:
     - tox -e xdist
