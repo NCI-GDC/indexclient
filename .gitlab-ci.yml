@@ -27,6 +27,7 @@ tox:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'false'
+    USE_RUNNING_PG: true
   script:
     - tox -e parallel
 
