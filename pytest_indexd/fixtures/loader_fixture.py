@@ -1,3 +1,5 @@
+import json
+from pathlib import PosixPath
 from typing import Iterable, List, Union
 
 import pytest
@@ -22,10 +24,13 @@ def indexd_loader(indexd_client_tss: IndexClient) -> hints.IndexRecordLoader:
         docs: List[Document] = []
         docs_data: Iterable[IndexData] = resource
 
-        if isinstance(resource, str):
+        if isinstance(resource, str) or isinstance(resource, PosixPath):
             #  attempt to read from file
             with open(resource, "r") as f:
-                doc_data = yaml.safe_load(f)
+                try:
+                    doc_data = yaml.safe_load(f)
+                except yaml.scanner.ScannerError:
+                    doc_data = json.loads(f)
                 docs_data = doc_data["docs"]
 
         for doc in docs_data:

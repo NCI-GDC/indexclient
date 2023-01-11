@@ -8,5 +8,6 @@ from pytest_indexd.fixtures.db_fixtures import (
     pg_url,
     postgresql_server_indexd,
 )
+from pytest_indexd.fixtures.indexd_models_fixture import indexd_client_tss
 from pytest_indexd.fixtures.loader_fixture import indexd_loader
 from pytest_indexd.fixtures.server_fixture import indexd_server

@@ -51,6 +51,8 @@ importlib-metadata==4.11.3
     #   pre-commit
     #   pytest
     #   virtualenv
+importlib-resources==5.10.2
+    # via indexclient (setup.py)
 indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2
     # via indexclient (setup.py)
 indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.1.0
@@ -153,7 +155,9 @@ werkzeug==0.16.1
     #   flask
     #   indexd
 zipp==3.7.0
-    # via importlib-metadata
+    # via
+    #   importlib-metadata
+    #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
