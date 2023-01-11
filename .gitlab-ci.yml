@@ -32,7 +32,7 @@ tox:
     USE_PYTEST_INDEXD: 'false'
     USE_RUNNING_PG: 'true'
   script:
-    - tox -e parallel
+    - tox
 
 test utils2 proc:
   stage: test
