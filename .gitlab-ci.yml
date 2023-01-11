@@ -14,6 +14,8 @@ default:
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
       alias: postgres
+  variables:
+    PG_INDEXD_HOST: postgres
   before_script:
     - !reference [.load_github_key, script]
     - pip install "tox<4"
