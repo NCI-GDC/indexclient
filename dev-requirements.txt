@@ -55,7 +55,7 @@ importlib-resources==5.10.2
     # via indexclient (setup.py)
 indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2
     # via indexclient (setup.py)
-indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.1.0
+indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@53da40cfd4040f7bb5abc837d93d4664aa8394e1
     # via indexclient (setup.py)
 iniconfig==1.1.1
     # via pytest
