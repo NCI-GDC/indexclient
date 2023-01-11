@@ -20,7 +20,9 @@ if os.getenv("USE_RUNNING_PG", "true").lower() == "true":
         dbname=os.getenv("PG_INDEXD_NAME", "indexd_test"),
     )
 else:
-    postgresql_server_indexd = factories.postgresql_proc(dbname=INDEXD_DBNAME)
+    postgresql_server_indexd = factories.postgresql_proc(
+        dbname=INDEXD_DBNAME, password="test"
+    )
 
 
 @pytest.fixture(scope="session")
