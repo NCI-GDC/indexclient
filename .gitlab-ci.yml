@@ -28,7 +28,7 @@ variables:
     - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
     - apt-get update
     - apt-get install -y postgresql-13
-    - chown -R postgres /venv/
+    - chown -R postgres /venv
     - su postgres
     - export PATH=/venv/bin:$PATH
     - pip install "tox<4"
