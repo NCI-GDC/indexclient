@@ -10,15 +10,16 @@ include:
       - templates/global/full.yaml
       - templates/python/full.yaml
 
-image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
-services:
-  - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
-    alias: postgres
-before_script:
-  - !reference [.load_github_key, script]
-  - pip install "tox<4"
-tags:
-  - dind
+default:
+  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
+  services:
+    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+      alias: postgres
+  before_script:
+    - !reference [.load_github_key, script]
+    - pip install "tox<4"
+  tags:
+    - dind
 
 tox:
   stage: test
