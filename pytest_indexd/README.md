@@ -40,6 +40,19 @@ a postgres database instance and a indexd server instance. So use half number of
 of your machine as the number of parallel. For example, if you have a 8 core 16 thread
 intel cpu, use `pytest -n 8`.
 
+## Indexd Driver Wrapper
+
+This use indexd models to save and get data, should be used for fixture setup and data
+validation.
+
+## indexd loader
+
+There is a new fixture called indexd_loader, which can load indexd data from yaml file,
+json file or dictionary data. The loader uses indexd_models to load data directly into
+database.
+
+
+
 ### Known Issues
 #### Several problem has been found on my arm mac, ensure you have the following setting
 in your env if you are using arm mac:

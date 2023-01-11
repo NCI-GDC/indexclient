@@ -8,7 +8,7 @@ from indexdmodels.sqlalchemy import models, sessions
 from indexclient.client import Document
 
 
-class IndexClientTestSpecificSubclass:
+class IndexdDriverWrapper:
     def __init__(self, pg_url):
         self.driver = sessions.IndexdDatabaseDriver(pg_url, read_only=False)
 
@@ -107,5 +107,5 @@ class IndexClientTestSpecificSubclass:
 
 
 @pytest.fixture
-def indexd_client_tss(pg_url, create_indexd_tables):
-    return IndexClientTestSpecificSubclass(pg_url)
+def indexd_driver_wrapper(pg_url, create_indexd_tables):
+    return IndexdDriverWrapper(pg_url)

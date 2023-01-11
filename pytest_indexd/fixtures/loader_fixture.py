@@ -5,14 +5,17 @@ from typing import Iterable, List, Union
 import pytest
 import yaml
 
-from indexclient.client import Document, IndexClient
+from indexclient.client import Document
 from indexclient.types import IndexData
 from pytest_indexd import hints
+from pytest_indexd.fixtures.indexd_models_fixture import IndexdDriverWrapper
 from pytest_indexd.utils import mock_doc
 
 
 @pytest.fixture()
-def indexd_loader(indexd_client_tss: IndexClient) -> hints.IndexRecordLoader:
+def indexd_loader(
+    indexd_driver_wrapper: IndexdDriverWrapper,
+) -> hints.IndexRecordLoader:
     """Loads index documents from file"""
 
     def load(resource: Union[str, Iterable[IndexData]]) -> List[Document]:
@@ -34,7 +37,7 @@ def indexd_loader(indexd_client_tss: IndexClient) -> hints.IndexRecordLoader:
                 docs_data = doc_data["docs"]
 
         for doc in docs_data:
-            document = indexd_client_tss.create(**mock_doc(doc))
+            document = indexd_driver_wrapper.create(**mock_doc(doc))
             docs.append(document)
         return docs
 
