@@ -23,22 +23,22 @@ tags:
 tox:
   stage: test
   variables:
-  - USE_PYTEST_INDEXD: false
+    USE_PYTEST_INDEXD: "false"
   script:
     - tox -e parallel
 
 test utils2 proc:
   stage: test
   variables:
-    - USE_PYTEST_INDEXD: true
-    - USE_RUNNING_PG: false
+    USE_PYTEST_INDEXD: "true"
+    USE_RUNNING_PG: "false"
   script:
     - tox
 
 test utils2 noproc:
   stage: test
   variables:
-    - USE_PYTEST_INDEXD: true
+    USE_PYTEST_INDEXD: "true"
   script:
     - tox
 
