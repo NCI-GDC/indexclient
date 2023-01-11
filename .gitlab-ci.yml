@@ -1,0 +1,53 @@
+---
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Python.gitlab-ci.yml
+include:
+  - project: nci-gdc/gitlab-templates
+    ref: master
+    file:
+      - templates/global/full.yaml
+      - templates/python/full.yaml
+
+image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
+services:
+  - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+    alias: postgres
+before_script:
+  - !reference [.load_github_key, script]
+  - pip install "tox<4"
+tags:
+  - dind
+
+tox:
+  stage: test
+  variables:
+  - USE_PYTEST_INDEXD: false
+  script:
+    - tox -e parallel
+
+test utils2 proc:
+  stage: test
+  variables:
+    - USE_PYTEST_INDEXD: true
+    - USE_RUNNING_PG: false
+  script:
+    - tox
+
+test utils2 noproc:
+  stage: test
+  variables:
+    - USE_PYTEST_INDEXD: true
+  script:
+    - tox
+
+tox parallel:
+  stage: test
+  script:
+    - tox -e parallel
+
+xdist:
+  stage: test
+  script:
+    - tox -e xdist
