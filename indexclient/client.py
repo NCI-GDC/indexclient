@@ -132,7 +132,7 @@ class IndexClient:
         try:
             response = self._post(
                 "bulk/documents/latest",
-                params={"skip_null": skip_null, "skip_deleted": skip_deleted},
+                params={"skip_null": skip_null, "exclude_deleted": skip_deleted},
                 json=dids,
                 headers=headers,
             )
@@ -327,7 +327,7 @@ class IndexClient:
 
         params = {
             "has_version": json.dumps(skip_null_versions),
-            "not_deleted": json.dumps(skip_deleted_versions),
+            "exclude_deleted": json.dumps(skip_deleted_versions),
         }
         doc = self._get("index", did, "latest", params=params).json()
 
@@ -362,7 +362,7 @@ class IndexClient:
             list: Document versions
         """
 
-        params = {"not_deleted": json.dumps(skip_deleted_versions)}
+        params = {"exclude_deleted": json.dumps(skip_deleted_versions)}
 
         versions_dict = self._get(
             "index", did, "versions", params=params
