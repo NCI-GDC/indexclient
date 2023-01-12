@@ -16,7 +16,7 @@ setup(
             "pytest~=6.2.0",
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
-            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.0#egg=indexd",
         ],
         "pytest_indexd": [
             "deepdiff",
@@ -26,7 +26,7 @@ setup(
             "pytest-parallel",
             "pytest-postgresql",
             "pytest-xdist",
-            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.9.0-rc.2#egg=indexd",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.0#egg=indexd",
             "indexdmodels @  git+ssh://git@github.com/NCI-GDC/indexdmodels.git@53da40cfd4040f7bb5abc837d93d4664aa8394e1#egg=indexdmodels",
         ],
     },
