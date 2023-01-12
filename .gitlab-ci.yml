@@ -62,13 +62,6 @@ test utils2 noproc:
   script:
     - tox
 
-tox parallel:
-  stage: test
-  before_script:
-    - !reference [.prepareTox, script]
-  script:
-    - tox -e parallel
-
 xdist:
   stage: test
   before_script:
