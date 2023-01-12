@@ -33,7 +33,7 @@ def setup_indexd_test_database(request):
 
     # try_drop_test_data() is run before the tests starts and after the tests
     # complete. This ensures a clean database on start and end of the tests.
-    setup_database()
+    setup_database(host=PG_HOST)
     request.addfinalizer(try_drop_test_data)
 
 
