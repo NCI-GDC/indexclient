@@ -58,7 +58,7 @@ importlib-metadata==6.0.0
     #   virtualenv
 importlib-resources==5.10.2
     # via indexclient (setup.py)
-indexd @ git+https://github.com/NCI-GDC/indexd.git@5932bddbc27048855e55735e1522f08cadd50222
+indexd @ git+https://github.com/NCI-GDC/indexd.git@ce1cdd71430c2ec985d8c32750890c747e961ade
     # via indexclient (setup.py)
 indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@53da40cfd4040f7bb5abc837d93d4664aa8394e1
     # via indexclient (setup.py)
