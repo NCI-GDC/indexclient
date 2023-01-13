@@ -27,7 +27,7 @@ variables:
     - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee /etc/apt/sources.list.d/pgdg.list
     - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
     - apt-get update
-    - apt-get install -y postgresql-13
+    - apt-get install -y postgresql-client-13
     - chown -R postgres /venv
     - su postgres
     - export PATH=/venv/bin:$PATH
@@ -38,16 +38,6 @@ tox:
   variables:
     USE_PYTEST_INDEXD: 'false'
     USE_RUNNING_PG: 'true'
-  before_script:
-    - !reference [.prepareTox, script]
-  script:
-    - tox
-
-test utils2 proc:
-  stage: test
-  variables:
-    USE_PYTEST_INDEXD: 'true'
-    USE_RUNNING_PG: 'false'
   before_script:
     - !reference [.prepareTox, script]
   script:
@@ -64,6 +54,8 @@ test utils2 noproc:
 
 xdist:
   stage: test
+  variables:
+    USE_RUNNING_PG = 'true'
   before_script:
     - !reference [.prepareTox, script]
   script:
