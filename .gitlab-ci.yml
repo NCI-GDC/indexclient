@@ -55,7 +55,7 @@ test utils2 noproc:
 xdist:
   stage: test
   variables:
-    USE_RUNNING_PG = 'true'
+    USE_RUNNING_PG: 'true'
   before_script:
     - !reference [.prepareTox, script]
   script:
