@@ -1,9 +1,15 @@
+"""Module for indexd_client fixture
+
+This is the fixture user should use most. This fixture will create provide a working
+indexclient. The indexclient will talk to a test indexd server and data will be saved
+to postgres db.
+"""
 from typing import Tuple
 
 import pytest
 from _pytest.fixtures import fixture
 
-from indexclient.client import Document, IndexClient
+from indexclient.client import IndexClient
 from pytest_indexd.fixtures.server_fixture import MockServer
 
 
