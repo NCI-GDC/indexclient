@@ -1,3 +1,8 @@
+"""db fixtures for test indexd server
+
+This module contains database fixtures, which use pytest_postgresql to set up database
+for test indexd server.
+"""
 import os
 from typing import Tuple
 

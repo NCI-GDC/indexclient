@@ -1,8 +1,8 @@
 """Module for indexd_client fixture
 
-This is the fixture user should use most. This fixture will create provide a working
-indexclient. The indexclient will talk to a test indexd server and data will be saved
-to postgres db.
+The index_client fixture is the fixture user should use most. This fixture will create
+provide a working indexclient. The indexclient will talk to a test indexd server and
+data will be saved to temporary postgres db.
 """
 from typing import Tuple
 
