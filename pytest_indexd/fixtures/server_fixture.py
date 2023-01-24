@@ -1,3 +1,10 @@
+"""Module for indexd_server fixture
+
+The indexd_server fixture start up a test indexd server, runs on random ports between
+8000 and 9000. We use random ports so we can parallel testing. This server save data to
+postgres db. index_client fixture is usually used to interact with this server for
+testing.
+"""
 import os
 import random
 import socket
