@@ -47,7 +47,7 @@ validation.
 
 ## indexd loader
 
-There is a new fixture called indexd_loader, which can load indexd data from yaml file,
+There is a fixture called indexd_loader, which can load indexd data from yaml file,
 json file or dictionary data. The loader uses indexd_models to load data directly into
 database.
 
