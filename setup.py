@@ -26,7 +26,7 @@ setup(
             "pytest-parallel",
             "pytest-postgresql",
             "pytest-xdist",
-            "indexd @ git+https://github.com/NCI-GDC/indexd.git@ce1cdd71430c2ec985d8c32750890c747e961ade#egg=indexd",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1#egg=indexd",
             "indexdmodels @  git+ssh://git@github.com/NCI-GDC/indexdmodels.git@53da40cfd4040f7bb5abc837d93d4664aa8394e1#egg=indexdmodels",
         ],
     },
