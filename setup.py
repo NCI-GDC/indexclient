@@ -22,7 +22,7 @@ setup(
             "deepdiff",
             "importlib_resources",
             "psycopg",
-            "pytest~=6.2.0",
+            "pytest",
             "pytest-parallel",
             "pytest-postgresql",
             "pytest-xdist",
