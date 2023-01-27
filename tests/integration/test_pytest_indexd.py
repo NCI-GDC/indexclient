@@ -2,11 +2,13 @@ import deepdiff
 import importlib_resources
 import yaml
 
+from indexclient.client import IndexClient
 from pytest_indexd import hints
+from pytest_indexd.fixtures.indexd_models_fixture import IndexdDriverWrapper
 
 
 def test_indexd_loader_dict(
-    indexd_loader: hints.IndexRecordLoader, indexd_client
+    indexd_loader: hints.IndexRecordLoader, indexd_client: IndexClient
 ) -> None:
     docs_data = (
         importlib_resources.files("tests.data")
@@ -20,7 +22,7 @@ def test_indexd_loader_dict(
 
 
 def test_indexd_loader_yaml(
-    indexd_loader: hints.IndexRecordLoader, indexd_client
+    indexd_loader: hints.IndexRecordLoader, indexd_client: IndexClient
 ) -> None:
     docs_data = importlib_resources.files("tests.data").joinpath(
         "dat_3021_indexd_sample.yaml"
@@ -31,7 +33,7 @@ def test_indexd_loader_yaml(
 
 
 def test_indexd_loader_json(
-    indexd_loader: hints.IndexRecordLoader, indexd_client
+    indexd_loader: hints.IndexRecordLoader, indexd_client: IndexClient
 ) -> None:
     docs_data = importlib_resources.files("tests.data").joinpath("documents.json")
 
@@ -41,7 +43,9 @@ def test_indexd_loader_json(
 
 
 def test_indexd_driver_wrapper_get(
-    indexd_loader: hints.IndexRecordLoader, indexd_client, indexd_driver_wrapper
+    indexd_loader: hints.IndexRecordLoader,
+    indexd_client: IndexClient,
+    indexd_driver_wrapper: IndexdDriverWrapper,
 ) -> None:
     docs_data = importlib_resources.files("tests.data").joinpath("documents.json")
 
