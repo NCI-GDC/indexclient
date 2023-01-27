@@ -28,6 +28,7 @@ class IndexData(TypedDict, total=False):
     size: int
     acl: List[str]
     urls: List[str]
+    file_name: str
     hashes: IndexHash
     version: str
     metadata: IndexMetaData
