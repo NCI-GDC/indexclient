@@ -1,5 +1,7 @@
 from typing import Dict, Iterable, List, Protocol
 
+from indexclient.types import IndexHash, IndexMetaData, UrlMetadata
+
 class Document(Protocol):
     acl: List[str]
     did: str
