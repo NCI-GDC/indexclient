@@ -1,8 +1,18 @@
 {
   "docs": [
     {
+      "acl": [
+        "phs000178"
+      ],
       "did": "317f2c0d-bb9f-4924-bedc-d09275a85da4",
       "file_name": "01.txt",
+      "hashes": {
+        "md5": "b0b159ffa2d34deb43f04ec39205d078"
+      },
+      "metadata": {
+        "gencode_version": "v36",
+        "release_number": "32.0"
+      },
       "size": 122,
       "urls_metadata": {
         "s3://localhost:7000/test_bucket/01.txt": {

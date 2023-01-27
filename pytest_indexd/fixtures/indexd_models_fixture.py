@@ -21,7 +21,7 @@ class IndexdDriverWrapper:
         """
         with self.driver.transaction() as t:
             record = t.query(models.IndexRecord).get(did)
-        return Document(None, did, dict(record))
+            return Document(None, did, dict(record))
 
     def create(
         self,
