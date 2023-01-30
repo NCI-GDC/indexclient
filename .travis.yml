@@ -26,6 +26,9 @@ cache:
 jobs:
   fast_finish: true
   include:
+    - name: test unit tests
+      script:
+        - tox unit_test
     - name: test
       env:
         global:

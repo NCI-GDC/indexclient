@@ -10,11 +10,15 @@ if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
         auth_driver,
         create_indexd_tables,
         index_driver,
-        indexd_client,
         indexd_admin_user,
+        indexd_client,
         indexd_server,
         setup_indexd_test_database,
     )
+else:
+    # This only works in top level conftest
+    pytest_plugins = ("pytest_indexd.plugin",)
+
 
 from indexclient import client
 
