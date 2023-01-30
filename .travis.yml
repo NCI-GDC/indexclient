@@ -28,7 +28,7 @@ jobs:
   include:
     - name: test unit tests
       script:
-        - tox unit_test
+        - tox -e unit_test
     - name: test
       env:
         global:
