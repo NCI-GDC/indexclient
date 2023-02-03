@@ -54,9 +54,6 @@ jobs:
           - USE_RUNNING_PG=false
       script:
         - tox
-    - name: test parallel
-      script:
-        - tox -e parallel
     - name: test xdist
       script:
         - tox -e xdist

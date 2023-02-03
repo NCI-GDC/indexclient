@@ -20,7 +20,6 @@ setup(
         "pytest_indexd": [
             "psycopg",
             "pytest~=6.2.0",
-            "pytest-parallel",
             "pytest-postgresql",
             "pytest-xdist",
             "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.0#egg=indexd",
