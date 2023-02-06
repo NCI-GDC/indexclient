@@ -104,11 +104,8 @@ pyrsistent==0.18.1
 pytest==6.2.5
     # via
     #   indexclient (setup.py)
-    #   pytest-parallel
     #   pytest-postgresql
     #   pytest-xdist
-pytest-parallel==0.1.1
-    # via indexclient (setup.py)
 pytest-postgresql==4.1.1
     # via indexclient (setup.py)
 pytest-xdist==3.1.0
@@ -139,8 +136,6 @@ sqlalchemy-utils==0.36.3
     # via
     #   indexclient (setup.py)
     #   indexd
-tblib==1.7.0
-    # via pytest-parallel
 tenacity==7.0.0
     # via
     #   ddtrace

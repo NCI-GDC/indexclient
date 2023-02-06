@@ -26,6 +26,9 @@ cache:
 jobs:
   fast_finish: true
   include:
+    - name: test unit tests
+      script:
+        - tox -e unit_test
     - name: test
       env:
         global:
@@ -51,9 +54,6 @@ jobs:
           - USE_RUNNING_PG=false
       script:
         - tox
-    - name: test parallel
-      script:
-        - tox -e parallel
     - name: test xdist
       script:
         - tox -e xdist

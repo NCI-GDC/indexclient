@@ -20,6 +20,7 @@ interact with the index in a meaningful manner.
          * [Retrieve a record](#retrieve-a-record)
          * [Update a record](#update-a-record)
          * [Delete a record](#delete-a-record)
+      * [pytest_indexd](#pytest_indexd)
       * [Setup pre-commit hook to check for secrets](#setup-pre-commit-hook-to-check-for-secrets)
 
 <!-- Added by: qiaoqiao, at: Tue Jul 21 11:52:15 CDT 2020 -->
@@ -124,6 +125,10 @@ These queries are handled via requests and wrapped into the index client.
 
 ***TODO***
 
+## Pytest_indexd
+
+A plugin with fixtures for indexd/indexclient related tests.
+[pytest_indexd](pytest_indexd/README.md)
 
 ## Setup pre-commit hook to check for secrets
 
