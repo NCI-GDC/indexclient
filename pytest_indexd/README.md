@@ -31,11 +31,21 @@ The travis tests is updated to 3 jobs:
     ```yaml
     pytest<7(required by current version of pytest-postgresql)
     pytest-postgresql
-    psycopg>3(probably not needed)
+    psycopg>3
+    psycopg2
     ```
     note: `psycopg>3` can coexist with `psycopyg2` which is ued by `psqlgraph`.
+4. Install the plugin with
+   ```bash
+   pip install indexclient[pytest_indexd]
+   ```
 
-4. (optional) To run tests in parallel, install `pytest-xdist`. Each test will spin up
+5. In your root conftest.py file, add:
+   ```python
+   pytest_plugins = ("pytest_indexd.plugin",)
+   ```
+
+5. (optional) To run tests in parallel, install `pytest-xdist`. Each test will spin up
 a postgres database instance and a indexd server instance. So use half number of cores
 of your machine as the number of parallel. For example, if you have a 8 core 16 thread
 intel cpu, use `pytest -n 8`.
