@@ -31,7 +31,14 @@ variables:
     - apt-get install -y postgresql-client-13
     - pip install "tox<4"
 
-tox:
+unit_test:
+  stage: test
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox -e unit_test
+
+indexd_test_utils:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'false'
@@ -41,7 +48,7 @@ tox:
   script:
     - tox
 
-test utils2 noproc:
+pytest_indexd proc:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'true'
@@ -50,7 +57,7 @@ test utils2 noproc:
   script:
     - tox
 
-xdist:
+pytest_indexd xdist:
   stage: test
   variables:
     USE_RUNNING_PG: 'true'
