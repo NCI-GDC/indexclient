@@ -45,7 +45,7 @@ indexd_test_utils:
   script:
     - tox -e indexd_test_utils
 
-pytest_indexd proc:
+pytest_indexd noproc:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'true'
