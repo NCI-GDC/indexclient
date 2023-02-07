@@ -40,13 +40,10 @@ unit_test:
 
 indexd_test_utils:
   stage: test
-  variables:
-    USE_PYTEST_INDEXD: 'false'
-    USE_RUNNING_PG: 'true'
   before_script:
     - !reference [.prepareTox, script]
   script:
-    - tox
+    - tox -e indexd_test_utils
 
 pytest_indexd proc:
   stage: test
