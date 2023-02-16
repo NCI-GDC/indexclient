@@ -6,6 +6,7 @@ include:
     ref: master
     file:
       - templates/global/full.yaml
+      - templates/python/full.yaml
 
 default:
   image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
