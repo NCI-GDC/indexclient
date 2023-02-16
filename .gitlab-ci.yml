@@ -61,3 +61,15 @@ pytest_indexd xdist:
     - !reference [.prepareTox, script]
   script:
     - tox -e xdist
+
+tox:
+  rules:
+    - when: never
+
+docker_build:
+  rules:
+    - when: never
+
+release:
+  rules:
+    - when: never
