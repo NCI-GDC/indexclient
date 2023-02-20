@@ -1,12 +1,13 @@
-from pytest_indexd import (
+from pytest_indexd.fixtures.client_fixture import indexd_client
+from pytest_indexd.fixtures.db_fixtures import (
     alias_driver,
     auth_driver,
     create_indexd_tables,
-    create_random_index,
     index_driver,
     indexd_admin_user,
-    indexd_client,
-    indexd_server,
     pg_url,
     postgresql_server_indexd,
 )
+from pytest_indexd.fixtures.indexd_models_fixture import indexd_driver_wrapper
+from pytest_indexd.fixtures.loader_fixture import indexd_loader
+from pytest_indexd.fixtures.server_fixture import indexd_server

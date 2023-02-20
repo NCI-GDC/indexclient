@@ -1,4 +1,5 @@
 import hashlib
+import os
 import random
 import threading
 import uuid
@@ -15,7 +16,8 @@ from indexd.utils import setup_database, try_drop_test_data
 
 from indexclient.client import Document, IndexClient
 
-PG_URL = "postgresql://test:test@localhost/indexd_test"
+PG_HOST = os.getenv("PG_INDEXD_HOST", "localhost")
+PG_URL = f"postgresql://test:test@{PG_HOST}/indexd_test"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -31,8 +33,9 @@ def setup_indexd_test_database(request):
 
     # try_drop_test_data() is run before the tests starts and after the tests
     # complete. This ensures a clean database on start and end of the tests.
-    setup_database()
-    request.addfinalizer(try_drop_test_data)
+    yield setup_database(host=PG_HOST)
+
+    try_drop_test_data(host=PG_HOST)
 
 
 def truncate_tables(driver, base):

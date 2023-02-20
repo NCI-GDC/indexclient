@@ -1,6 +1,7 @@
 import collections
 import copy
 import json
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import requests
@@ -537,7 +538,7 @@ class Document:
             )
         return self._doc
 
-    def to_json(self, include_rev=True):
+    def to_json(self, include_rev: bool = True) -> Dict[str, Any]:
         json = self._render(include_rev=include_rev)
         if self.did:
             json["did"] = self.did

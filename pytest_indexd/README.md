@@ -12,6 +12,11 @@ run multiple postgres process on different port. And random assign port number
 to mock indexd server so multiple indexd server could be used at the same time
 on the same dev machine.
 
+The reason we do not use the client of pytest_postgresql.factories is that we need to use
+a mock indexd server. The server needs the database. The server setup is time consuming.
+So we set the server as session scope. So we can not use function scope client provided
+by the pytest_postgresql.
+
 The travis tests is updated to 3 jobs:
 1. Run indexclient tests with old indexd_test_utils
 2. Run indexclient tests with new pytest_indexd in single process.
@@ -44,6 +49,19 @@ The travis tests is updated to 3 jobs:
 a postgres database instance and a indexd server instance. So use half number of cores
 of your machine as the number of parallel. For example, if you have a 8 core 16 thread
 intel cpu, use `pytest -n 8`.
+
+## Indexd Driver Wrapper
+
+This use indexd models to save and get data, should be used for fixture setup and data
+validation.
+
+## indexd loader
+
+There is a fixture called indexd_loader, which can load indexd data from yaml file,
+json file or dictionary data. The loader uses indexd_models to load data directly into
+database.
+
+
 
 ### Known Issues
 #### Several problem has been found on my arm mac, ensure you have the following setting

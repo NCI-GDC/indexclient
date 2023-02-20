@@ -1,0 +1,75 @@
+---
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+include:
+  - project: nci-gdc/gitlab-templates
+    ref: master
+    file:
+      - templates/global/full.yaml
+      - templates/python/full.yaml
+
+default:
+  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
+  services:
+    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+      alias: postgres
+  tags:
+    - dind
+
+variables:
+  PG_INDEXD_HOST: postgres
+
+.prepareTox:
+  script:
+    - !reference [.load_github_key, script]
+    - apt-get update && apt-get install -y gnupg
+    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee
+      /etc/apt/sources.list.d/pgdg.list
+    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
+    - apt-get update
+    - apt-get install -y postgresql-client-13
+    - pip install "tox<4"
+
+unit_test:
+  stage: test
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox -e unit_test
+
+indexd_test_utils:
+  stage: test
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox -e indexd_test_utils
+
+pytest_indexd noproc:
+  stage: test
+  variables:
+    USE_PYTEST_INDEXD: 'true'
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox
+
+pytest_indexd xdist:
+  stage: test
+  variables:
+    USE_RUNNING_PG: 'true'
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox -e xdist
+
+tox:
+  rules:
+    - when: never
+
+docker_build:
+  rules:
+    - when: never
+
+release:
+  rules:
+    - when: never
