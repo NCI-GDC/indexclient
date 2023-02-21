@@ -90,12 +90,11 @@ update_pin_for_gdcws:
     - cd gdcws
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
-    - sed -i 's|indexclient @ git+https://github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|indexclient
-      @ git+https://github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
+    - sed -i 's|indexclient @ git+ssh://git@github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|indexclient
+      @ git+ssh://git@github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
       setup.py
     - cat setup.py
-    - sed -i 's|indexclient @ git+https://github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|indexclient
-      @ git+https://github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
+    - sed -i 's|git+ssh://git@github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|git+ssh://git@github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
       dev-requirements.in
     - cat dev-requirements.in
     - pip3 --version
