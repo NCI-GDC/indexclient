@@ -1,6 +1,12 @@
 ---
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
 # https://docs.gitlab.com/ee/development/cicd/templates.html
+
+stages:
+  - test
+  - build
+  - update_pins
+
 include:
   - project: nci-gdc/gitlab-templates
     ref: master
@@ -44,7 +50,7 @@ indexd_test_utils:
   script:
     - tox -e indexd_test_utils
 
-pytest_indexd noproc:
+pytest_indexd_noproc:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'true'
@@ -53,7 +59,7 @@ pytest_indexd noproc:
   script:
     - tox
 
-pytest_indexd xdist:
+pytest_indexd_xdist:
   stage: test
   variables:
     USE_RUNNING_PG: 'true'
@@ -73,3 +79,30 @@ docker_build:
 release:
   rules:
     - when: never
+
+update_pin_for_gdcws:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  script:
+    - !reference [.load_github_key, script]
+    - git clone git@github.com:NCI-GDC/gdcws.git
+    - cd gdcws
+    - git checkout "$CI_COMMIT_REF_NAME" || git checkout -b "$CI_COMMIT_REF_NAME"
+    - git log -1
+    - sed -i 's|indexclient @ git+https://github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|indexclient
+      @ git+https://github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
+      setup.py
+    - cat setup.py
+    - sed -i 's|indexclient @ git+https://github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|indexclient
+      @ git+https://github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
+      dev-requirements.in
+    - cat dev-requirements.in
+    - pip3 --version
+    - pip3 install virtualenv pip-tools==6.3.0
+    - pip-compile -i https://pypi.org/simple
+    - pip-compile -i https://pypi.org/simple dev-requirements.in
+    - git add .
+    - git commit -m "Use gdcdictionary $CI_COMMIT_REF_NAME $CI_COMMIT_SHA"
+    - git push origin "$CI_COMMIT_REF_NAME"
+#   rules:
+#     - if: $CI_COMMIT_TAG != null
