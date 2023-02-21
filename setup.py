@@ -18,7 +18,7 @@ setup(
             "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1#egg=indexd",
         ],
         "pytest_indexd": [
-            "deepdiff",
+            "deepdiff<5.8",  # for python3.6
             "importlib_resources",
             "psycopg",
             "pytest<7",
