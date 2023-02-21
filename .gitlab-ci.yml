@@ -118,7 +118,7 @@ update_pin_for_sheepdog:
   script:
     - !reference [.load_github_key, script]
     - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
-    - cd "REPO_NAME"
+    - cd "$REPO_NAME"
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
