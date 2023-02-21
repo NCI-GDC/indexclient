@@ -123,7 +123,7 @@ update_pin_for_gdcws:
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
       dev-requirements.in
     - cat dev-requirements.in
-    - pip3 install pip<22     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
+    - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
     - pip3 install virtualenv pip-tools==6.3.0
     - pip-compile -i https://pypi.org/simple
     - pip-compile -i https://pypi.org/simple dev-requirements.in
