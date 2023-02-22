@@ -167,7 +167,6 @@ update_pin_for_gdcbatch:
     - !reference [.update_pin, before_script]
   script:
     - pwd
-    - cd "$REPO_NAME"
     - pip-compile --extra=dev --output-file=dev-requirements.txt
   after_script:
     - !reference [.update_pin, after_script]
