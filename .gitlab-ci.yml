@@ -89,19 +89,23 @@ release:
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
-      setup.py
+      setup.py || true
     - cat setup.py || true
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
-      dev-requirements.in
+      dev-requirements.in || true
     - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
     - pip3 install virtualenv pip-tools==6.3.0
 
   script:
+    - pwd
+    - cd "$REPO_NAME"
     - pip-compile -i https://pypi.org/simple
     - pip-compile -i https://pypi.org/simple dev-requirements.in
 
   after_script:
+    - pwd
+    - cd "$REPO_NAME"
     - git add .
     - git commit -m "Update pin indexclient $CI_COMMIT_REF_NAME $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
@@ -164,6 +168,8 @@ update_pin_for_gdcbatch:
   before_script:
     - !reference [.update_pin, before_script]
   script:
+    - pwd
+    - cd "$REPO_NAME"
     - pip-compile --extra=dev --output-file=dev-requirements.txt
   after_script:
     - !reference [.update_pin, after_script]
