@@ -235,3 +235,48 @@ update_pin_for_data_tools:
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
+
+update_pin_for_gdc_mutation_indexer:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdc-mutation-indexer
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdcapi:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcapi
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_esbuild:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcapi
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
