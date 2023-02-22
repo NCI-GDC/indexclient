@@ -189,4 +189,4 @@ update_pin_for_gdcadmin:
     - !reference [.update_pin, after_script]
   rules:
     - !reference [.update_pin, rules]
-  allow_failure: tru
+  allow_failure: true
