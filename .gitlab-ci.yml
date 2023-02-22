@@ -103,6 +103,7 @@ release:
     - pip-compile -i https://pypi.org/simple dev-requirements.in
 
   after_script:
+    - !reference [.load_github_key, script]
     - cd "$REPO_NAME"
     - pwd
     - git add .
