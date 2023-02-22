@@ -104,6 +104,7 @@ release:
 
   after_script:
     - pwd
+    - cd "$REPO_NAME"
     - git add .
     - git commit -m "Update pin indexclient $CI_COMMIT_REF_NAME $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
