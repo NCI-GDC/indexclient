@@ -82,7 +82,7 @@ release:
     - when: never
 
 .update_pin:
-  script:
+  before_script:
     - !reference [.load_github_key, script]
     - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
     - cd "$REPO_NAME"
@@ -90,14 +90,18 @@ release:
     - git log -1
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
       setup.py
-    - cat setup.py
+    - cat setup.py || true
     - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$CI_COMMIT_REF_NAME"'#egg=indexclient|'
       dev-requirements.in
-    - cat dev-requirements.in
+    - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
     - pip3 install virtualenv pip-tools==6.3.0
+
+  script:
     - pip-compile -i https://pypi.org/simple
     - pip-compile -i https://pypi.org/simple dev-requirements.in
+
+  after_script:
     - git add .
     - git commit -m "Update pin indexclient $CI_COMMIT_REF_NAME $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
@@ -111,8 +115,12 @@ update_pin_for_gdcws:
   image: docker.osdc.io/ncigdc/python36-builder:1.4.0
   variables:
     REPO_NAME: gdcws
+  before_script:
+    - !reference [.update_pin, before_script]
   script:
     - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -123,8 +131,12 @@ update_pin_for_sheepdog:
   image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
   variables:
     REPO_NAME: sheepdog
+  before_script:
+    - !reference [.update_pin, before_script]
   script:
     - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -134,8 +146,27 @@ update_pin_for_inspector:
   image: docker.osdc.io/ncigdc/python36-builder:1.4.0
   variables:
     REPO_NAME: inspector
+  before_script:
+    - !reference [.update_pin, before_script]
   script:
     - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdcbatch:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcbatch
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - pip-compile --extra=dev --output-file=dev-requirements.txt
+  after_script:
+    - !reference [.update_pin, after_script]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
