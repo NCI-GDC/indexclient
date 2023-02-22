@@ -24,7 +24,7 @@ default:
 
 variables:
   PG_INDEXD_HOST: postgres
-  UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$CI_COMMIT_REF_NAME
+
 
 .prepareTox:
   script:
@@ -82,6 +82,8 @@ release:
     - when: never
 
 .update_pin:
+  variables:
+    UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$CI_COMMIT_REF_NAME
   before_script:
     - !reference [.load_github_key, script]
     - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
