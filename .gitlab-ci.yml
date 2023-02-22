@@ -109,7 +109,7 @@ release:
     - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
   rules:
-    - if: INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
+    - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
         INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
         UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
