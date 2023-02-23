@@ -23,6 +23,7 @@ setup(
             "pytest<7",
             "pytest-postgresql",
             "pytest-xdist",
+            "pyyaml",
             "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1#egg=indexd",
             "indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0#egg=indexdmodels",
         ],

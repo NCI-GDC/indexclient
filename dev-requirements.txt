@@ -100,6 +100,8 @@ pytest-postgresql==4.1.1
     # via indexclient (setup.py)
 pytest-xdist==3.1.0
     # via indexclient (setup.py)
+pyyaml==6.0
+    # via indexclient (setup.py)
 requests==2.28.2
     # via
     #   doiclient
