@@ -11,7 +11,6 @@ setup(
         "dev": [
             "cdislogging==1.0.0",
             "markupsafe~=1.1.1",  # newer version not compatible
-            "pre-commit~=1.21.0",
             "pytest~=6.2.0",
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
