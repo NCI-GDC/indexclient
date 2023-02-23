@@ -94,7 +94,7 @@ release:
       dev-requirements.in || true
     - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
-    - pip3 install virtualenv pip-tools==6.3.0
+    - pip3 install virtualenv pip-tools==6.3.0 "setuptools_scm<6"
 
   script:
     - pwd
