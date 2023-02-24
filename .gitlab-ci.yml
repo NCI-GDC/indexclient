@@ -35,11 +35,14 @@ variables:
     - apt-get update
     - apt-get install -y postgresql-client-13
     - pip install "tox<4"
+  needs: [pre-commit]
 
 unit_test:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e unit_test
 
@@ -47,6 +50,8 @@ indexd_test_utils:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e indexd_test_utils
 
@@ -56,6 +61,8 @@ pytest_indexd_noproc:
     USE_PYTEST_INDEXD: 'true'
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox
 
@@ -65,6 +72,8 @@ pytest_indexd_xdist:
     USE_RUNNING_PG: 'true'
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e xdist
 
@@ -108,6 +117,11 @@ release:
     - git add .
     - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
+  needs:
+    - pytest_indexd_noproc
+    - pytest_indexd_xdist
+    - indexd_test_utils
+    - unit_test
   rules:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
@@ -130,6 +144,8 @@ update_pin_for_gdcws:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -146,6 +162,8 @@ update_pin_for_sheepdog:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -161,6 +179,8 @@ update_pin_for_inspector:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -177,6 +197,8 @@ update_pin_for_gdcbatch:
     - pip-compile --extra=dev --output-file=dev-requirements.txt
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -192,6 +214,8 @@ update_pin_for_gdcadmin:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -207,6 +231,8 @@ update_pin_for_bio_client:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -222,6 +248,8 @@ update_pin_for_ancillary_services:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -237,6 +265,8 @@ update_pin_for_data_tools:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -252,6 +282,8 @@ update_pin_for_gdc_mutation_indexer:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -267,6 +299,8 @@ update_pin_for_gdcapi:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
@@ -282,6 +316,8 @@ update_pin_for_esbuild:
     - !reference [.update_pin, script]
   after_script:
     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
