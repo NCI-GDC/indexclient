@@ -340,7 +340,7 @@ update_pin_for_esbuild:
     - cd $REPO_NAME
     - gh pr create --title $UPDATE_PIN_BRANCH_NAME
   needs:
-    - update_pin_for_gdcws
+    - update_pin_for_$REPO_NAME
 
 
 create_pr_for_gdcws:
