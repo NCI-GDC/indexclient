@@ -126,11 +126,11 @@ release:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
         INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+        UPDATE_PIN_BRANCH_NAME: auto/update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
     - when: always
       variables:
         INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+        UPDATE_PIN_BRANCH_NAME: auto/update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
 
 
 update_pin_for_gdcws:
