@@ -4,8 +4,6 @@
 #
 #    pip-compile --extra=dev --extra=pytest_indexd --output-file=dev-requirements.txt
 #
-aspy-yaml==1.3.0
-    # via pre-commit
 attrs==22.2.0
     # via
     #   ddtrace
@@ -19,43 +17,33 @@ cdislogging==1.0.0
     #   indexd
 certifi==2022.12.7
     # via requests
-cfgv==3.3.1
-    # via pre-commit
 charset-normalizer==3.0.1
     # via requests
 click==7.1.2
     # via flask
 ddtrace==0.59.2
     # via indexd
-deepdiff==6.2.3
+deepdiff==5.7.0
     # via indexclient (setup.py)
-distlib==0.3.6
-    # via virtualenv
 doiclient @ git+https://github.com/uc-cdis/doiclient.git@1.0.0
     # via indexd
 dosclient @ git+https://github.com/uc-cdis/dosclient.git@1.0.0
     # via indexd
 execnet==1.9.0
     # via pytest-xdist
-filelock==3.9.0
-    # via virtualenv
 flask==1.1.4
     # via indexd
 future==0.18.2
     # via indexd
 futures==3.1.1
     # via indexd
-identify==2.5.13
-    # via pre-commit
 idna==3.4
     # via requests
 importlib-metadata==6.0.0
     # via
     #   jsonschema
     #   pluggy
-    #   pre-commit
     #   pytest
-    #   virtualenv
 importlib-resources==5.10.2
     # via indexclient (setup.py)
 indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1
@@ -76,25 +64,17 @@ markupsafe==1.1.1
     #   jinja2
 mirakuru==2.4.2
     # via pytest-postgresql
-nodeenv==1.7.0
-    # via pre-commit
-ordered-set==4.1.0
-    # via deepdiff
-orjson==3.8.5
+ordered-set==4.0.2
     # via deepdiff
 packaging==20.9
     # via
     #   ddtrace
     #   indexd
     #   pytest
-platformdirs==2.6.2
-    # via virtualenv
 pluggy==1.0.0
     # via pytest
 port-for==0.6.3
     # via pytest-postgresql
-pre-commit==1.21.0
-    # via indexclient (setup.py)
 protobuf==4.21.12
     # via ddtrace
 psutil==5.9.4
@@ -121,9 +101,7 @@ pytest-postgresql==4.1.1
 pytest-xdist==3.1.0
     # via indexclient (setup.py)
 pyyaml==6.0
-    # via
-    #   aspy-yaml
-    #   pre-commit
+    # via indexclient (setup.py)
 requests==2.28.2
     # via
     #   doiclient
@@ -133,7 +111,6 @@ six==1.16.0
     # via
     #   ddtrace
     #   jsonschema
-    #   pre-commit
     #   sqlalchemy-utils
     #   tenacity
 sqlalchemy==1.3.24
@@ -151,20 +128,15 @@ tenacity==7.0.0
     #   ddtrace
     #   indexd
 toml==0.10.2
-    # via
-    #   pre-commit
-    #   pytest
+    # via pytest
 typing==3.7.4.3
     # via indexd
 typing-extensions==4.4.0
     # via
     #   importlib-metadata
-    #   platformdirs
     #   psycopg
 urllib3==1.26.14
     # via requests
-virtualenv==20.17.1
-    # via pre-commit
 werkzeug==0.16.1
     # via
     #   flask

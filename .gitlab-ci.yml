@@ -1,6 +1,12 @@
 ---
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
 # https://docs.gitlab.com/ee/development/cicd/templates.html
+
+stages:
+  - test
+  - build
+  - update_pins
+
 include:
   - project: nci-gdc/gitlab-templates
     ref: master
@@ -29,11 +35,14 @@ variables:
     - apt-get update
     - apt-get install -y postgresql-client-13
     - pip install "tox<4"
+  needs: [pre-commit]
 
 unit_test:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e unit_test
 
@@ -41,24 +50,30 @@ indexd_test_utils:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e indexd_test_utils
 
-pytest_indexd noproc:
+pytest_indexd_noproc:
   stage: test
   variables:
     USE_PYTEST_INDEXD: 'true'
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox
 
-pytest_indexd xdist:
+pytest_indexd_xdist:
   stage: test
   variables:
     USE_RUNNING_PG: 'true'
   before_script:
     - !reference [.prepareTox, script]
+  needs:
+    - !reference [.prepareTox, needs]
   script:
     - tox -e xdist
 
@@ -73,3 +88,236 @@ docker_build:
 release:
   rules:
     - when: never
+
+.update_pin:
+  before_script:
+    - !reference [.load_github_key, script]
+    - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
+    - cd "$REPO_NAME"
+    - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
+    - git log -1
+    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+      setup.py || true
+    - cat setup.py || true
+    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+      dev-requirements.in || true
+    - cat dev-requirements.in || true
+    - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
+    - pip3 install virtualenv pip-tools==6.3.0 "setuptools_scm<6"
+
+  script:
+    - pwd
+    - pip-compile -i https://pypi.org/simple
+    - pip-compile -i https://pypi.org/simple dev-requirements.in
+
+  after_script:
+    - !reference [.load_github_key, script]
+    - cd "$REPO_NAME"
+    - pwd
+    - git add .
+    - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
+    - git push origin "$UPDATE_PIN_BRANCH_NAME"
+  needs:
+    - pytest_indexd_noproc
+    - pytest_indexd_xdist
+    - indexd_test_utils
+    - unit_test
+  rules:
+    - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
+      variables:
+        INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
+        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+    - when: always
+      variables:
+        INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
+        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+
+
+update_pin_for_gdcws:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcws
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+
+update_pin_for_sheepdog:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
+  variables:
+    REPO_NAME: sheepdog
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_inspector:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: inspector
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdcbatch:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcbatch
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - pwd
+    - pip-compile --extra=dev --output-file=dev-requirements.txt
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdcadmin:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
+  variables:
+    REPO_NAME: gdcadmin
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_bio_client:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
+  variables:
+    REPO_NAME: bio-client
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_ancillary_services:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
+  variables:
+    REPO_NAME: ancillary-services
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_data_tools:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: data-tools
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdc_mutation_indexer:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdc-mutation-indexer
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_gdcapi:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcapi
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
+
+update_pin_for_esbuild:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: esbuild
+  before_script:
+    - !reference [.update_pin, before_script]
+  script:
+    - !reference [.update_pin, script]
+  after_script:
+    - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.update_pin, needs]
+  rules:
+    - !reference [.update_pin, rules]
+  allow_failure: true
