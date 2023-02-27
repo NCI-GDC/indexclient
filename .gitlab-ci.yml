@@ -6,6 +6,7 @@ stages:
   - test
   - build
   - update_pins
+  - create_pr
 
 include:
   - project: nci-gdc/gitlab-templates
@@ -321,3 +322,40 @@ update_pin_for_esbuild:
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
+
+
+.create_pr:
+  before_script:
+    - !reference [.load_github_key, script]
+    - type -p curl >/dev/null || sudo apt install curl -y
+    - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd
+      of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    - chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg]
+      https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+      > /dev/null
+    - apt update
+    - apt install gh -y
+  script:
+    - cd $REPO_NAME
+    - gh pr create --title $UPDATE_PIN_BRANCH_NAME
+  needs:
+    - update_pin_for_gdcws
+
+
+create_pr_for_gdcws:
+  stage: update_pins
+  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  variables:
+    REPO_NAME: gdcws
+  before_script:
+    - !reference [.create_pr, before_script]
+#   script:
+#     - !reference [.update_pin, script]
+#   after_script:
+#     - !reference [.update_pin, after_script]
+  needs:
+    - !reference [.create_pr, needs]
+#   rules:
+#     - !reference [.update_pin, rules]
+#   allow_failure: true
