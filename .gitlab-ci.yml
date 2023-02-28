@@ -153,6 +153,7 @@ update_pin_for_gdcws:
   artifacts:
     paths:
       - $REPO_NAME
+    expire_in: 1 week
 
 
 update_pin_for_sheepdog:
@@ -344,6 +345,15 @@ update_pin_for_esbuild:
     - ls
     - cd $REPO_NAME
     - gh pr create --title $UPDATE_PIN_BRANCH_NAME
+  rules:
+    - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
+      variables:
+        INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
+        UPDATE_PIN_BRANCH_NAME: auto/update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+    - when: always
+      variables:
+        INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
+        UPDATE_PIN_BRANCH_NAME: auto/update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
 
 
 create_pr_for_gdcws:
