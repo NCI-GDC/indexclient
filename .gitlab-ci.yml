@@ -339,8 +339,6 @@ update_pin_for_esbuild:
   script:
     - cd $REPO_NAME
     - gh pr create --title $UPDATE_PIN_BRANCH_NAME
-  needs:
-    - update_pin_for_$REPO_NAME
 
 
 create_pr_for_gdcws:
@@ -350,12 +348,12 @@ create_pr_for_gdcws:
     REPO_NAME: gdcws
   before_script:
     - !reference [.create_pr, before_script]
-#   script:
-#     - !reference [.update_pin, script]
+  script:
+    - !reference [.create_pr, script]
 #   after_script:
 #     - !reference [.update_pin, after_script]
   needs:
-    - !reference [.create_pr, needs]
+    - update_pin_for_gdcws
 #   rules:
 #     - !reference [.update_pin, rules]
 #   allow_failure: true
