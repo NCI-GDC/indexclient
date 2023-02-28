@@ -327,7 +327,7 @@ update_pin_for_esbuild:
 .create_pr:
   before_script:
     - !reference [.load_github_key, script]
-    - type -p curl >/dev/null || apt install curl -y
+    - type -p curl >/dev/null || apt update && apt install curl -y
     - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd
       of=/usr/share/keyrings/githubcli-archive-keyring.gpg
     - chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
