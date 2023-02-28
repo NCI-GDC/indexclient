@@ -150,6 +150,9 @@ update_pin_for_gdcws:
   rules:
     - !reference [.update_pin, rules]
   allow_failure: true
+  artifacts:
+    paths:
+      - $REPO_NAME
 
 
 update_pin_for_sheepdog:
@@ -337,6 +340,8 @@ update_pin_for_esbuild:
     - apt update
     - apt install gh -y
   script:
+    - pwd
+    - ls
     - cd $REPO_NAME
     - gh pr create --title $UPDATE_PIN_BRANCH_NAME
 
