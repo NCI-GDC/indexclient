@@ -369,6 +369,6 @@ create_pr_for_gdcws:
 #     - !reference [.update_pin, after_script]
   needs:
     - update_pin_for_gdcws
-#   rules:
-#     - !reference [.update_pin, rules]
+  rules:
+    - !reference [.create_pr, rules]
 #   allow_failure: true
