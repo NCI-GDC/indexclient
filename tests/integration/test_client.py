@@ -490,9 +490,9 @@ def test_query_urls_metadata_exclude_deleted(index_client):
         index_client (indexclient.client.IndexClient): IndexClient fixture
     """
     # all docs created with create_random_index() have a url matching this pattern and a corresponding key-value pair
-    url_match = "s3://ceph.service.consul/"
-    key = "type"
-    value = "cleversafe"
+    url_match = "s3://super-safe.com/"
+    key = "a"
+    value = "b"
 
     non_deleted_count = 0
     deleted_count = 0
