@@ -117,13 +117,13 @@ class IndexClient:
 
         return [Document(self, doc["did"], json=doc) for doc in response.json()]
 
-    def bulk_get_latest(self, dids, skip_null=False, skip_deleted=True):
+    def bulk_get_latest(self, dids, skip_null=False, exclude_deleted=False):
         """
         bulk get latest version
         Args:
             dids (list): list of dids
             skip_null (bool): skip null versions
-            skip_deleted (bool): skip deleted versions
+            exclude_deleted (bool): exclude deleted versions
 
         Returns:
             list: Document objects
@@ -133,7 +133,7 @@ class IndexClient:
         try:
             response = self._post(
                 "bulk/documents/latest",
-                params={"skip_null": skip_null, "exclude_deleted": skip_deleted},
+                params={"skip_null": skip_null, "exclude_deleted": exclude_deleted},
                 json=dids,
                 headers=headers,
             )
@@ -313,22 +313,20 @@ class IndexClient:
         resp = self._put(url, headers=headers, data=data, auth=self.auth)
         return resp.json()
 
-    def get_latest_version(
-        self, did, skip_null_versions=False, skip_deleted_versions=True
-    ):
+    def get_latest_version(self, did, skip_null_versions=False, exclude_deleted=False):
         """
         Get the latest version given did
         Args:
             did (str): document id of an existing entry whose latest version is requested
             skip_null_versions (bool): if True, exclude entries without a version
-            skip_deleted_versions (bool): if True, exclude entries marked as deleted in metadata
+            exclude_deleted (bool): if True, exclude entries marked as deleted in metadata
         Returns:
             Document: latest version of the entry
         """
 
         params = {
             "has_version": json.dumps(skip_null_versions),
-            "exclude_deleted": json.dumps(skip_deleted_versions),
+            "exclude_deleted": json.dumps(exclude_deleted),
         }
         doc = self._get("index", did, "latest", params=params).json()
 
@@ -353,17 +351,17 @@ class IndexClient:
             return Document(self, rev_doc["did"])
         return None
 
-    def list_versions(self, did, skip_deleted_versions=True):
+    def list_versions(self, did, exclude_deleted=False):
         """
         Get all record versions given did
         Args:
             did (str): document id of an existing record
-            skip_deleted_versions (bool): if True, exclude records marked as deleted in metadata
+            exclude_deleted (bool): if True, exclude records marked as deleted in metadata
         Returns:
             list: Document versions
         """
 
-        params = {"exclude_deleted": json.dumps(skip_deleted_versions)}
+        params = {"exclude_deleted": json.dumps(exclude_deleted)}
 
         versions_dict = self._get(
             "index", did, "versions", params=params
@@ -381,6 +379,7 @@ class IndexClient:
         value,
         fields=None,
         versioned=False,
+        exclude_deleted=False,
         limit=100,
         offset=0,
         page_size=100,
@@ -390,7 +389,8 @@ class IndexClient:
             url (str): A URL pattern to match
             key (str): metadata key
             value (str): metadata value for key
-            versioned (str): whether or not is versioned
+            versioned (bool): whether or not is versioned
+            exclude_deleted (bool): If true, exclude deleted documents from search
             fields: (str): comma separated list of fields to return
             limit: (int): max results to return
             offset: (int) where to start the next query from
@@ -404,6 +404,7 @@ class IndexClient:
             "value": value,
             "fields": fields,
             "versioned": versioned,
+            "exclude_deleted": exclude_deleted,
             "limit": limit if limit < page_size else page_size,
             "offset": offset,
         }
@@ -423,6 +424,7 @@ class IndexClient:
         exclude=None,
         include=None,
         versioned=False,
+        exclude_deleted=False,
         fields=None,
         limit=100,
         offset=0,
@@ -432,7 +434,8 @@ class IndexClient:
         Args:
             exclude (str): A URL pattern to exclude. All URLs matching this pattern will not be included in the return
             include (str): All entries with URL matching this pattern will be included
-            versioned (str): whether or not is versioned
+            versioned (bool): whether or not is versioned
+            exclude_deleted (bool): if True, excludes deleted docs from search
             fields: (str): comma separated list of fields to return
             limit: (int): max results to return
             offset: (int) where to start the next query from
@@ -444,6 +447,7 @@ class IndexClient:
             "exclude": exclude,
             "include": include,
             "versioned": versioned,
+            "exclude_deleted": exclude_deleted,
             "fields": fields,
             "limit": limit if limit < page_size else page_size,
             "offset": offset,

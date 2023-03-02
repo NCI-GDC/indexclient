@@ -52,10 +52,7 @@ def mock_doc(doc: IndexData) -> IndexData:
         doc["acl"] = ["open"]
     if "urls_metadata" not in doc:
         doc["urls_metadata"] = {
-            f"s3://ceph.service.consul/data-tools/{doc['did']}_test_file.svs": {
-                "type": "cleversafe",
-                "state": "validated",
-            }
+            f"s3://super-safe.com/{doc['did']}_warning_huge_file.svs": {"a": "b"}
         }
     if "urls" not in doc:
         doc["urls"] = list(doc.get("urls_metadata", {}).keys())
