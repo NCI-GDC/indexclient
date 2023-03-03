@@ -4,9 +4,12 @@ from indexclient.types import IndexHash, IndexMetaData, UrlMetadata
 
 class Document(Protocol):
     acl: List[str]
+    baseid: str
     did: str
+    file_name: str
     hashes: IndexHash
     metadata: IndexMetaData
+    rev: str
     size: int
     urls: List[str]
     urls_metadata: Dict[str, UrlMetadata]

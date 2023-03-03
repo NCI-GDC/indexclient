@@ -36,6 +36,12 @@ def create_document(
     )
 
 
+def test_acl_append():
+    doc = create_document(acl=["1", "2"])
+    doc.acl.append("3")
+    assert doc.acl == ["1", "2", "3"]
+
+
 def test_equals():
     doc1 = create_document(did="11111111-1111-1111-1111-111111111111")
     doc2 = create_document(did="11111111-1111-1111-1111-111111111111")
