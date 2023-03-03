@@ -5,12 +5,12 @@ from indexclient.types import IndexHash, IndexMetaData, UrlMetadata
 class Document(Protocol):
     acl: List[str]
     did: str
+    hashes: IndexHash
+    metadata: IndexMetaData
     size: int
     urls: List[str]
-    hashes: IndexHash
-    version: str
-    metadata: IndexMetaData
     urls_metadata: Dict[str, UrlMetadata]
+    version: str
 
     def patch(self): ...
 
