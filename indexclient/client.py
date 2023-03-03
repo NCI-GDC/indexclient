@@ -493,11 +493,11 @@ class DocumentDeletedError(Exception):
 
 class Document:
     def __init__(self, client, did, json=None):
+        self._doc = {}
         self.client = client
         self.did = did
         self._fetched = False
         self._deleted = False
-        self._doc = {}
         self._load(json)
 
     @property
@@ -515,6 +515,14 @@ class Document:
     @baseid.setter
     def baseid(self, new_baseid: str) -> None:
         self._doc["baseid"] = new_baseid
+
+    @property
+    def did(self) -> str:
+        return self._doc.setdefault("did", "")
+
+    @did.setter
+    def did(self, new_did: str) -> None:
+        self._doc["did"] = new_did
 
     @property
     def file_name(self) -> str:
@@ -621,8 +629,8 @@ class Document:
 
     def to_json(self, include_rev: bool = True) -> Dict[str, Any]:
         json = self._render(include_rev=include_rev)
-        if self.did:
-            json["did"] = self.did
+        if not self.did:
+            del json["did"]
         return json
 
     def _load(self, json=None):
