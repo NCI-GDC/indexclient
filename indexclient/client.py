@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 import requests
 
-from indexclient.types import IndexHash, IndexMetaData
+from indexclient.types import Form, IndexHash, IndexMetaData
 
 UPDATABLE_ATTRS = [
     "file_name",
@@ -531,6 +531,14 @@ class Document:
     @file_name.setter
     def file_name(self, new_file_name: str) -> None:
         self._doc["file_name"] = new_file_name
+
+    @property
+    def form(self) -> Form:
+        return self._doc.setdefault("form", "")
+
+    @form.setter
+    def form(self, new_form: Form) -> None:
+        self._doc["form"] = new_form
 
     @property
     def hashes(self) -> IndexHash:

@@ -1,3 +1,5 @@
+import enum
+
 try:
     from typing import TypedDict
 except ImportError:
@@ -33,3 +35,9 @@ class IndexData(TypedDict, total=False):
     version: str
     metadata: IndexMetaData
     urls_metadata: Dict[str, UrlMetadata]
+
+
+class Form(enum.Enum):
+    object = "object"
+    container = "container"
+    multipart = "multipart"

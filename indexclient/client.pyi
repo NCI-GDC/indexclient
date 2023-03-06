@@ -1,12 +1,13 @@
 from typing import Dict, Iterable, List, Protocol
 
-from indexclient.types import IndexHash, IndexMetaData, UrlMetadata
+from indexclient.types import Form, IndexHash, IndexMetaData, UrlMetadata
 
 class Document(Protocol):
     acl: List[str]
     baseid: str
     did: str
     file_name: str
+    form: Form
     hashes: IndexHash
     metadata: IndexMetaData
     rev: str
