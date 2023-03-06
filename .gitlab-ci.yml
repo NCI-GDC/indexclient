@@ -273,7 +273,7 @@ update_pin_for_data_tools:
 
 update_pin_for_gdc_mutation_indexer:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python3.9-builder:2.2.0
   variables:
     REPO_NAME: gdc-mutation-indexer
   before_script:
