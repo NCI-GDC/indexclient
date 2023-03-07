@@ -510,7 +510,7 @@ class Document:
 
     @property
     def baseid(self) -> str:
-        return self._doc.setdefault("baseid", [])
+        return self._doc.get("baseid")
 
     @baseid.setter
     def baseid(self, new_baseid: str) -> None:
@@ -518,7 +518,7 @@ class Document:
 
     @property
     def did(self) -> str:
-        return self._doc.setdefault("did", "")
+        return self._doc.get("did")
 
     @did.setter
     def did(self, new_did: str) -> None:
@@ -526,7 +526,7 @@ class Document:
 
     @property
     def file_name(self) -> str:
-        return self._doc.setdefault("file_name", "")
+        return self._doc.get("file_name")
 
     @file_name.setter
     def file_name(self, new_file_name: str) -> None:
@@ -534,7 +534,7 @@ class Document:
 
     @property
     def form(self) -> Form:
-        return self._doc.setdefault("form", "")
+        return self._doc.get("form")
 
     @form.setter
     def form(self, new_form: Form) -> None:
@@ -558,15 +558,12 @@ class Document:
 
     @property
     def rev(self) -> str:
-        return self._doc.setdefault("rev", "")
-
-    @rev.setter
-    def rev(self, new_rev: str) -> None:
-        self._doc["rev"] = new_rev
+        """rev is read only"""
+        return self._doc.get("rev")
 
     @property
     def size(self) -> int:
-        return self._doc.setdefault("size", -1)
+        return self._doc.get("size")
 
     @size.setter
     def size(self, new_size: int) -> None:
@@ -590,7 +587,11 @@ class Document:
 
     @property
     def version(self) -> str:
-        return self._doc.setdefault("version", "")
+        return self._doc.get("version")
+
+    @version.setter
+    def version(self, new_version: str) -> None:
+        self._doc["version"] = new_version
 
     def __eq__(self, other_doc):
         """
