@@ -655,9 +655,7 @@ class Document:
             if hasattr(self, k):
                 setattr(self, k, v)
             else:
-                logging.warning(
-                    f"Extra data {k}={v} from indexd not handled by indexclient"
-                )
+                logging.warning(f"Extra data {k}={v} not handled by indexclient")
         self._attrs = json.keys()
         self._fetched = True
 
