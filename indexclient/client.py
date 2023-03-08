@@ -647,8 +647,7 @@ class Document:
         self._check_deleted()
         json = json or self.client._get("index", self.did).json()
         # set attributes to current Document
-        for k, v in json.items():
-            self._doc[k] = v
+        self._doc.update(json)
         self._attrs = json.keys()
         self._fetched = True
 
