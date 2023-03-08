@@ -1,12 +1,13 @@
 import collections
 import copy
 import json
-from typing import Any, Dict, List
+import logging
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 import requests
 
-from indexclient.types import Form, IndexHash, IndexMetaData
+from indexclient.types import Form, IndexData, IndexHash, IndexMetaData
 
 UPDATABLE_ATTRS = [
     "file_name",
@@ -558,8 +559,11 @@ class Document:
 
     @property
     def rev(self) -> str:
-        """rev is read only"""
         return self._doc.get("rev")
+
+    @rev.setter
+    def rev(self, new_rev) -> None:
+        self._doc["rev"] = new_rev
 
     @property
     def size(self) -> int:
@@ -642,12 +646,18 @@ class Document:
             del json["did"]
         return json
 
-    def _load(self, json=None):
+    def _load(self, json: Optional[IndexData] = None):
         """Load the document contents from the server or from the provided dictionary"""
         self._check_deleted()
         json = json or self.client._get("index", self.did).json()
         # set attributes to current Document
-        self._doc.update(json)
+        for k, v in json.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
+            else:
+                logging.warning(
+                    f"Extra data {k}={v} from indexd not handled by indexclient"
+                )
         self._attrs = json.keys()
         self._fetched = True
 
