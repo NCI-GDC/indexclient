@@ -1,3 +1,5 @@
+import enum
+
 try:
     from typing import TypedDict
 except ImportError:
@@ -23,13 +25,19 @@ class IndexHash(TypedDict, total=False):
 
 
 class IndexData(TypedDict, total=False):
-    did: str
-    form: str
-    size: int
     acl: List[str]
-    urls: List[str]
+    did: str
     file_name: str
+    form: str
     hashes: IndexHash
-    version: str
     metadata: IndexMetaData
+    size: int
+    urls: List[str]
     urls_metadata: Dict[str, UrlMetadata]
+    version: str
+
+
+class Form(enum.Enum):
+    object = "object"
+    container = "container"
+    multipart = "multipart"

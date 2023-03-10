@@ -1,16 +1,20 @@
 from typing import Dict, Iterable, List, Protocol
 
-from indexclient.types import IndexHash, IndexMetaData, UrlMetadata
+from indexclient.types import Form, IndexHash, IndexMetaData, UrlMetadata
 
 class Document(Protocol):
     acl: List[str]
+    baseid: str
     did: str
+    file_name: str
+    form: Form
+    hashes: IndexHash
+    metadata: IndexMetaData
+    rev: str
     size: int
     urls: List[str]
-    hashes: IndexHash
-    version: str
-    metadata: IndexMetaData
     urls_metadata: Dict[str, UrlMetadata]
+    version: str
 
     def patch(self): ...
 

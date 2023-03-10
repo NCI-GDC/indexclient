@@ -1,10 +1,13 @@
 import collections
 import copy
 import json
-from typing import Any, Dict
+import logging
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 import requests
+
+from indexclient.types import Form, IndexData, IndexHash, IndexMetaData
 
 UPDATABLE_ATTRS = [
     "file_name",
@@ -491,11 +494,108 @@ class DocumentDeletedError(Exception):
 
 class Document:
     def __init__(self, client, did, json=None):
+        self._doc = {}
         self.client = client
         self.did = did
         self._fetched = False
         self._deleted = False
         self._load(json)
+
+    @property
+    def acl(self) -> List[str]:
+        return self._doc.setdefault("acl", [])
+
+    @acl.setter
+    def acl(self, new_acl: List[str]) -> None:
+        self._doc["acl"] = new_acl
+
+    @property
+    def baseid(self) -> str:
+        return self._doc.get("baseid")
+
+    @baseid.setter
+    def baseid(self, new_baseid: str) -> None:
+        self._doc["baseid"] = new_baseid
+
+    @property
+    def did(self) -> str:
+        return self._doc.get("did")
+
+    @did.setter
+    def did(self, new_did: str) -> None:
+        self._doc["did"] = new_did
+
+    @property
+    def file_name(self) -> str:
+        return self._doc.get("file_name")
+
+    @file_name.setter
+    def file_name(self, new_file_name: str) -> None:
+        self._doc["file_name"] = new_file_name
+
+    @property
+    def form(self) -> Form:
+        return self._doc.get("form")
+
+    @form.setter
+    def form(self, new_form: Form) -> None:
+        self._doc["form"] = new_form
+
+    @property
+    def hashes(self) -> IndexHash:
+        return self._doc.setdefault("hashes", {})
+
+    @hashes.setter
+    def hashes(self, new_hashes: IndexHash) -> None:
+        self._doc["hashes"] = new_hashes
+
+    @property
+    def metadata(self) -> IndexMetaData:
+        return self._doc.get("metadata")
+
+    @metadata.setter
+    def metadata(self, new_metadata: IndexMetaData) -> None:
+        self._doc["metadata"] = new_metadata
+
+    @property
+    def rev(self) -> str:
+        return self._doc.get("rev")
+
+    @rev.setter
+    def rev(self, new_rev) -> None:
+        self._doc["rev"] = new_rev
+
+    @property
+    def size(self) -> int:
+        return self._doc.get("size")
+
+    @size.setter
+    def size(self, new_size: int) -> None:
+        self._doc["size"] = new_size
+
+    @property
+    def urls(self) -> List[str]:
+        return self._doc.setdefault("urls", [])
+
+    @urls.setter
+    def urls(self, new_urls: List[str]) -> None:
+        self._doc["urls"] = new_urls
+
+    @property
+    def urls_metadata(self) -> Dict[str, UrlMetadata]:
+        return self._doc.setdefault("urls_metadata", {})
+
+    @urls_metadata.setter
+    def urls_metadata(self, new_urls_metadata: Dict[str, UrlMetadata]):
+        self._doc["urls_metadata"] = new_urls_metadata
+
+    @property
+    def version(self) -> str:
+        return self._doc.get("version")
+
+    @version.setter
+    def version(self, new_version: str) -> None:
+        self._doc["version"] = new_version
 
     def __eq__(self, other_doc):
         """
@@ -525,9 +625,7 @@ class Document:
         Example:
             <Document(size=1, form=object, file_name=filename.txt, ...)>
         """
-        attributes = ", ".join(
-            [f"{attr}={self.__dict__[attr]}" for attr in self._attrs]
-        )
+        attributes = ", ".join([f"{attr}={self._doc[attr]}" for attr in self._attrs])
         return "<Document(" + attributes + ")>"
 
     def _check_deleted(self):
@@ -544,17 +642,20 @@ class Document:
 
     def to_json(self, include_rev: bool = True) -> Dict[str, Any]:
         json = self._render(include_rev=include_rev)
-        if self.did:
-            json["did"] = self.did
+        if not self.did:
+            del json["did"]
         return json
 
-    def _load(self, json=None):
+    def _load(self, json: Optional[IndexData] = None):
         """Load the document contents from the server or from the provided dictionary"""
         self._check_deleted()
         json = json or self.client._get("index", self.did).json()
         # set attributes to current Document
         for k, v in json.items():
-            self.__dict__[k] = v
+            if hasattr(self, k):
+                setattr(self, k, v)
+            else:
+                logging.warning(f"Extra data {k}={v} not handled by indexclient")
         self._attrs = json.keys()
         self._fetched = True
 
@@ -564,10 +665,6 @@ class Document:
         to be updated
         """
         return {k: v for k, v in self._doc.items() if k in UPDATABLE_ATTRS}
-
-    @property
-    def _doc(self):
-        return {k: self.__dict__[k] for k in self._attrs}
 
     @property
     def _sorted_doc(self):
