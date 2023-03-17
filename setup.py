@@ -14,7 +14,7 @@ setup(
             "pytest~=6.2.0",
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
-            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1#egg=indexd",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@feat/dev-1744-remove-doiclient-and-dosclient#egg=indexd",
         ],
         "pytest_indexd": [
             "deepdiff<5.8",  # for python3.6
@@ -24,7 +24,7 @@ setup(
             "pytest-postgresql",
             "pytest-xdist",
             "pyyaml",
-            "indexd @ git+https://github.com/NCI-GDC/indexd.git@2.10.0-rc.1#egg=indexd",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@feat/dev-1744-remove-doiclient-and-dosclient#egg=indexd",
             "indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0#egg=indexdmodels",
         ],
     },
