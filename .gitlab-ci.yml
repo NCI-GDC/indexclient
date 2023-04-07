@@ -1,6 +1,4 @@
 ---
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
 
 stages:
   - test
@@ -23,26 +21,27 @@ default:
     - dind
 
 variables:
+  PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
+  PRE_COMMIT_VERSION: 3.2.1
   PG_INDEXD_HOST: postgres
+  POSTGRES_DB: indexd_test
+  POSTGRES_USER: test
+  POSTGRES_PASSWORD: test
+  POSTGRES_HOST_AUTH_METHOD: trust
 
-.prepareTox:
-  script:
-    - !reference [.load_github_key, script]
-    - apt-get update && apt-get install -y gnupg
-    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee
-      /etc/apt/sources.list.d/pgdg.list
-    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
-    - apt-get update
-    - apt-get install -y postgresql-client-13
-    - pip install "tox<4"
-  needs: [pre-commit]
-
-unit_test:
+tox:
   stage: test
-  before_script:
-    - !reference [.prepareTox, script]
+  parallel:
+    matrix:
+      - PY_VER:
+          - '3.7'
+          - '3.8'
+          - '3.9'
   needs:
-    - !reference [.prepareTox, needs]
+    - pre-commit
+  image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
+  before_script:
+    - pip install "tox<4"
   script:
     - tox -e unit_test
 
@@ -76,10 +75,6 @@ pytest_indexd_xdist:
     - !reference [.prepareTox, needs]
   script:
     - tox -e xdist
-
-tox:
-  rules:
-    - when: never
 
 docker_build:
   rules:

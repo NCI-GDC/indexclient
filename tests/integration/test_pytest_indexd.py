@@ -1,10 +1,13 @@
 import deepdiff
 import importlib_resources
+import pytest
 import yaml
 
 from indexclient.client import IndexClient
 from pytest_indexd import hints
 from pytest_indexd.fixtures.indexd_models_fixture import IndexdDriverWrapper
+
+pytestmark = [pytest.mark.pytest_indexd]
 
 
 def test_indexd_loader_dict(

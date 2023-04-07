@@ -50,7 +50,7 @@ importlib-metadata==6.0.0
     #   pytest
 importlib-resources==5.10.2
     # via indexclient (setup.py)
-indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.0
+indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3
     # via indexclient (setup.py)
 indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0
     # via indexclient (setup.py)

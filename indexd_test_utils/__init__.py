@@ -12,7 +12,7 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as index_base
 from indexd.index.drivers.alchemy import SQLAlchemyIndexDriver
-from indexd.utils import setup_database, try_drop_test_data
+from indexd.utils import config, setup_database, try_drop_test_data
 
 from indexclient.client import Document, IndexClient
 
