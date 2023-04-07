@@ -14,7 +14,6 @@ def create_document(
     urls=None,
     urls_metadata=None,
 ):
-
     did = str(uuid.uuid4()) if did is None else did
 
     return Document(

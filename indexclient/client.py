@@ -456,7 +456,6 @@ class IndexClient:
             "offset": offset,
         }
         while limit > 0:
-
             response = self._get("_query/urls/q", params=params).json()
 
             if not response:

@@ -28,7 +28,6 @@ def not_implemented(*args, **kwargs):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
 
     parser.set_defaults(log_levels=[logging.ERROR])

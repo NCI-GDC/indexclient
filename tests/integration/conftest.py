@@ -27,7 +27,6 @@ if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
                 doc_data = json.load(f)
             doc_data = doc_data["docs"]
             for doc in doc_data:
-
                 # add dummy md5hash if no hash is specified
                 if "hashes" not in doc:
                     md5 = hashlib.md5()
