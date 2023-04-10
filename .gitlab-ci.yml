@@ -43,38 +43,23 @@ tox:
   before_script:
     - pip install "tox<4"
   script:
-    - tox -e unit_test
-
-indexd_test_utils:
-  stage: test
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
-    - tox -e indexd_test_utils
-
-pytest_indexd_noproc:
-  stage: test
-  variables:
-    USE_PYTEST_INDEXD: 'true'
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
     - tox
 
-pytest_indexd_xdist:
+tox:integration:
   stage: test
+  parallel:
+    matrix:
+      - USE_PYTEST_INDEXD:
+          - true
+          - false
+      - USE_RUNNING_PG:
+          - true
+          - false
   variables:
-    USE_RUNNING_PG: 'true'
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
+    USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
+    USE_RUNNING_PG: ${USE_RUNNING_PG}
   script:
-    - tox -e xdist
+    - tox -e integration
 
 docker_build:
   rules:

@@ -12,12 +12,12 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as index_base
 from indexd.index.drivers.alchemy import SQLAlchemyIndexDriver
-from indexd.utils import config, setup_database, try_drop_test_data
+from indexd.utils import IndexdConfig, setup_database, try_drop_test_data
 
 from indexclient.client import Document, IndexClient
 
 PG_HOST = os.getenv("PG_INDEXD_HOST", "localhost")
-PG_URL = f"postgresql://test:test@{PG_HOST}/indexd_test"
+PG_URL = f"postgresql://{IndexdConfig['user']}:{IndexdConfig['password']}@{IndexdConfig['host']}/{IndexdConfig['database']}"
 
 
 @pytest.fixture(scope="session", autouse=True)

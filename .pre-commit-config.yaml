@@ -1,10 +1,5 @@
 ---
 repos:
-  - repo: git@github.com:Yelp/detect-secrets
-    rev: v1.4.0
-    hooks:
-      - id: detect-secrets
-        args: [--baseline, .secrets.baseline]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -49,3 +44,8 @@ repos:
     hooks:
       - id: toml-sort
         args: [--in-place]
+  - repo: git@github.com:Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
