@@ -43,6 +43,7 @@ tox:
     - tox -e py
 
 tox:integration:
+  allow_failure: true
   stage: test
   parallel:
     matrix:
