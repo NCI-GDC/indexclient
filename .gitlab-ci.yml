@@ -19,6 +19,9 @@ default:
       alias: postgres
   tags:
     - dind
+  before_script:
+    - !reference [.load_github_key, before_script]
+    - pip install "tox<4"
 
 variables:
   PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
@@ -41,7 +44,6 @@ tox:
     - pre-commit
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
   before_script:
-    - pip install "tox<4"
   script:
     - tox
 
