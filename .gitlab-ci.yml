@@ -55,6 +55,14 @@ tox:integration:
   variables:
     USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
     USE_RUNNING_PG: 'false'
+    PG_INDEXD_DROP_DB: 'false'
+    PG_INDEXD_HOST: postgres
+    PG_INDEXD_ROOT_USER: test
+    PG_INDEXD_ROOT_PASS: test
+    POSTGRES_DB: indexd_test
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: test
+    POSTGRES_HOST_AUTH_METHOD: trust
   script:
     - tox -e integration
 
