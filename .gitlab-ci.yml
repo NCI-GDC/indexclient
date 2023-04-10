@@ -39,11 +39,9 @@ tox:
       - PY_VER:
           - '3.7'
           - '3.8'
-          - '3.9'
   needs:
     - pre-commit
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
-  before_script:
   script:
     - tox -e py
 
