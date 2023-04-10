@@ -50,11 +50,11 @@ tox:integration:
   parallel:
     matrix:
       - USE_PYTEST_INDEXD:
-          - true
-          - false
+          - 'true'
+          - 'false'
       - USE_RUNNING_PG:
-          - true
-          - false
+          - 'true'
+          - 'false'
   variables:
     USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
     USE_RUNNING_PG: ${USE_RUNNING_PG}
@@ -98,10 +98,7 @@ release:
     - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
   needs:
-    - pytest_indexd_noproc
-    - pytest_indexd_xdist
-    - indexd_test_utils
-    - unit_test
+    - tox
   rules:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
