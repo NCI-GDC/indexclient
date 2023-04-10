@@ -39,7 +39,6 @@ tox:
       - PY_VER:
           - '3.7'
           - '3.8'
-          - '3.9'
   needs:
     - pre-commit
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
@@ -53,12 +52,9 @@ tox:integration:
       - USE_PYTEST_INDEXD:
           - 'true'
           - 'false'
-      - USE_RUNNING_PG:
-          - 'true'
-          - 'false'
   variables:
     USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
-    USE_RUNNING_PG: ${USE_RUNNING_PG}
+    USE_RUNNING_PG: 'false'
   script:
     - tox -e integration
 
