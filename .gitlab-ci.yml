@@ -12,17 +12,6 @@ include:
       - templates/global/full.yaml
       - templates/python/full.yaml
 
-default:
-  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
-  services:
-    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
-      alias: postgres
-  tags:
-    - dind
-  before_script:
-    - !reference [.load_github_key, script]
-    - pip install "tox<4"
-
 variables:
   PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
   PRE_COMMIT_VERSION: 3.2.1
@@ -42,6 +31,14 @@ tox:
   needs:
     - pre-commit
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
+  services:
+    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+      alias: postgres
+  tags:
+    - dind
+  before_script:
+    - !reference [.load_github_key, script]
+    - pip install "tox<4"
   script:
     - tox -e py
 
@@ -52,6 +49,8 @@ tox:integration:
       - USE_PYTEST_INDEXD:
           - 'true'
           - 'false'
+  needs:
+    - tox
   variables:
     USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
     USE_RUNNING_PG: 'false'
@@ -63,6 +62,15 @@ tox:integration:
     POSTGRES_USER: test
     POSTGRES_PASSWORD: test
     POSTGRES_HOST_AUTH_METHOD: trust
+  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
+  services:
+    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+      alias: postgres
+  tags:
+    - dind
+  before_script:
+    - !reference [.load_github_key, script]
+    - pip install "tox<4"
   script:
     - tox -e integration
 
