@@ -20,7 +20,7 @@ default:
   tags:
     - dind
   before_script:
-    - !reference [.load_github_key, before_script]
+    - !reference [.load_github_key, script]
     - pip install "tox<4"
 
 variables:
