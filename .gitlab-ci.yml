@@ -45,7 +45,7 @@ tox:
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
   before_script:
   script:
-    - tox
+    - tox -e py
 
 tox:integration:
   stage: test
