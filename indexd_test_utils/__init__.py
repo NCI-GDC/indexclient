@@ -149,7 +149,7 @@ def indexd_server():
     Runs once per test session.
     """
     app = get_app()
-    hostname = "localhost"
+    hostname = "127.0.0.1"
     port = 8001
     debug = False
     t = threading.Thread(
@@ -162,7 +162,7 @@ def indexd_server():
 
 
 def wait_for_indexd_alive(port):
-    url = f"http://localhost:{port}"
+    url = f"http://127.0.0.1:{port}"
     try:
         requests.get(url)
     except requests.ConnectionError:
@@ -174,7 +174,7 @@ def wait_for_indexd_alive(port):
 class MockServer:
     def __init__(self, port):
         self.port = port
-        self.baseurl = f"http://localhost:{port}"
+        self.baseurl = f"http://127.0.0.1:{port}"
 
 
 def create_random_index(index_client, did=None, version=None, hashes=None):
