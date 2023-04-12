@@ -2,7 +2,7 @@ import collections
 import copy
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
 import requests
@@ -40,7 +40,9 @@ def handle_error(resp):
 
 
 class IndexClient:
-    def __init__(self, baseurl, version="v0", auth=None):
+    def __init__(
+        self, baseurl: str, version: str = "v0", auth: Optional[Tuple[str, str]] = None
+    ):
         self.auth = auth
         self.url = baseurl
         self.version = version
@@ -53,7 +55,7 @@ class IndexClient:
         resp = requests.get(self.url + "/index")
         handle_error(resp)
 
-    def global_get(self, did, no_dist=False):
+    def global_get(self, did, no_dist=False) -> Optional["Document"]:
         """
         Makes a web request to the Indexd service global endpoint to retrieve
         an index document record.
@@ -492,7 +494,9 @@ class DocumentDeletedError(Exception):
 
 
 class Document:
-    def __init__(self, client, did, json=None):
+    def __init__(
+        self, client: IndexClient, did: str, json: Optional[Dict] = None
+    ) -> None:
         self._doc = {}
         self.client = client
         self.did = did

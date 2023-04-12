@@ -140,7 +140,7 @@ def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
 
 
 @pytest.fixture(scope="session")
-def indexd_server():
+def indexd_server() -> "MockServer":
     """
     Starts the indexd server, and cleans up its mess.
     Most tests will use the client which stems from this
@@ -149,7 +149,7 @@ def indexd_server():
     Runs once per test session.
     """
     app = get_app()
-    hostname = "127.0.0.1"
+    hostname = "localhost"
     port = 8001
     debug = False
     t = threading.Thread(
@@ -158,11 +158,11 @@ def indexd_server():
     t.setDaemon(True)
     t.start()
     wait_for_indexd_alive(port)
-    yield MockServer(port=port)
+    return MockServer(port=port)
 
 
 def wait_for_indexd_alive(port):
-    url = f"http://127.0.0.1:{port}"
+    url = f"http://localhost:{port}"
     try:
         requests.get(url)
     except requests.ConnectionError:
@@ -174,7 +174,7 @@ def wait_for_indexd_alive(port):
 class MockServer:
     def __init__(self, port):
         self.port = port
-        self.baseurl = f"http://127.0.0.1:{port}"
+        self.baseurl = f"http://localhost:{port}"
 
 
 def create_random_index(index_client, did=None, version=None, hashes=None):

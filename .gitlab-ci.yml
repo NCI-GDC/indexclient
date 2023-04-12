@@ -15,65 +15,38 @@ include:
 variables:
   PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
   PRE_COMMIT_VERSION: 3.2.1
-  PG_INDEXD_HOST: postgres
-  POSTGRES_DB: indexd_test
-  POSTGRES_USER: test
-  POSTGRES_PASSWORD: test
-  POSTGRES_HOST_AUTH_METHOD: trust
 
 tox:
   stage: test
   parallel:
     matrix:
       - PY_VER:
+          - '3.6'
           - '3.7'
           - '3.8'
+      - TOX_ENV:
+          - py
+          - fixtures
+          - plugin
   needs:
     - pre-commit
   image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
       alias: postgres
-  tags:
-    - dind
-  before_script:
-    - !reference [.load_github_key, script]
-    - pip install "tox<4"
-  script:
-    - tox -e py
-
-tox:integration:
-  allow_failure: true
-  stage: test
-  parallel:
-    matrix:
-      - USE_PYTEST_INDEXD:
-          - 'true'
-          - 'false'
-  needs:
-    - tox
   variables:
-    USE_PYTEST_INDEXD: ${USE_PYTEST_INDEXD}
-    USE_RUNNING_PG: 'false'
-    PG_INDEXD_DROP_DB: 'false'
     PG_INDEXD_HOST: postgres
-    PG_INDEXD_ROOT_USER: test
-    PG_INDEXD_ROOT_PASS: test
     POSTGRES_DB: indexd_test
     POSTGRES_USER: test
     POSTGRES_PASSWORD: test
     POSTGRES_HOST_AUTH_METHOD: trust
-  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
-  services:
-    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
-      alias: postgres
   tags:
     - dind
   before_script:
     - !reference [.load_github_key, script]
     - pip install "tox<4"
   script:
-    - tox -e integration
+    - tox -e ${TOX_ENV}
 
 docker_build:
   rules:
