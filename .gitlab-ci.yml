@@ -36,6 +36,8 @@ tox:
       alias: postgres
   variables:
     PG_INDEXD_HOST: postgres
+    PG_INDEXD_ROOT_USER: test
+    PG_INDEXD_ROOT_PASS: test
     POSTGRES_DB: indexd_test
     POSTGRES_USER: test
     POSTGRES_PASSWORD: test
