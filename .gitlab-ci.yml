@@ -24,7 +24,7 @@ tox:
           - '3.6'
           - '3.7'
           - '3.8'
-      - TOX_ENV:
+        TOX_ENV:
           - py
           - fixtures
           - plugin
