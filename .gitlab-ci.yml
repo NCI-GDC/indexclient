@@ -16,18 +16,6 @@ variables:
   PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
   PRE_COMMIT_VERSION: 3.2.1
 
-.prepareTox:
-  script:
-    - !reference [.load_github_key, script]
-    - apt-get update && apt-get install -y gnupg
-    - echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main 13" | tee
-      /etc/apt/sources.list.d/pgdg.list
-    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7FCC7D46ACCC4CF8
-    - apt-get update
-    - apt-get install -y postgresql-client-13
-    - pip install "tox<4"
-  needs: [pre-commit]
-
 tox:
   stage: test
   parallel:
@@ -57,7 +45,7 @@ tox:
   tags:
     - dind
   before_script:
-    - !reference [.prepareTox, script]
+    - !reference [.load_github_key, script]
     - pip install "tox<4"
   script:
     - tox -e ${TOX_ENV}
