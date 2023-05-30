@@ -40,8 +40,6 @@ unit_test:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
   script:
     - tox -e unit_test
 
@@ -49,8 +47,6 @@ indexd_test_utils:
   stage: test
   before_script:
     - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
   script:
     - tox -e indexd_test_utils
 
@@ -60,8 +56,6 @@ pytest_indexd_noproc:
     USE_PYTEST_INDEXD: 'true'
   before_script:
     - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
   script:
     - tox
 
@@ -71,8 +65,6 @@ pytest_indexd_xdist:
     USE_RUNNING_PG: 'true'
   before_script:
     - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
   script:
     - tox -e xdist
 
