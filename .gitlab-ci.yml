@@ -9,7 +9,7 @@ stages:
 
 include:
   - project: nci-gdc/gitlab-templates
-    ref: master
+    ref: 0.2.0
     file:
       - templates/global/full.yaml
       - templates/python/full.yaml
@@ -35,7 +35,6 @@ variables:
     - apt-get update
     - apt-get install -y postgresql-client-13
     - pip install "tox<4"
-  needs: [pre-commit]
 
 unit_test:
   stage: test
@@ -76,18 +75,6 @@ pytest_indexd_xdist:
     - !reference [.prepareTox, needs]
   script:
     - tox -e xdist
-
-tox:
-  rules:
-    - when: never
-
-docker_build:
-  rules:
-    - when: never
-
-release:
-  rules:
-    - when: never
 
 .update_pin:
   before_script:
@@ -135,7 +122,7 @@ release:
 
 update_pin_for_gdcws:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: gdcws
   before_script:
@@ -153,7 +140,7 @@ update_pin_for_gdcws:
 
 update_pin_for_sheepdog:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
+  image: docker.osdc.io/ncigdc/python3.7-builder:${BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: sheepdog
   before_script:
@@ -170,7 +157,7 @@ update_pin_for_sheepdog:
 
 update_pin_for_inspector:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: inspector
   before_script:
@@ -187,7 +174,7 @@ update_pin_for_inspector:
 
 update_pin_for_gdcbatch:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: gdcbatch
   before_script:
@@ -205,7 +192,7 @@ update_pin_for_gdcbatch:
 
 update_pin_for_gdcadmin:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
+  image: docker.osdc.io/ncigdc/python3.7-builder:${BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: gdcadmin
   before_script:
@@ -222,7 +209,7 @@ update_pin_for_gdcadmin:
 
 update_pin_for_bio_client:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
+  image: docker.osdc.io/ncigdc/python3.8-builder:${BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: bio-client
   before_script:
@@ -239,7 +226,7 @@ update_pin_for_bio_client:
 
 update_pin_for_ancillary_services:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
+  image: docker.osdc.io/ncigdc/python3.8-builder:${BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: ancillary-services
   before_script:
@@ -256,7 +243,7 @@ update_pin_for_ancillary_services:
 
 update_pin_for_data_tools:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: data-tools
   before_script:
@@ -273,7 +260,7 @@ update_pin_for_data_tools:
 
 update_pin_for_gdc_mutation_indexer:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.9-builder:2.2.0
+  image: docker.osdc.io/ncigdc/python3.9-builder:${BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: gdc-mutation-indexer
   before_script:
@@ -290,7 +277,7 @@ update_pin_for_gdc_mutation_indexer:
 
 update_pin_for_gdcapi:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: gdcapi
   before_script:
@@ -307,7 +294,7 @@ update_pin_for_gdcapi:
 
 update_pin_for_esbuild:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
+  image: docker.osdc.io/ncigdc/python36-builder:${LEGACY_BASE_CONTAINER_VERSION}
   variables:
     REPO_NAME: esbuild
   before_script:
