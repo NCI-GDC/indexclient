@@ -53,13 +53,13 @@ importlib-metadata==4.8.3
     #   pluggy
     #   pytest
     #   sqlalchemy-utils
-importlib-resources==5.4.0 ; python_version < "3.7"
+importlib-resources==5.4.0
     # via
     #   backports.zoneinfo
     #   indexclient (setup.py)
-git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3#egg=indexd
+indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3
     # via indexclient (setup.py)
-git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0#egg=indexdmodels
+indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0
     # via indexclient (setup.py)
 iniconfig==1.1.1
     # via pytest
