@@ -55,14 +55,6 @@ tox:
   script:
     - tox -e ${TOX_ENV}
 
-docker_build:
-  rules:
-    - when: never
-
-release:
-  rules:
-    - when: never
-
 .update_pin:
   before_script:
     - !reference [.load_github_key, script]
@@ -70,10 +62,12 @@ release:
     - cd "$REPO_NAME"
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 
+      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       setup.py || true
     - cat setup.py || true
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 
+      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       dev-requirements.in || true
     - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
