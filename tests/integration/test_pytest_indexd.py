@@ -16,7 +16,7 @@ def test_indexd_loader_dict(
         .read_text()
     )
     data = yaml.safe_load(docs_data)
-    indexd_loader(resource=data["docs"])
+    indexd_loader(data["docs"])
 
     assert len(list(indexd_client.list())) == 5
 
@@ -27,7 +27,7 @@ def test_indexd_loader_yaml(
     docs_data = importlib_resources.files("tests.data").joinpath(
         "dat_3021_indexd_sample.yaml"
     )
-    indexd_loader(resource=docs_data)
+    indexd_loader(docs_data)
 
     assert len(list(indexd_client.list())) == 5
 
@@ -37,7 +37,7 @@ def test_indexd_loader_json(
 ) -> None:
     docs_data = importlib_resources.files("tests.data").joinpath("documents.json")
 
-    indexd_loader(resource=docs_data)
+    indexd_loader(docs_data)
 
     assert len(list(indexd_client.list())) == 5
 
@@ -49,7 +49,7 @@ def test_indexd_driver_wrapper_get(
 ) -> None:
     docs_data = importlib_resources.files("tests.data").joinpath("documents.json")
 
-    indexd_loader(resource=docs_data)
+    indexd_loader(docs_data)
 
     expected = indexd_client.get("317f2c0d-bb9f-4924-bedc-d09275a85da4").to_json()
 
