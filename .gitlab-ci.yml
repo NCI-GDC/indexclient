@@ -103,11 +103,11 @@ integrate:
   parallel:
     matrix:
       - PY_VER: '3.6'
-        REPO_NAME: [data-tools, esbuild, gdcapi, gdcbatch, gdcws, inspector]
+        REPO_NAME: [data-tools, esbuild, gdcapi, gdcbatch, inspector]
       - PY_VER: '3.7'
         REPO_NAME: [gdcadmin, sheepdog]
       - PY_VER: '3.8'
-        REPO_NAME: [ancillary-services, bio-client]
+        REPO_NAME: [ancillary-services, bio-client, gdcws]
       - PY_VER: '3.9'
         REPO_NAME: [gdc-mutation-indexer]
   image: docker.osdc.io/ncigdc/python${PY_VER}-builder
