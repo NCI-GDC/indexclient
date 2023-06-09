@@ -12,21 +12,22 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as IndexBase
 from indexd.index.drivers.alchemy import IndexDriverABC, SQLAlchemyIndexDriver
+from indexd.utils import IndexdConfig
 from pytest_postgresql import factories
 from pytest_postgresql.executor import PostgreSQLExecutor
 
-INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", "indexd_test")
+INDEXD_DBNAME = os.getenv("INDEXD_DBNAME", IndexdConfig["database"])
 
 if os.getenv("USE_RUNNING_PG", "true").lower() == "true":
     postgresql_server_indexd = factories.postgresql_noproc(
-        host=os.getenv("PG_INDEXD_HOST", "localhost"),
-        user=os.getenv("PG_INDEXD_USER", "postgres"),
-        password=os.getenv("PG_INDEXD_PASS", ""),
-        dbname=os.getenv("PG_INDEXD_NAME", "indexd_test"),
+        host=IndexdConfig["host"],
+        user=IndexdConfig["root_user"],
+        password=IndexdConfig["root_password"],
+        dbname=IndexdConfig["database"],
     )
 else:
     postgresql_server_indexd = factories.postgresql_proc(
-        dbname=INDEXD_DBNAME, password="test"
+        dbname=INDEXD_DBNAME, password=IndexdConfig["password"]
     )
 
 

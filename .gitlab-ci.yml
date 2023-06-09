@@ -1,6 +1,4 @@
 ---
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
 
 stages:
   - test
@@ -9,21 +7,14 @@ stages:
 
 include:
   - project: nci-gdc/gitlab-templates
-    ref: master
+    ref: 0.2.0
     file:
       - templates/global/full.yaml
       - templates/python/full.yaml
 
-default:
-  image: ${BASE_CONTAINER_REGISTRY}/python3.7-builder:${BASE_CONTAINER_VERSION}
-  services:
-    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
-      alias: postgres
-  tags:
-    - dind
-
 variables:
-  PG_INDEXD_HOST: postgres
+  PRE_COMMIT_DOCKER_IMAGE: ${BASE_CONTAINER_REGISTRY}/python3.8-builder
+  PRE_COMMIT_VERSION: 3.2.1
 
 .prepareTox:
   script:
@@ -37,57 +28,32 @@ variables:
     - pip install "tox<4"
   needs: [pre-commit]
 
-unit_test:
-  stage: test
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
-    - tox -e unit_test
-
-indexd_test_utils:
-  stage: test
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
-    - tox -e indexd_test_utils
-
-pytest_indexd_noproc:
-  stage: test
-  variables:
-    USE_PYTEST_INDEXD: 'true'
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
-    - tox
-
-pytest_indexd_xdist:
-  stage: test
-  variables:
-    USE_RUNNING_PG: 'true'
-  before_script:
-    - !reference [.prepareTox, script]
-  needs:
-    - !reference [.prepareTox, needs]
-  script:
-    - tox -e xdist
-
 tox:
-  rules:
-    - when: never
-
-docker_build:
-  rules:
-    - when: never
-
-release:
-  rules:
-    - when: never
+  stage: test
+  parallel:
+    matrix:
+      - PY_VER: ['3.6', '3.7', '3.8']
+        TOX_ENV: [py, fixtures, plugin]
+  needs:
+    - pre-commit
+  image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
+  services:
+    - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
+      alias: postgres
+  variables:
+    PG_INDEXD_HOST: postgres
+    PG_INDEXD_ROOT_USER: test
+    PG_INDEXD_ROOT_PASS: test
+    POSTGRES_DB: indexd_test
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: test
+    POSTGRES_HOST_AUTH_METHOD: trust
+  tags:
+    - dind
+  before_script:
+    - !reference [.prepareTox, script]
+  script:
+    - tox -e ${TOX_ENV}
 
 .update_pin:
   before_script:
@@ -96,10 +62,12 @@ release:
     - cd "$REPO_NAME"
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 
+      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       setup.py || true
     - cat setup.py || true
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 
+      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       dev-requirements.in || true
     - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
@@ -118,10 +86,7 @@ release:
     - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
     - git push origin "$UPDATE_PIN_BRANCH_NAME"
   needs:
-    - pytest_indexd_noproc
-    - pytest_indexd_xdist
-    - indexd_test_utils
-    - unit_test
+    - tox
   rules:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
@@ -132,12 +97,20 @@ release:
         INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
         UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
 
-
-update_pin_for_gdcws:
+integrate:
   stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: gdcws
+  allow_failure: true
+  parallel:
+    matrix:
+      - PY_VER: '3.6'
+        REPO_NAME: [data-tools, esbuild, gdcapi, gdcbatch, inspector]
+      - PY_VER: '3.7'
+        REPO_NAME: [gdcadmin, sheepdog]
+      - PY_VER: '3.8'
+        REPO_NAME: [ancillary-services, bio-client, gdcws]
+      - PY_VER: '3.9'
+        REPO_NAME: [gdc-mutation-indexer]
+  image: docker.osdc.io/ncigdc/python${PY_VER}-builder
   before_script:
     - !reference [.update_pin, before_script]
   script:
@@ -148,176 +121,3 @@ update_pin_for_gdcws:
     - !reference [.update_pin, needs]
   rules:
     - !reference [.update_pin, rules]
-  allow_failure: true
-
-
-update_pin_for_sheepdog:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
-  variables:
-    REPO_NAME: sheepdog
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_inspector:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: inspector
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_gdcbatch:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: gdcbatch
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - pwd
-    - pip-compile --extra=dev --output-file=dev-requirements.txt
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_gdcadmin:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.7-builder:2.2.0
-  variables:
-    REPO_NAME: gdcadmin
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_bio_client:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
-  variables:
-    REPO_NAME: bio-client
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_ancillary_services:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.8-builder:2.2.0
-  variables:
-    REPO_NAME: ancillary-services
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_data_tools:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: data-tools
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_gdc_mutation_indexer:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python3.9-builder:2.2.0
-  variables:
-    REPO_NAME: gdc-mutation-indexer
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_gdcapi:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: gdcapi
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true
-
-update_pin_for_esbuild:
-  stage: update_pins
-  image: docker.osdc.io/ncigdc/python36-builder:1.4.0
-  variables:
-    REPO_NAME: esbuild
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-  allow_failure: true

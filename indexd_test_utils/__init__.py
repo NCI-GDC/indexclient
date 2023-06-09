@@ -12,12 +12,12 @@ from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
 from indexd.index.drivers.alchemy import Base as index_base
 from indexd.index.drivers.alchemy import SQLAlchemyIndexDriver
-from indexd.utils import setup_database, try_drop_test_data
+from indexd.utils import IndexdConfig, setup_database, try_drop_test_data
 
 from indexclient.client import Document, IndexClient
 
 PG_HOST = os.getenv("PG_INDEXD_HOST", "localhost")
-PG_URL = f"postgresql://test:test@{PG_HOST}/indexd_test"
+PG_URL = f"postgresql://{IndexdConfig['user']}:{IndexdConfig['password']}@{IndexdConfig['host']}/{IndexdConfig['database']}"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -139,8 +139,14 @@ def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
     )
 
 
+class MockServer:
+    def __init__(self, port):
+        self.port = port
+        self.baseurl = f"http://localhost:{port}"
+
+
 @pytest.fixture(scope="session")
-def indexd_server():
+def indexd_server() -> MockServer:
     """
     Starts the indexd server, and cleans up its mess.
     Most tests will use the client which stems from this
@@ -158,7 +164,7 @@ def indexd_server():
     t.setDaemon(True)
     t.start()
     wait_for_indexd_alive(port)
-    yield MockServer(port=port)
+    return MockServer(port=port)
 
 
 def wait_for_indexd_alive(port):
@@ -169,12 +175,6 @@ def wait_for_indexd_alive(port):
         return wait_for_indexd_alive(port)
     else:
         return
-
-
-class MockServer:
-    def __init__(self, port):
-        self.port = port
-        self.baseurl = f"http://localhost:{port}"
 
 
 def create_random_index(index_client, did=None, version=None, hashes=None):

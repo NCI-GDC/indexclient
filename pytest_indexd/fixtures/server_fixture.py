@@ -9,6 +9,7 @@ import os
 import random
 import socket
 import threading
+from typing import Union
 
 import flask
 import pytest
@@ -19,7 +20,7 @@ from pytest_indexd.fixtures import indexd_settings
 
 
 class MockServer:
-    def __init__(self, host: str, port: str):
+    def __init__(self, host: str, port: Union[int, str]):
         self.host = host
         self.port = port
         self.baseurl = f"http://{host}:{port}"

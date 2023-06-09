@@ -9,22 +9,24 @@ setup(
     ],
     extras_require={
         "dev": [
-            "cdislogging==1.0.0",
-            "markupsafe~=1.1.1",  # newer version not compatible
-            "pytest~=6.2.0",
+            "markupsafe",  # newer version not compatible
+            "pytest",
+            "pytest-cov[toml]",
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
-            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.0#egg=indexd",
+            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3#egg=indexd",
         ],
         "pytest_indexd": [
             "deepdiff<5.8",  # for python3.6
+            "dataclasses; python_version < '3.7'",
             "importlib_resources",
             "psycopg",
             "pytest<7",
+            "pytest-cov[toml]",
             "pytest-postgresql",
             "pytest-xdist",
             "pyyaml",
-            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.0#egg=indexd",
+            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3#egg=indexd",
             "indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0#egg=indexdmodels",
         ],
     },
