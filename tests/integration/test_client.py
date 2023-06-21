@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import pkg_resources
@@ -17,6 +18,7 @@ def test_instantiate(index_client):
     size = 5
     acl = ["a", "b"]
     hashes = {"md5": "ab167e49d25b488939b1ede42752458b"}
+    before = datetime.datetime.utcnow()
     doc = index_client.create(
         hashes=hashes,
         size=size,
@@ -25,6 +27,8 @@ def test_instantiate(index_client):
         baseid=baseid,
         urls_metadata=urls_metadata,
     )
+    after = datetime.datetime.utcnow()
+
     assert doc.size == 5
     assert doc.hashes == hashes
     assert doc.size == size
@@ -32,6 +36,12 @@ def test_instantiate(index_client):
     assert doc.baseid == baseid
     assert doc.urls_metadata == urls_metadata
     assert doc.acl == acl
+    assert doc.uploader is None
+    assert doc.created_date is not None
+    assert doc.updated_date is not None
+    # TODO: update the test after drop py36
+    # created_date = datetime.datetime.fromisoformat(doc.created_date)
+    # updated_date = datetime.datetime.fromisoformat(doc.updated_date)
 
 
 def test_create_with_metadata(index_client):

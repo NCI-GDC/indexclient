@@ -600,6 +600,30 @@ class Document:
     def version(self, new_version: str) -> None:
         self._doc["version"] = new_version
 
+    @property
+    def uploader(self) -> str:
+        return self._doc.get("uploader")
+
+    @uploader.setter
+    def uploader(self, new_uploader: str) -> None:
+        self._doc["uploader"] = new_uploader
+
+    @property
+    def created_date(self) -> str:
+        return self._doc.get("created_date")
+
+    @created_date.setter
+    def created_date(self, new_date: str) -> None:
+        self._doc["created_date"] = new_date
+
+    @property
+    def updated_date(self) -> str:
+        return self._doc.get("updated_date")
+
+    @updated_date.setter
+    def updated_date(self, new_date: str) -> None:
+        self._doc["updated_date"] = new_date
+
     def __eq__(self, other_doc):
         """
         equals `==` operator overload
