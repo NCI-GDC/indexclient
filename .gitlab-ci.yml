@@ -133,5 +133,6 @@ integrate:
 release:
   before_script:
     - git fetch --unshallow
+    - git fetch -t
   variables:
     LEGACY_BASE_CONTAINER_VERSION: 2.3.0
