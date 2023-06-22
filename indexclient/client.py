@@ -513,7 +513,7 @@ class Document:
         self._doc["acl"] = new_acl
 
     @property
-    def baseid(self) -> str:
+    def baseid(self) -> Optional[str]:
         return self._doc.get("baseid")
 
     @baseid.setter
@@ -521,7 +521,7 @@ class Document:
         self._doc["baseid"] = new_baseid
 
     @property
-    def did(self) -> str:
+    def did(self) -> Optional[str]:
         return self._doc.get("did")
 
     @did.setter
@@ -529,7 +529,7 @@ class Document:
         self._doc["did"] = new_did
 
     @property
-    def file_name(self) -> str:
+    def file_name(self) -> Optional[str]:
         return self._doc.get("file_name")
 
     @file_name.setter
@@ -537,7 +537,7 @@ class Document:
         self._doc["file_name"] = new_file_name
 
     @property
-    def form(self) -> Form:
+    def form(self) -> Optional[Form]:
         return self._doc.get("form")
 
     @form.setter
@@ -553,7 +553,7 @@ class Document:
         self._doc["hashes"] = new_hashes
 
     @property
-    def metadata(self) -> IndexMetaData:
+    def metadata(self) -> Optional[IndexMetaData]:
         return self._doc.get("metadata")
 
     @metadata.setter
@@ -561,7 +561,7 @@ class Document:
         self._doc["metadata"] = new_metadata
 
     @property
-    def rev(self) -> str:
+    def rev(self) -> Optional[str]:
         return self._doc.get("rev")
 
     @rev.setter
@@ -569,7 +569,7 @@ class Document:
         self._doc["rev"] = new_rev
 
     @property
-    def size(self) -> int:
+    def size(self) -> Optional[int]:
         return self._doc.get("size")
 
     @size.setter
@@ -593,7 +593,7 @@ class Document:
         self._doc["urls_metadata"] = new_urls_metadata
 
     @property
-    def version(self) -> str:
+    def version(self) -> Optional[str]:
         return self._doc.get("version")
 
     @version.setter
@@ -601,7 +601,7 @@ class Document:
         self._doc["version"] = new_version
 
     @property
-    def uploader(self) -> str:
+    def uploader(self) -> Optional[str]:
         return self._doc.get("uploader")
 
     @uploader.setter
@@ -609,7 +609,7 @@ class Document:
         self._doc["uploader"] = new_uploader
 
     @property
-    def created_date(self) -> str:
+    def created_date(self) -> Optional[str]:
         return self._doc.get("created_date")
 
     @created_date.setter
@@ -617,7 +617,7 @@ class Document:
         self._doc["created_date"] = new_date
 
     @property
-    def updated_date(self) -> str:
+    def updated_date(self) -> Optional[str]:
         return self._doc.get("updated_date")
 
     @updated_date.setter
