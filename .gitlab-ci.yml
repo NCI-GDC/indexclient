@@ -133,6 +133,6 @@ integrate:
 release:
   before_script:
     - git fetch --unshallow
-    - git fetch --all --tags
+    - git fetch --tags --force
   variables:
     LEGACY_BASE_CONTAINER_VERSION: 2.3.0
