@@ -32,6 +32,9 @@ def test_instantiate(index_client):
     assert doc.baseid == baseid
     assert doc.urls_metadata == urls_metadata
     assert doc.acl == acl
+    assert doc.uploader is None
+    assert doc.created_date is not None
+    assert doc.updated_date is not None
 
 
 def test_create_with_metadata(index_client):
