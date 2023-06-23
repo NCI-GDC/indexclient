@@ -2,7 +2,11 @@ from setuptools import find_packages, setup
 
 setup(
     name="indexclient",
-    version="2.0.0",
+    setup_requires=["setuptools_scm<7"],
+    use_scm_version={
+        "local_scheme": "no-local-version",
+        "write_to": "indexclient/_version.py",
+    },
     packages=find_packages(),
     install_requires=[
         "requests~=2.5",
