@@ -240,17 +240,17 @@ class IndexClient:
 
     def create(
         self,
-        hashes,
-        size,
-        did=None,
-        urls=None,
-        file_name=None,
-        metadata=None,
-        baseid=None,
-        acl=None,
-        urls_metadata=None,
-        version=None,
-    ):
+        hashes: Dict[str, str],
+        size: int,
+        did: Optional[str] = None,
+        urls: Optional[List[str]] = None,
+        file_name: Optional[str] = None,
+        metadata: Optional[str, str] = None,
+        baseid: Optional[str] = None,
+        acl: Optional[List[str]] = None,
+        urls_metadata: Optional[Dict[str, Dict[str, str]]] = None,
+        version: Optional[str] = None,
+    ) -> "Document":
         """Create a new entry in indexd
 
         Args:
@@ -291,7 +291,11 @@ class IndexClient:
             data=json_dumps(json),
             auth=self.auth,
         )
-        return Document(self, resp.json()["did"])
+        try:
+            return Document(self, resp.json()["did"])
+        except KeyError as e:
+            logging.error(resp.json())
+            raise e
 
     def create_alias(
         self,
