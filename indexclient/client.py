@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import requests
 
+from indexclient import errors
 from indexclient.types import Form, IndexData, IndexHash, IndexMetaData
 
 UPDATABLE_ATTRS = [
@@ -291,11 +292,11 @@ class IndexClient:
             data=json_dumps(json),
             auth=self.auth,
         )
-        try:
+        if resp.status_code == 200:
             return Document(self, resp.json()["did"])
-        except KeyError as e:
-            logging.error(resp.json())
-            raise e
+
+        logging.error(resp.json())
+        raise errors.BaseIndexError(resp.status_code, resp.text)
 
     def create_alias(
         self,
