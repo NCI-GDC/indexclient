@@ -250,7 +250,7 @@ class IndexClient:
         acl: Optional[List[str]] = None,
         urls_metadata: Optional[Dict[str, Dict[str, str]]] = None,
         version: Optional[str] = None,
-    ) -> "Document":
+    ):
         """Create a new entry in indexd
 
         Args:
