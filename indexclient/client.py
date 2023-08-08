@@ -245,7 +245,7 @@ class IndexClient:
         did: Optional[str] = None,
         urls: Optional[List[str]] = None,
         file_name: Optional[str] = None,
-        metadata: Optional[str, str] = None,
+        metadata: Optional[Dict[str, str]] = None,
         baseid: Optional[str] = None,
         acl: Optional[List[str]] = None,
         urls_metadata: Optional[Dict[str, Dict[str, str]]] = None,
