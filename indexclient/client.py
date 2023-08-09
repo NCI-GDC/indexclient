@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import requests
 
+from indexclient import errors
 from indexclient.types import Form, IndexData, IndexHash, IndexMetaData
 
 UPDATABLE_ATTRS = [
@@ -240,16 +241,16 @@ class IndexClient:
 
     def create(
         self,
-        hashes,
-        size,
-        did=None,
-        urls=None,
-        file_name=None,
-        metadata=None,
-        baseid=None,
-        acl=None,
-        urls_metadata=None,
-        version=None,
+        hashes: Dict[str, str],
+        size: int,
+        did: Optional[str] = None,
+        urls: Optional[List[str]] = None,
+        file_name: Optional[str] = None,
+        metadata: Optional[Dict[str, str]] = None,
+        baseid: Optional[str] = None,
+        acl: Optional[List[str]] = None,
+        urls_metadata: Optional[Dict[str, Dict[str, str]]] = None,
+        version: Optional[str] = None,
     ):
         """Create a new entry in indexd
 
@@ -291,7 +292,11 @@ class IndexClient:
             data=json_dumps(json),
             auth=self.auth,
         )
-        return Document(self, resp.json()["did"])
+        if resp.status_code == 200:
+            return Document(self, resp.json()["did"])
+
+        logging.error(resp.json())
+        raise errors.BaseIndexError(resp.status_code, resp.text)
 
     def create_alias(
         self,
