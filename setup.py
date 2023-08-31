@@ -18,7 +18,7 @@ setup(
             "pytest-cov[toml]",
             "sqlalchemy~=1.3.0",
             "sqlalchemy-utils>=0.32,<0.36.4",
-            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3#egg=indexd",
+            "indexd",
         ],
         "pytest_indexd": [
             "deepdiff<5.8",  # for python3.6
@@ -30,8 +30,8 @@ setup(
             "pytest-postgresql",
             "pytest-xdist",
             "pyyaml",
-            "indexd @ git+ssh://git@github.com/NCI-GDC/indexd.git@2.11.1-rc.3#egg=indexd",
-            "indexdmodels @ git+ssh://git@github.com/NCI-GDC/indexdmodels.git@0.2.0#egg=indexdmodels",
+            "indexd",
+            "indexdmodels",
         ],
     },
 )
