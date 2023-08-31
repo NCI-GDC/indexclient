@@ -17,9 +17,8 @@ tox:
   stage: test
   parallel:
     matrix:
-      - PY_VER: ['3.6', '3.7', '3.8']
+      - BUILD_PY_VERSION: [python3.6, python3.7, python3.8, python3.9]
         TOX_ENV: [py, fixtures, plugin]
-  image: ${BASE_CONTAINER_REGISTRY}/python${PY_VER}-builder
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
       alias: postgres
@@ -102,13 +101,8 @@ integrate:
   rules:
     - !reference [.update_pin, rules]
 
-# used by release
-.python_versions:
-  parallel:
-    matrix:
-      - BUILD_PY_VERSION: [python3.6]
-      - RELEASE_PY_VERSION: [python3.6]
-
 release:
+  variables:
+    RELEASE_PY_VERSION: python3.6
   before_script:
     - git fetch --unshallow
