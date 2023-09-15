@@ -21,11 +21,10 @@ setup(
             "indexd",
         ],
         "pytest_indexd": [
-            "deepdiff<5.8",  # for python3.6
-            "dataclasses; python_version < '3.7'",
+            "deepdiff",
             "importlib_resources",
             "psycopg",
-            "pytest<7",
+            "pytest",
             "pytest-cov[toml]",
             "pytest-postgresql",
             "pytest-xdist",
