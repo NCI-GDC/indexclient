@@ -9,6 +9,7 @@ setup(
     name="indexclient",
     setup_requires=["setuptools_scm<7"],
     long_description=long_description,
+    long_description_content_type="text/markdown",
     use_scm_version={
         "local_scheme": "no-local-version",
         "write_to": "indexclient/_version.py",
