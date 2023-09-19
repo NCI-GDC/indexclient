@@ -344,10 +344,10 @@ def test_bulk_get_latest_with_exclude_deleted(index_client):
         latest_dids.add(latest_doc.did)
 
     includes_deleted = index_client.bulk_get_latest(dids)
-    assert set(doc.did for doc in includes_deleted) == latest_dids
+    assert {doc.did for doc in includes_deleted} == latest_dids
 
     excludes_deleted = index_client.bulk_get_latest(dids, exclude_deleted=True)
-    assert set(doc.did for doc in excludes_deleted) == latest_non_deleted_dids
+    assert {doc.did for doc in excludes_deleted} == latest_non_deleted_dids
 
 
 @pytest.mark.parametrize(

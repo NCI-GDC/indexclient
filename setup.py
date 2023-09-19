@@ -1,8 +1,15 @@
+from pathlib import Path
+
 from setuptools import find_packages, setup
+
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="indexclient",
     setup_requires=["setuptools_scm<7"],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     use_scm_version={
         "local_scheme": "no-local-version",
         "write_to": "indexclient/_version.py",
@@ -21,11 +28,10 @@ setup(
             "indexd",
         ],
         "pytest_indexd": [
-            "deepdiff<5.8",  # for python3.6
-            "dataclasses; python_version < '3.7'",
+            "deepdiff",
             "importlib_resources",
             "psycopg",
-            "pytest<7",
+            "pytest",
             "pytest-cov[toml]",
             "pytest-postgresql",
             "pytest-xdist",

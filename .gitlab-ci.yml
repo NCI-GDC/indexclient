@@ -17,7 +17,7 @@ tox:
   stage: test
   parallel:
     matrix:
-      - BUILD_PY_VERSION: [python3.6, python3.7, python3.8, python3.9]
+      - BUILD_PY_VERSION: [python3.7, python3.8, python3.9]
         TOX_ENV: [py, fixtures, plugin]
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
@@ -81,14 +81,12 @@ integrate:
   allow_failure: true
   parallel:
     matrix:
-      - PY_VER: '3.6'
-        REPO_NAME: [data-tools, esbuild, gdcapi, gdcbatch, inspector]
       - PY_VER: '3.7'
-        REPO_NAME: [gdcadmin, sheepdog]
+        REPO_NAME: [gdcadmin, gdcbatch, esbuild, sheepdog]
       - PY_VER: '3.8'
-        REPO_NAME: [ancillary-services, bio-client, gdcws]
+        REPO_NAME: [ancillary-services, bio-client, gdcapi, gdcws]
       - PY_VER: '3.9'
-        REPO_NAME: [gdc-mutation-indexer]
+        REPO_NAME: [data-tools, gdc-mutation-indexer, inspector]
   image: docker.osdc.io/ncigdc/python${PY_VER}-builder
   before_script:
     - !reference [.update_pin, before_script]
@@ -103,6 +101,6 @@ integrate:
 
 release:
   variables:
-    RELEASE_PY_VERSION: python3.6
+    RELEASE_PY_VERSION: python3.7
   before_script:
     - git fetch --unshallow

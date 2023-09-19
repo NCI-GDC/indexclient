@@ -34,7 +34,7 @@ def indexd_loader(
 
         if isinstance(resource, str) or isinstance(resource, PosixPath):
             #  attempt to read from file
-            with open(resource, "r") as f:
+            with open(resource) as f:
                 try:
                     doc_data = yaml.safe_load(f)
                 except yaml.scanner.ScannerError:

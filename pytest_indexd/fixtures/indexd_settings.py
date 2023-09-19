@@ -41,7 +41,7 @@ def get_settings(pg_url):
         {
             "name": "DX DOI",
             "host": "https://doi.org/",
-            "hints": ["10\..*"],
+            "hints": [r"10\..*"],
             "type": "doi",
         },
         {
