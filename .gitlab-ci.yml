@@ -7,7 +7,7 @@ stages:
 
 include:
   - project: nci-gdc/gitlab-templates
-    ref: 0.3.1
+    ref: master
     file:
       - templates/global/full.yaml
       - templates/python/full.yaml
