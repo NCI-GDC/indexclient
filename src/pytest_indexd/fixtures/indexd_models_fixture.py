@@ -61,9 +61,7 @@ class IndexdDriverWrapper:
         did = did or str(uuid.uuid4())
         baseid = baseid or str(uuid.uuid4())
 
-        assert sorted(urls) == sorted(
-            urls_metadata.keys()
-        ), "urls and urls_metadata mismatch"
+        assert sorted(urls) == sorted(urls_metadata.keys()), "urls and urls_metadata mismatch"
 
         with self.driver.transaction() as t:
             record_acl = [models.IndexRecordACE(did=did, ace=ace) for ace in acl]

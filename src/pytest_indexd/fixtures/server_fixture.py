@@ -45,9 +45,7 @@ def indexd_server(pg_url: str) -> MockServer:
     debug = os.getenv("DEBUG", False)
     port = get_available_port(host)
 
-    t = threading.Thread(
-        target=app.run, kwargs={"host": host, "port": port, "debug": debug}
-    )
+    t = threading.Thread(target=app.run, kwargs={"host": host, "port": port, "debug": debug})
     t.setDaemon(True)
     t.start()
 
