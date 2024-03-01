@@ -24,9 +24,7 @@ def test_indexd_loader_dict(
 def test_indexd_loader_yaml(
     indexd_loader: hints.IndexRecordLoader, indexd_client: IndexClient
 ) -> None:
-    docs_data = importlib_resources.files("tests.data").joinpath(
-        "dat_3021_indexd_sample.yaml"
-    )
+    docs_data = importlib_resources.files("tests.data").joinpath("dat_3021_indexd_sample.yaml")
     indexd_loader(resource=docs_data)
 
     assert len(list(indexd_client.list())) == 5
@@ -53,8 +51,6 @@ def test_indexd_driver_wrapper_get(
 
     expected = indexd_client.get("317f2c0d-bb9f-4924-bedc-d09275a85da4").to_json()
 
-    doc_dict = indexd_driver_wrapper.get(
-        "317f2c0d-bb9f-4924-bedc-d09275a85da4"
-    ).to_json()
+    doc_dict = indexd_driver_wrapper.get("317f2c0d-bb9f-4924-bedc-d09275a85da4").to_json()
 
     assert deepdiff.DeepDiff(doc_dict, expected, ignore_order=True) == {}
