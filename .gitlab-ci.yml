@@ -7,7 +7,7 @@ stages:
 
 include:
   - project: nci-gdc/gitlab-templates
-    ref: 0.3.1
+    ref: 0.7.2
     file:
       - templates/global/full.yaml
       - templates/python/full.yaml
@@ -103,4 +103,4 @@ release:
   variables:
     RELEASE_PY_VERSION: python3.7
   before_script:
-    - git fetch --unshallow
+    - git fetch --unshallow || true

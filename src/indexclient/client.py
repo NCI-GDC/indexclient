@@ -41,9 +41,7 @@ def handle_error(resp):
 
 
 class IndexClient:
-    def __init__(
-        self, baseurl: str, version: str = "v0", auth: Optional[Tuple[str, str]] = None
-    ):
+    def __init__(self, baseurl: str, version: str = "v0", auth: Optional[Tuple[str, str]] = None):
         self.auth = auth
         self.url = baseurl
         self.version = version
@@ -354,9 +352,7 @@ class IndexClient:
             Document: the version that was just added
         """
 
-        rev_doc = self._post(
-            "index", current_did, json=new_doc.to_json(), auth=self.auth
-        ).json()
+        rev_doc = self._post("index", current_did, json=new_doc.to_json(), auth=self.auth).json()
         if rev_doc and "did" in rev_doc:
             return Document(self, rev_doc["did"])
         return None
@@ -373,9 +369,7 @@ class IndexClient:
 
         params = {"exclude_deleted": json.dumps(exclude_deleted)}
 
-        versions_dict = self._get(
-            "index", did, "versions", params=params
-        ).json()  # type: dict
+        versions_dict = self._get("index", did, "versions", params=params).json()  # type: dict
         versions = []
 
         for version in versions_dict.values():
@@ -499,9 +493,7 @@ class DocumentDeletedError(Exception):
 
 
 class Document:
-    def __init__(
-        self, client: IndexClient, did: str, json: Optional[Dict] = None
-    ) -> None:
+    def __init__(self, client: IndexClient, did: str, json: Optional[Dict] = None) -> None:
         self._doc = {}
         self.client = client
         self.did = did
@@ -727,9 +719,7 @@ class Document:
 
     def delete(self):
         self._check_deleted()
-        self.client._delete(
-            "index", self.did, auth=self.client.auth, params={"rev": self.rev}
-        )
+        self.client._delete("index", self.did, auth=self.client.auth, params={"rev": self.rev})
         self._deleted = True
 
     def get_url_metadata_by_type(self, url_type):

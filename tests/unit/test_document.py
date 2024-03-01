@@ -131,9 +131,7 @@ def test_get_state_by_type_negative():
 
 
 def test_get_state_by_type_missing_state():
-    doc = create_document(
-        urls=[TEST_URL], urls_metadata={TEST_URL: {"type": TEST_URL_TYPE}}
-    )
+    doc = create_document(urls=[TEST_URL], urls_metadata={TEST_URL: {"type": TEST_URL_TYPE}})
     url_metadata = doc.get_url_metadata_by_type(url_type=TEST_URL_TYPE)
     assert url_metadata
 
