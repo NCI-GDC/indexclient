@@ -23,9 +23,8 @@ setup(
             "markupsafe",  # newer version not compatible
             "pytest",
             "pytest-cov[toml]",
-            "sqlalchemy~=1.3.0",
-            "sqlalchemy-utils>=0.32,<0.36.4",
-            "indexd",
+            "sqlalchemy~=1.4",
+            "indexd @ git+https://github.com/NCI-GDC/indexd.git@feat/dev-XXXX-upgrade-sqlalchemy",
         ],
         "pytest_indexd": [
             "deepdiff",
