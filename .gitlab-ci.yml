@@ -28,7 +28,7 @@ tox:
 
 .update_pin:
   before_script:
-    - !reference [.load_github_key, script]
+    - !reference [.job-with-ssh-keys, before_script]
     - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
     - cd "$REPO_NAME"
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
@@ -48,7 +48,7 @@ tox:
     - pip-compile -i https://pypi.org/simple dev-requirements.in
 
   after_script:
-    - !reference [.load_github_key, script]
+    - !reference [.job-with-ssh-keys, before_script]
     - cd "$REPO_NAME"
     - pwd
     - git add .
@@ -60,11 +60,11 @@ tox:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
         INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
     - when: always
       variables:
         INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
 
 integrate:
   stage: .post

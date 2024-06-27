@@ -72,3 +72,4 @@ indexclient/_version.py
 
 # sqlite
 *.sq3
+report.xml
