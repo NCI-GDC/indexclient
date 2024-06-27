@@ -68,7 +68,7 @@ venv*/
 
 local_settings.py
 settings.yaml
-indexclient/_version.py
+src/indexclient/_version.py
 
 # sqlite
 *.sq3

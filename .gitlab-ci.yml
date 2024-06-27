@@ -61,7 +61,7 @@ tox:
       variables:
         INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
         UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
-    - when: always
+    - when: manual
       variables:
         INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
         UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
