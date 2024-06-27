@@ -47,7 +47,7 @@ junit_logging = "system-out"
 console_output_style = "classic"
 log_cli_level = "INFO"
 log_cli = "true"
-addopts = "-rfE --color=yes --max-fail=10 --cov=indexclient --cov-report term"
+addopts = "-rfE --color=yes --maxfail=10 --cov=indexclient --cov-report term"
 norecursedirs = [
   ".git",
   ".tox",
