@@ -61,9 +61,7 @@ def test_list_with_params(index_client):
     doc1 = create_random_index(index_client, hashes=hashes)
     doc2 = create_random_index(index_client, hashes=hashes)
 
-    docs_with_hashes = index_client.list_with_params(
-        page_size=1, params={"hashes": hashes}
-    )
+    docs_with_hashes = index_client.list_with_params(page_size=1, params={"hashes": hashes})
     dids = [doc1.did, doc2.did]
     found = []
     for d in docs_with_hashes:
@@ -244,9 +242,7 @@ def test_updating_hashes(index_client):
     Args:
         index_client (indexclient.client.IndexClient): IndexClient Pytest Fixture
     """
-    doc = create_random_index(
-        index_client, hashes={"md5": "3e8335931696df6261d8d437139d0463"}
-    )
+    doc = create_random_index(index_client, hashes={"md5": "3e8335931696df6261d8d437139d0463"})
 
     new_hash = "2a6f7de6a11b8adafc5dc55646978142"
     doc.hashes["md5"] = new_hash
@@ -300,9 +296,7 @@ def test_bulk_get_latest_with_skip_null(index_client):
     for i in range(20):
         doc = create_random_index(index_client, version="1")
         rev_doc = create_random_index_version(index_client, did=doc.did, version="2")
-        null_doc = (
-            create_random_index_version(index_client, did=doc.did) if i < 5 else rev_doc
-        )
+        null_doc = create_random_index_version(index_client, did=doc.did) if i < 5 else rev_doc
         dids.append(doc.did)
         new_dids.add(rev_doc.did)
         null_dids.add(null_doc.did)
@@ -510,9 +504,7 @@ def test_query_urls_metadata_exclude_deleted(index_client):
             doc.patch()
             deleted_count += 1
 
-    includes_deleted = list(
-        index_client.query_urls_metadata(url=url_match, key=key, value=value)
-    )
+    includes_deleted = list(index_client.query_urls_metadata(url=url_match, key=key, value=value))
     assert len(includes_deleted) == non_deleted_count + deleted_count
 
     excludes_deleted = list(

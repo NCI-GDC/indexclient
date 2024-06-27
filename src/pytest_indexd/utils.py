@@ -93,9 +93,7 @@ def create_random_index_version(
     data["urls"] = [f"s3://super-safe.com/{file_name}_warning_huge_file.svs"]
     data["form"] = "object"
     data["file_name"] = f"{file_name}_warning_huge_file.svs"
-    data["urls_metadata"] = {
-        f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}
-    }
+    data["urls_metadata"] = {f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}}
 
     if version:
         data["version"] = version
@@ -131,13 +129,9 @@ def verify_indexd_contents(index_client: IndexClient, expected_docs: IndexData):
         did = expected_doc["did"]
         assert did in docs_by_id
 
-        json_doc = {
-            key: value for key, value in docs_by_id[did].items() if key in expected_doc
-        }
+        json_doc = {key: value for key, value in docs_by_id[did].items() if key in expected_doc}
 
         assert (
-            deepdiff.DeepDiff(
-                json_doc, expected_doc, ignore_order=True, report_repetition=False
-            )
+            deepdiff.DeepDiff(json_doc, expected_doc, ignore_order=True, report_repetition=False)
             == {}
         )

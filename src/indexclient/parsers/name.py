@@ -7,9 +7,7 @@ import requests
 from indexclient import errors
 
 
-def name_record(
-    host, port, name, rev, size, hashes, release, metadata, hosts, keeper, **kwargs
-):
+def name_record(host, port, name, rev, size, hashes, release, metadata, hosts, keeper, **kwargs):
     """
     Alias a record.
     """

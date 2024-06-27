@@ -1,0 +1,7 @@
+graft src/indexclient
+graft src/indexd_test_utils
+graft src/pytest_indexd
+prune tests
+global-exclude */__pycache__/*
+global-exclude *.pyc
+exclude .gitignore .gitlab-ci.yml .pre-commit-config.yaml .secrets.baseline .travis.yml

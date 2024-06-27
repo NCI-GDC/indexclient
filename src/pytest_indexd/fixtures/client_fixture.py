@@ -4,6 +4,7 @@ The index_client fixture is the fixture user should use most. This fixture will 
 provide a working indexclient. The indexclient will talk to a test indexd server and
 data will be saved to temporary postgres db.
 """
+
 from typing import Tuple
 
 import pytest
@@ -20,6 +21,4 @@ def indexd_client(
     indexd_admin_user: Tuple[str, str],
 ) -> IndexClient:
     """Create the tables and add an auth user"""
-    return IndexClient(
-        indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1])
-    )
+    return IndexClient(indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1]))
