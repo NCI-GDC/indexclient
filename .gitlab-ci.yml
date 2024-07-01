@@ -1,23 +1,15 @@
 ---
 
-stages:
-  - test
-  - update_pins
-  - build
-
 include:
   - project: nci-gdc/gitlab-templates
-    ref: 0.3.1
+    ref: master
     file:
-      - templates/global/full.yaml
-      - templates/python/full.yaml
-      - templates/common/python.yaml
+      - templates/artifacts/python-library.yaml
 
 tox:
-  stage: test
   parallel:
     matrix:
-      - BUILD_PY_VERSION: [python3.7, python3.8, python3.9]
+      - BUILD_PY_VERSION: [python3.7, python3.8, python3.9, python3.10, python3.11]
         TOX_ENV: [py, fixtures, plugin]
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
@@ -36,17 +28,15 @@ tox:
 
 .update_pin:
   before_script:
-    - !reference [.load_github_key, script]
+    - !reference [.job-with-ssh-keys, before_script]
     - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
     - cd "$REPO_NAME"
     - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
     - git log -1
-    - sed -i 
-      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       setup.py || true
     - cat setup.py || true
-    - sed -i 
-      's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
+    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
       dev-requirements.in || true
     - cat dev-requirements.in || true
     - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
@@ -58,7 +48,7 @@ tox:
     - pip-compile -i https://pypi.org/simple dev-requirements.in
 
   after_script:
-    - !reference [.load_github_key, script]
+    - !reference [.job-with-ssh-keys, before_script]
     - cd "$REPO_NAME"
     - pwd
     - git add .
@@ -70,15 +60,16 @@ tox:
     - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
       variables:
         INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
-    - when: always
+        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
+    - when: manual
       variables:
         INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
-        UPDATE_PIN_BRANCH_NAME: update-indexcleint-to-$INDEXCLIENT_TARGET_VERSION
+        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
 
 integrate:
-  stage: update_pins
+  stage: .post
   allow_failure: true
+  extends: .update_pin
   parallel:
     matrix:
       - PY_VER: '3.7'
@@ -88,19 +79,3 @@ integrate:
       - PY_VER: '3.9'
         REPO_NAME: [data-tools, gdc-mutation-indexer, inspector]
   image: docker.osdc.io/ncigdc/python${PY_VER}-builder
-  before_script:
-    - !reference [.update_pin, before_script]
-  script:
-    - !reference [.update_pin, script]
-  after_script:
-    - !reference [.update_pin, after_script]
-  needs:
-    - !reference [.update_pin, needs]
-  rules:
-    - !reference [.update_pin, rules]
-
-release:
-  variables:
-    RELEASE_PY_VERSION: python3.7
-  before_script:
-    - git fetch --unshallow

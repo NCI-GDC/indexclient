@@ -134,9 +134,7 @@ def create_indexd_tables_no_migrate(
 @pytest.fixture
 def indexd_client(indexd_server, create_indexd_tables, indexd_admin_user):
     """Create the tables and add an auth user"""
-    return IndexClient(
-        indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1])
-    )
+    return IndexClient(indexd_server.baseurl, auth=(indexd_admin_user[0], indexd_admin_user[1]))
 
 
 class MockServer:
@@ -158,9 +156,7 @@ def indexd_server() -> MockServer:
     hostname = "localhost"
     port = 8001
     debug = False
-    t = threading.Thread(
-        target=app.run, kwargs={"host": hostname, "port": port, "debug": debug}
-    )
+    t = threading.Thread(target=app.run, kwargs={"host": hostname, "port": port, "debug": debug})
     t.setDaemon(True)
     t.start()
     wait_for_indexd_alive(port)
@@ -242,9 +238,7 @@ def create_random_index_version(index_client, did, version_did=None, version=Non
     data["urls"] = [f"s3://super-safe.com/{file_name}_warning_huge_file.svs"]
     data["form"] = "object"
     data["file_name"] = f"{file_name}_warning_huge_file.svs"
-    data["urls_metadata"] = {
-        f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}
-    }
+    data["urls_metadata"] = {f"s3://super-safe.com/{file_name}_warning_huge_file.svs": {"a": "b"}}
 
     if version:
         data["version"] = version

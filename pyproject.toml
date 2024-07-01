@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "setuptools_scm>=6.2", "versionista>=1.1.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "indexclient"
+dynamic = [
+  "version",
+  "description",
+  "readme",
+  "requires-python",
+  "license",
+  "authors",
+  "maintainers",
+  "keywords",
+  "classifiers",
+  "urls",
+  "scripts",
+  "gui-scripts",
+  "entry-points",
+  "dependencies",
+  "optional-dependencies"
+]
+
+[tool.black]
+include = '\.pyi?$'
+line-length = 98
+
+[tool.coverage.html]
+title = "indexclient coverage report"
+directory = "docs/htmlcov"
+show_contexts = true
+
+[tool.coverage.run]
+branch = true
+context = "unit tests"
+source = ["indexclient"]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["indexclient"]
+
+[tool.pytest.ini_options]
+minversion = 6.0
+# Silence warning by opting in to use pytest 6's new default value
+junit_family = "xunit2"
+junit_logging = "system-out"
+console_output_style = "classic"
+log_cli_level = "INFO"
+log_cli = "true"
+addopts = "-rfE --color=yes --maxfail=10 --cov=indexclient --cov-report term"
+norecursedirs = [
+  ".git",
+  ".tox",
+  "dist",
+  "build"
+]
+testpaths = [
+  "tests/unit"
+]
+
+[tool.setuptools_scm]
+local_scheme = "versionista-local-format"
+version_scheme = "versionista-format"
+write_to = "src/indexclient/_version.py"

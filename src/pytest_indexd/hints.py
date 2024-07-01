@@ -10,5 +10,4 @@ from indexclient.types import IndexData
 
 
 class IndexRecordLoader(Protocol):
-    def __call__(self, resource: Union[str, Iterable[IndexData]]) -> Iterable[Document]:
-        ...
+    def __call__(self, resource: Union[str, Iterable[IndexData]]) -> Iterable[Document]: ...

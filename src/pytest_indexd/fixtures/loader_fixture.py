@@ -3,6 +3,7 @@
 The indexd_loader fixture will help to load test data on to test postgres db. This fixture
 talks to postgres directly and should be faster than loading data through indexclient.
 """
+
 import json
 from pathlib import PosixPath
 from typing import Iterable, List, Union
