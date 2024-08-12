@@ -5,6 +5,7 @@ import pytest
 if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
     import hashlib
     import json
+    import sys
     from typing import List
 
     from indexclient import client
@@ -29,7 +30,11 @@ if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
             for doc in doc_data:
                 # add dummy md5hash if no hash is specified
                 if "hashes" not in doc:
-                    md5 = hashlib.md5()
+                    md5 = (
+                        hashlib.md5()
+                        if sys.version_info < (3, 9)
+                        else hashlib.md5(usedforsecurity=False)
+                    )  # nosec
                     md5.update(doc["did"].encode("utf-8"))
                     doc["hashes"] = {"md5": md5.hexdigest()}
                 doc["urls"] = list(doc.get("urls_metadata", {}).keys())

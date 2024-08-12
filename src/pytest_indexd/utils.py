@@ -1,5 +1,6 @@
 import hashlib
 import random
+import sys
 import uuid
 from typing import Dict, Optional
 
@@ -43,7 +44,10 @@ def mock_doc(doc: IndexData) -> IndexData:
 
     # add dummy md5hash if no hash is specified
     if "hashes" not in doc or doc["hashes"] is None:
-        md5 = hashlib.md5()
+
+        md5 = (
+            hashlib.md5() if sys.version_info < (3, 9) else hashlib.md5(usedforsecurity=False)
+        )  # nosec
         md5.update(doc["did"].encode("utf-8"))
         doc["hashes"] = IndexHash(md5=md5.hexdigest())
     if "size" not in doc:

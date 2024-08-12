@@ -1,6 +1,7 @@
 import hashlib
 import os
 import random
+import sys
 import threading
 import uuid
 
@@ -191,7 +192,9 @@ def create_random_index(index_client, did=None, version=None, hashes=None):
     did = str(uuid.uuid4()) if did is None else did
 
     if not hashes:
-        md5_hasher = hashlib.md5()
+        md5_hasher = (
+            hashlib.md5() if sys.version_info < (3, 9) else hashlib.md5(usedforsecurity=False)
+        )  # nosec
         md5_hasher.update(did.encode("utf-8"))
         hashes = {"md5": md5_hasher.hexdigest()}
 
