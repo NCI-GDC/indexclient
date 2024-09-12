@@ -81,7 +81,9 @@ def create_random_index_version(
     Returns:
         Document: the document just created
     """
-    md5_hasher = hashlib.md5()
+    md5_hasher = (
+        hashlib.md5() if sys.version_info < (3, 9) else hashlib.md5(usedforsecurity=False)
+    )  # nosec
     md5_hasher.update(did.encode("utf-8"))
     file_name = did
 
