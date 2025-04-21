@@ -11,6 +11,7 @@ from indexd import get_app
 from indexd.alias.drivers.alchemy import Base as alias_base
 from indexd.alias.drivers.alchemy import SQLAlchemyAliasDriver
 from indexd.auth.drivers.alchemy import SQLAlchemyAuthDriver
+from indexd.auth.errors import AuthError
 from indexd.index.drivers.alchemy import Base as index_base
 from indexd.index.drivers.alchemy import SQLAlchemyIndexDriver
 from indexd.utils import IndexdConfig, setup_database, try_drop_test_data
@@ -82,9 +83,14 @@ def auth_driver():
 @pytest.fixture
 def indexd_admin_user(auth_driver):
     username = password = "admin"
-    auth_driver.add(username, password)
-    yield username, password
-    auth_driver.delete("admin")
+    try:
+        auth_driver.add(username, password)
+    except AuthError as e:
+        # Sometimes, indexd gets in a bad state and didn't clean up the user after testing.
+        print(f"An error occurred: {e}. Continuing as if it didn't happen.")
+    finally:
+        yield username, password
+        auth_driver.delete("admin")
 
 
 @pytest.fixture
