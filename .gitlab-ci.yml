@@ -1,4 +1,6 @@
 ---
+variables:
+  LANGUAGE_VERSION: python3.9
 
 include:
   - project: nci-gdc/gitlab-templates
