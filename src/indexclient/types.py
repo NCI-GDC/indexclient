@@ -1,12 +1,6 @@
 import enum
 
-try:
-    from typing import TypedDict
-except ImportError:
-    from typing_extensions import TypedDict
-
-from typing import Dict, List
-
+from typing import TypedDict
 
 class UrlMetadata(TypedDict):
     state: str
@@ -25,15 +19,15 @@ class IndexHash(TypedDict, total=False):
 
 
 class IndexData(TypedDict, total=False):
-    acl: List[str]
+    acl: list[str]
     did: str
     file_name: str
     form: str
     hashes: IndexHash
     metadata: IndexMetaData
     size: int
-    urls: List[str]
-    urls_metadata: Dict[str, UrlMetadata]
+    urls: list[str]
+    urls_metadata: dict[str, UrlMetadata]
     version: str
 
 
