@@ -17,8 +17,8 @@ dev = [
 name = "indexclient"
 description = "IndexD python API client"
 readme = "README.md"
-author = {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
-maintainers = {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
+authors = [{name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}]
+maintainers = [{name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}]
 license-files = ["LICENSE"]
 keywords = ["Genomic Data Commons", "IndexD", "REST", "indexclient"]
 classifiers = [
