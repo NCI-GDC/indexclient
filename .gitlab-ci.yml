@@ -4,14 +4,19 @@ variables:
 
 include:
   - project: nci-gdc/gitlab-templates
-    ref: master
+    ref: 0.8.0
     file:
       - templates/artifacts/python-library.yaml
 
 tox:
   parallel:
     matrix:
-      - BUILD_PY_VERSION: [python3.7, python3.8, python3.9, python3.10, python3.11]
+      - BUILD_PY_VERSION:
+          - python3.7
+          - python3.8
+          - python3.9
+          - python3.10
+          - python3.11
         TOX_ENV: [py, fixtures, plugin]
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
@@ -24,60 +29,7 @@ tox:
     POSTGRES_USER: test
     POSTGRES_PASSWORD: test
     POSTGRES_HOST_AUTH_METHOD: trust
-  script:
-    - pip install "tox<4"
-    - tox -e ${TOX_ENV}
-
-.update_pin:
   before_script:
-    - !reference [.job-with-ssh-keys, before_script]
-    - git clone git@github.com:NCI-GDC/"$REPO_NAME".git
-    - cd "$REPO_NAME"
-    - git checkout "$UPDATE_PIN_BRANCH_NAME" || git checkout -b "$UPDATE_PIN_BRANCH_NAME"
-    - git log -1
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
-      setup.py || true
-    - cat setup.py || true
-    - sed -i 's|github.com/NCI-GDC/indexclient.git@.*#egg=indexclient|github.com/NCI-GDC/indexclient.git@'"$INDEXCLIENT_TARGET_VERSION"'#egg=indexclient|'
-      dev-requirements.in || true
-    - cat dev-requirements.in || true
-    - pip3 install 'pip<22'     # error importing BAR_TYPES, assert assert isinstance(handler, logging.StreamHandler)
-    - pip3 install virtualenv pip-tools==6.3.0 "setuptools_scm<6"
-
+    - pip install tox
   script:
-    - pwd
-    - pip-compile -i https://pypi.org/simple
-    - pip-compile -i https://pypi.org/simple dev-requirements.in
-
-  after_script:
-    - !reference [.job-with-ssh-keys, before_script]
-    - cd "$REPO_NAME"
-    - pwd
-    - git add .
-    - git commit -m "Update indexclient to $INDEXCLIENT_TARGET_VERSION $CI_COMMIT_SHA"
-    - git push origin "$UPDATE_PIN_BRANCH_NAME"
-  needs:
-    - tox
-  rules:
-    - if: $INDEXCLIENT_TARGET_VERSION_OVERRIDE != null
-      variables:
-        INDEXCLIENT_TARGET_VERSION: $INDEXCLIENT_TARGET_VERSION_OVERRIDE
-        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
-    - when: manual
-      variables:
-        INDEXCLIENT_TARGET_VERSION: $CI_COMMIT_REF_NAME
-        UPDATE_PIN_BRANCH_NAME: update-indexclient-to-$INDEXCLIENT_TARGET_VERSION
-
-integrate:
-  stage: .post
-  allow_failure: true
-  extends: .update_pin
-  parallel:
-    matrix:
-      - PY_VER: '3.7'
-        REPO_NAME: [gdcadmin, gdcbatch, esbuild, sheepdog]
-      - PY_VER: '3.8'
-        REPO_NAME: [ancillary-services, bio-client, gdcapi, gdcws]
-      - PY_VER: '3.9'
-        REPO_NAME: [data-tools, gdc-mutation-indexer, inspector]
-  image: docker.osdc.io/ncigdc/python${PY_VER}-builder
+    - tox -e ${TOX_ENV}

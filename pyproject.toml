@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel", "setuptools_scm>=6.2", "versionista>=1.1.0"]
+requires = ["setuptools<81.0.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -60,6 +60,4 @@ testpaths = [
 ]
 
 [tool.setuptools_scm]
-local_scheme = "versionista-local-format"
-version_scheme = "versionista-format"
-write_to = "src/indexclient/_version.py"
+fallback_version = "0.0.0"
