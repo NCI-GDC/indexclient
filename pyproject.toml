@@ -2,25 +2,58 @@
 requires = ["setuptools<81.0.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
+[dependency-groups]
+dev = [
+  "coverage[toml]",
+  "indexd",
+  "pytest>=6",
+  "pytest-cov",
+  "setuptools<81.0.0",
+  "sqlalchemy",
+  "sqlalchemy-utils"
+]
+
 [project]
 name = "indexclient"
-dynamic = [
-  "version",
-  "description",
-  "readme",
-  "requires-python",
-  "license",
-  "authors",
-  "maintainers",
-  "keywords",
-  "classifiers",
-  "urls",
-  "scripts",
-  "gui-scripts",
-  "entry-points",
-  "dependencies",
-  "optional-dependencies"
+description = "IndexD python API client"
+readme = "README.md"
+author = {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
+maintainers = {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
+license-files = ["LICENSE"]
+keywords = ["Genomic Data Commons", "IndexD", "REST", "indexclient"]
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11"
 ]
+requires-python = ">=3.7"
+dependencies = ["requests"]
+dynamic = [
+  "version"
+]
+
+[project.optional-dependencies]
+pytest_indexd = [
+  "deepdiff",
+  "importlib-resources",
+  "psycopg",
+  "pytest",
+  "pytest-cov[toml]",
+  "pytest-postgresql",
+  "pytest-xdist",
+  "pyyaml",
+  "indexd",
+  "indexdmodels",
+  "setuptools<81.0.0"
+]
+
+[project.urls]
+Repository = "https://github.com/NCI-GDC/indexclient"
 
 [tool.black]
 include = '\.pyi?$'
