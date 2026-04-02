@@ -33,17 +33,15 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = ["requests"]
-dynamic = [
-  "version"
-]
+dynamic = ["version"]
 
 [project.optional-dependencies]
-pytest_indexd = [
+pytest-indexd = [
   "deepdiff",
   "importlib-resources",
   "psycopg",
   "pytest",
-  "pytest-cov[toml]",
+  "pytest-cov",
   "pytest-postgresql",
   "pytest-xdist",
   "pyyaml",
