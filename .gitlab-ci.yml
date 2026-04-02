@@ -11,13 +11,16 @@ include:
 tox:
   parallel:
     matrix:
-      - BUILD_PY_VERSION:
+      - LANGUAGE_VERSION:
           - python3.7
           - python3.8
           - python3.9
           - python3.10
           - python3.11
-        TOX_ENV: [py, fixtures, plugin]
+        TOX_ENV:
+          - fixtures
+          - plugin
+          - test
   services:
     - name: docker.osdc.io/ncigdc/ci-postgres-13:${BASE_CONTAINER_VERSION}
       alias: postgres
@@ -32,4 +35,4 @@ tox:
   before_script:
     - pip install tox
   script:
-    - tox -e ${TOX_ENV}
+    - tox -e ${TOX_ENV}-${LANGUAGE_VERSION}

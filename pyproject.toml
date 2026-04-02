@@ -17,21 +17,25 @@ dev = [
 name = "indexclient"
 description = "IndexD python API client"
 readme = "README.md"
-authors = [{name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}]
-maintainers = [{name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}]
+requires-python = ">=3.7"
 license-files = ["LICENSE"]
+authors = [
+  {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
+]
+maintainers = [
+  {name = "GDC Feature Team", email = "gdc_dev_questions-aaaaae2lhsbell56tlvh3upgoq@cdis.slack.com"}
+]
 keywords = ["Genomic Data Commons", "IndexD", "REST", "indexclient"]
 classifiers = [
   "License :: OSI Approved :: Apache Software License",
-  "Topic :: Software Development :: Libraries :: Python Modules",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11"
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-requires-python = ">=3.7"
 dependencies = ["requests"]
 dynamic = ["version"]
 
@@ -80,15 +84,74 @@ console_output_style = "classic"
 log_cli_level = "INFO"
 log_cli = "true"
 addopts = "-rfE --color=yes --maxfail=10 --cov=indexclient --cov-report term"
-norecursedirs = [
-  ".git",
-  ".tox",
-  "dist",
-  "build"
-]
-testpaths = [
-  "tests/unit"
-]
+norecursedirs = [".git", ".tox", "dist", "build"]
+testpaths = ["tests/unit"]
 
 [tool.setuptools_scm]
 fallback_version = "0.0.0"
+
+[tool.tox]
+env_list = ["python3.7", "python3.8", "python3.9", "python3.10", "python3.11"]
+
+[tool.tox.env_base.fixtures]
+factors = [["python3.7", "python3.8", "python3.9", "python3.10", "python3.11"]]
+pass_env = ["PG_*"]
+commands = [
+  [
+    "pytest",
+    {replace = "posargs", default = [
+      "-lvvvs",
+      "tests/integration/test_client.py"
+    ], extend = true}
+  ]
+]
+
+[tool.tox.env_base.fixtures.set_env]
+NO_PROXY = "localhost,postgres"
+no_proxy = "localhost,postgres"
+USE_PYTEST_INDEXD = "false"
+
+[tool.tox.env_base.plugin]
+factors = [["python3.7", "python3.8", "python3.9", "python3.10", "python3.11"]]
+pass_env = ["PG_*", "USE_*"]
+dependency_groups = []
+extras = ["pytest-indexd"]
+commands = [
+  [
+    "pytest",
+    {replace = "posargs", default = ["-lvvvs", "tests/integration"], extend = true}
+  ]
+]
+
+[tool.tox.env_base.plugin.set_env]
+USE_RUNNING_PG = "true"
+USE_PYTEST_INDEXD = "true"
+NO_PROXY = "localhost,postgres"
+no_proxy = "localhost,postgres"
+# MacOS requires the following environment variable to run test in parallel
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY = "YES"
+
+[tool.tox.env_base.test]
+factors = [["python3.7", "python3.8", "python3.9", "python3.10", "python3.11"]]
+
+[tool.tox.env_run_base]
+base_python = "{factor:0}"
+pass_env = ["PG_INDEXD_HOST"]
+dependency_groups = ["dev"]
+commands = [
+  [
+    "pytest",
+    "-lv",
+    {replace = "posargs", default = [
+      "--cov-report=xml",
+      "--cov-report=html",
+      "--junit-xml=report.xml"
+    ], extend = true}
+  ]
+]
+ignore_base_python_conflict = true
+
+[tool.tox.env_run_base.set_env]
+NO_PROXY = "localhost,postgres"
+no_proxy = "localhost,postgres"
+USE_PYTEST_INDEXD = "true"
