@@ -1,55 +1,43 @@
 import os
+from typing import Iterator, Optional
 
+import importlib_resources as resources
 import pytest
+from testcontainers import compose
 
-if os.getenv("USE_PYTEST_INDEXD", "false").lower() == "false":
-    import hashlib
-    import json
-    import sys
-    from typing import List
+from indexclient import client
 
-    from indexclient import client
-    from indexd_test_utils import (
-        alias_driver,
-        auth_driver,
-        create_indexd_tables,
-        index_driver,
-        indexd_admin_user,
-        indexd_client,
-        indexd_server,
-        setup_indexd_test_database,
-    )
 
-    @pytest.fixture
-    def indexd_loader(indexd_client):
-        def load(file_name):
-            docs: List[client.Document] = []
-            with open(file_name) as f:
-                doc_data = json.load(f)
-            doc_data = doc_data["docs"]
-            for doc in doc_data:
-                # add dummy md5hash if no hash is specified
-                if "hashes" not in doc:
-                    md5 = (
-                        hashlib.md5()
-                        if sys.version_info < (3, 9)
-                        else hashlib.md5(usedforsecurity=False)
-                    )  # nosec
-                    md5.update(doc["did"].encode("utf-8"))
-                    doc["hashes"] = {"md5": md5.hexdigest()}
-                doc["urls"] = list(doc.get("urls_metadata", {}).keys())
-                docs.append(indexd_client.create(**doc))
-            return docs
+@pytest.fixture(scope="session")
+def services() -> Iterator[Optional[compose.DockerCompose]]:
+    """Start external services via compose."""
+    if os.getenv("CI"):
+        # disable test containers in gitlab ci
+        yield None
+        return
 
-        return load
+    docker_resources = resources.files("tests.integration") / "docker"
 
-else:
-    # This only works in top level conftest
-    pytest_plugins = ("pytest_indexd.plugin",)
+    with (
+        resources.as_file(docker_resources) as docker_dir,
+        compose.DockerCompose(
+            str(docker_dir),
+            "docker-compose.yaml",
+            pull=True,
+        ) as containers,
+    ):
+        indexd_port = containers.get_service_port("indexd", 80)
+        indexd_host = f"http://localhost:{indexd_port}"
+        os.environ["INDEXD_HOST"] = indexd_host
+        os.environ["INDEXD_USER"] = "admin"
+        os.environ["INDEXD_PASS"] = "admin"
+        containers.wait_for(url=f"{indexd_host}/_status")
+
+        yield containers
 
 
 @pytest.fixture(scope="function")
-def index_client(indexd_client):
+def index_client(services) -> client.IndexClient:
     """
     Handles getting all the docs from an
     indexing endpoint. Currently this is changing from
@@ -58,4 +46,7 @@ def index_client(indexd_client):
     tests:
     https://docs.pytest.org/en/latest/fixture.html#parametrizing-fixtures
     """
-    return indexd_client
+    return client.IndexClient(
+        os.environ["INDEXD_HOST"],
+        auth=(os.environ["INDEXD_USER"], os.environ["INDEXD_PASS"]),
+    )

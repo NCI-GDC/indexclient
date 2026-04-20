@@ -1,10 +1,10 @@
 import deepdiff
 import importlib_resources
 import yaml
-
-from indexclient.client import IndexClient
 from pytest_indexd import hints
 from pytest_indexd.fixtures.indexd_models_fixture import IndexdDriverWrapper
+
+from indexclient.client import IndexClient
 
 
 def test_indexd_loader_dict(

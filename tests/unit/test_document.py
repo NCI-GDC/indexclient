@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from indexclient.client import Document, UrlMetadata, recursive_sort
+from indexclient.client import Document, UrlMetadata, _recursive_sort
 
 
 def create_document(
@@ -82,7 +82,7 @@ def test_greater_than_less_than():
     ],
 )
 def test_recursive_sort(given, expected):
-    assert recursive_sort(given) == expected
+    assert _recursive_sort(given) == expected
 
 
 TEST_URL = "fake_cleversafe_url"
